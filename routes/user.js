@@ -6,7 +6,7 @@ let users = new Datastore({ filename: "users.db", autoload: true });
 
 /* 1️⃣ Setup Magic Admin SDK */
 const { Magic } = require("@magic-sdk/admin");
-const API_KEY= "pk_live_8E9201350998115F";
+const API_KEY= "sk_live_D4E272C6D218A773";
 const magic = new Magic(API_KEY);
 
 /* 2️⃣ Implement Auth Strategy */
