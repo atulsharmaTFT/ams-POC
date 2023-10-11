@@ -15,7 +15,7 @@ contract Token{
         owner=msg.sender;
     }
 
-    function transfer(address to , uint amount)external {
+    function transfer(address to , uint amount)external payable {
         require(balances[msg.sender]>=amount, "Not enough tokens");
         balances[msg.sender]-=amount;
         balances[to]+=amount;

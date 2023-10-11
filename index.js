@@ -1,17 +1,20 @@
 const express = require("express");
-const {Web3} = require("web3");
+const { Web3 } = require("web3");
 const crypto = require("crypto");
-var cors = require('cors')
+var cors = require("cors");
+const contractFile = require("./Hardhat/artifacts/contracts/Token.sol/Token.json");
 const app = express();
-app.use(cors({credentials: true, origin: true, exposedHeaders: '*'}))
+app.use(cors({ credentials: true, origin: true, exposedHeaders: "*" }));
 const port = 3000;
-
-const RPC_URL = "http://localhost:7545";
-const web3 = new Web3(new Web3.providers.HttpProvider(RPC_URL));
 
 app.use(express.json());
 
 const userAccounts = [];
+const RPC_URL = "http://127.0.0.1:8545/";
+const web3 = new Web3(new Web3.providers.HttpProvider(RPC_URL));
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const abi = contractFile?.abi;
+const contract = new web3.eth.Contract(abi, contractAddress);
 
 // Generate a private key securely
 function generatePrivateKey() {
@@ -22,11 +25,12 @@ function generatePrivateKey() {
 app.post("/register", (req, res) => {
   try {
     const user = req.body;
-    console.log(user,"User")
-    const privateKey = generatePrivateKey();
+    console.log(user, "User");
+    const privateKey =
+      "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a";
+    // const privateKey = generatePrivateKey();
     const account = web3.eth.accounts.create(privateKey);
     userAccounts.push({ address: account.address, privateKey });
-    console.log(privateKey, account, "WaL")
     res.json({
       success: true,
       message: "Registration success",
@@ -51,18 +55,34 @@ app.post("/sign-transaction", async (req, res) => {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-    console.log(user, "user")
+    console.log(user, "user");
+    const valueInWei = web3.utils.toWei("10", "ether");
     // sign the transaction using private key
-    const signedTransaction = await web3.eth.accounts.signTransaction(
-      transactionData,
-      user.privateKey
-    );
-    console.log("Signed Transaction:", signedTransaction);
-    res.json({
-      success: true,
-      message: "Transaction signed",
-      hash: signedTransaction.rawTransaction,
-    });
+    const isValidPrivateKey =
+      web3.utils.isHex(user.privateKey) && user.privateKey.length === 66;
+    if (isValidPrivateKey) {
+      const tx = {
+        to: contractAddress,
+        from: userAddress,
+        value: valueInWei,
+        gas: "0x200000",
+        gasPrice: web3.utils.toWei("10", "gwei"),
+        data: contract.methods.transfer(contractAddress, 10).encodeABI(),
+        nonce: 2,
+      };
+      const signedTransaction = await web3.eth.accounts.signTransaction(
+        tx,
+        user.privateKey
+      );
+      console.log("Signed Transaction:", signedTransaction);
+      res.json({
+        success: true,
+        message: "Transaction signed",
+        hash: signedTransaction.rawTransaction,
+      });
+    } else {
+      console.log("Not valid");
+    }
   } catch (error) {
     console.error(error);
     res
@@ -72,10 +92,12 @@ app.post("/sign-transaction", async (req, res) => {
 });
 
 // Handle admin transaction execution
-app.post("/execute-transaction", (req, res) => {
+app.post("/execute-transaction", async (req, res) => {
   try {
     const { signedTransaction } = req.body;
-    console.log("Admin executing transaction:", signedTransaction);
+    let execute = await web3.eth.sendSignedTransaction(signedTransaction);
+
+    console.log("Admin executing transaction:", execute);
     res.json({ success: true, message: "Transaction executed" });
   } catch (error) {
     console.error(error);
