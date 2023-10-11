@@ -1,40 +1,90 @@
 const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const logger = require("morgan");
-const session = require("express-session");
-const passport = require("passport");
-
-const indexRouter = require("./routes/index");
-const userRouter = require("./routes/user");
-
+const {Web3} = require("web3");
+const crypto = require("crypto");
+var cors = require('cors')
 const app = express();
-app.set("trust proxy", 1);
-app.set("view engine", "ejs");
+app.use(cors({credentials: true, origin: true, exposedHeaders: '*'}))
+const port = 3000;
 
-app.use(logger("dev"));
+const RPC_URL = "http://localhost:7545";
+const web3 = new Web3(new Web3.providers.HttpProvider(RPC_URL));
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
-app.use(
-  session({
-    secret: "not my cat's name",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      maxAge: 60 * 60 * 1000, // 1 hour
-      // secure: true, // Uncomment this line to enforce HTTPS protocol.
-      sameSite: true
+
+const userAccounts = [];
+
+// Generate a private key securely
+function generatePrivateKey() {
+  const privateKeyBytes = crypto.randomBytes(32);
+  return "0x" + privateKeyBytes.toString("hex");
+}
+
+app.post("/register", (req, res) => {
+  try {
+    const user = req.body;
+    console.log(user,"User")
+    const privateKey = generatePrivateKey();
+    const account = web3.eth.accounts.create(privateKey);
+    userAccounts.push({ address: account.address, privateKey });
+    console.log(privateKey, account, "WaL")
+    res.json({
+      success: true,
+      message: "Registration success",
+      userAddress: account.address,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Registration failed" });
+  }
+});
+
+// Handle user transaction signing
+app.post("/sign-transaction", async (req, res) => {
+  try {
+    const { userAddress, transactionData } = req.body;
+    // Find the user's private key based on their Ethereum address
+    const user = userAccounts.find(
+      (account) => account.address === userAddress
+    );
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
+    console.log(user, "user")
+    // sign the transaction using private key
+    const signedTransaction = await web3.eth.accounts.signTransaction(
+      transactionData,
+      user.privateKey
+    );
+    console.log("Signed Transaction:", signedTransaction);
+    res.json({
+      success: true,
+      message: "Transaction signed",
+      hash: signedTransaction.rawTransaction,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Transaction signing failed" });
+  }
+});
 
-app.use("/", indexRouter);
-app.use("/user", userRouter);
+// Handle admin transaction execution
+app.post("/execute-transaction", (req, res) => {
+  try {
+    const { signedTransaction } = req.body;
+    console.log("Admin executing transaction:", signedTransaction);
+    res.json({ success: true, message: "Transaction executed" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Transaction execution failed" });
+  }
+});
 
-const listener = app.listen(8080, function() {
-  console.log("Listening on port " + listener.address().port);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
