@@ -1,9 +1,9 @@
 async function main(){
     const [deployer] = await ethers.getSigners();
 
-    const Increment = await ethers.getContractFactory("Increment");
-    const increment = await Increment.deploy();
-    console.log("Increment address", increment.address);
+    const Counter = await ethers.getContractFactory("Counter");
+    const counter = await Counter.deploy();
+    console.log("Increment address", counter.address);
 }
 
 main()
