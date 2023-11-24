@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Dropdown from "./components/DropDown";
 import { fieldOption, options } from "./helper/constants";
-import RadioButton from "./RadioButton";
-import MultiDropdown from "./MultiSelectDropDown";
-import TextInput from "./TextInput";
+import RadioButton from "./components/RadioButton";
+import MultiDropdown from "./components/MultiSelectDropDown";
+import TextInput from "./components/TextInput";
 import CheckBox from "./components/CheckBox/CheckBox";
 import FileUploader from "./components/FileUploader/FileUploader";
 import DatePicker from "./components/DatePicker/DatePicker";
@@ -107,8 +107,8 @@ const App = () => {
 
       <p>Selected Option: {selectedOption}</p>
         <CheckBox value={"abcd"} title={"Ram"} isChecked={true}/>
-        <FileUploader/>
-        <DatePicker title={"Created At"}/>
+        <FileUploader title={"upload"}/>
+        <DatePicker title={"Created At"} />
         <button type="submit">Submit</button>
       </form>
 
