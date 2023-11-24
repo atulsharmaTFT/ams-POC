@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-const Dropdown = ({options}) => {
+const Dropdown = ({title, options, selectedOption, setSelectedOption}) => {
   // State to manage the selected option
-  const [selectedOption, setSelectedOption] = useState('');
+
 
   // Function to handle option selection
   const handleSelect = (event) => {
@@ -11,10 +11,10 @@ const Dropdown = ({options}) => {
 
   return (
     <div>
-      <label htmlFor="dropdown">Select an option:</label>
+      <label htmlFor="dropdown">{title}</label>
       <select id="dropdown" value={selectedOption} onChange={handleSelect}>
         <option value="">Select...</option>
-        {options.map((option)=> <option value={option?.id}>{option?.name}</option>)}
+        {options.map((option)=> <option value={option?.name}>{option?.name}</option>)}
         
       </select>
       {selectedOption && <p>You selected: {selectedOption}</p>}
