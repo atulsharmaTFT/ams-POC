@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import Dropdown from "./DropDown";
+import Dropdown from "./components/DropDown";
 import { fieldOption, options } from "./helper/constants";
+import CheckBox from "./components/CheckBox/CheckBox";
+import FileUploader from "./components/FileUploader/FileUploader";
+import DatePicker from "./components/DatePicker/DatePicker";
 
 const App = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -86,6 +89,9 @@ const App = () => {
           selectedOption={selectedField}
           setSelectedOption={setSelectedField}
         />
+        <CheckBox value={"abcd"} title={"Ram"} isChecked={true}/>
+        <FileUploader/>
+        <DatePicker title={"Created At"}/>
         <button type="submit">Submit</button>
       </form>
 
