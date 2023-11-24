@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import Dropdown from "./DropDown";
 import { fieldOption, options } from "./helper/constants";
+import RadioButton from "./RadioButton";
+import MultiDropdown from "./MultiSelectDropDown";
+import TextInput from "./TextInput";
 
 const App = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -86,6 +89,25 @@ const App = () => {
           selectedOption={selectedField}
           setSelectedOption={setSelectedField}
         />
+        {/* <MultiDropdown
+          key={selectedField[0]?.name}
+          title={"Field Type"}
+          options={fieldOption}
+          selectedOption={selectedField}
+          setSelectedOption={setSelectedField}
+        /> */}
+        <RadioButton
+        key={selectedField[0]?.name}
+        title={"Field Type"}
+        options={fieldOption}
+        selectedOption={selectedField}
+        setSelectedOption={setSelectedField}
+      />
+    
+    <TextInput label="TextInput"/>
+     
+
+      <p>Selected Option: {selectedOption}</p>
         <button type="submit">Submit</button>
       </form>
 
