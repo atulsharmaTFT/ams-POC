@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import Dropdown from "./DropDown";
+import Dropdown from "./components/DropDown";
 import { fieldOption, options } from "./helper/constants";
 import RadioButton from "./RadioButton";
 import MultiDropdown from "./MultiSelectDropDown";
 import TextInput from "./TextInput";
+import CheckBox from "./components/CheckBox/CheckBox";
+import FileUploader from "./components/FileUploader/FileUploader";
+import DatePicker from "./components/DatePicker/DatePicker";
 
 const App = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -89,25 +92,23 @@ const App = () => {
           selectedOption={selectedField}
           setSelectedOption={setSelectedField}
         />
-        {/* <MultiDropdown
+        <MultiDropdown
           key={selectedField[0]?.name}
           title={"Field Type"}
           options={fieldOption}
           selectedOption={selectedField}
           setSelectedOption={setSelectedField}
-        /> */}
-        <RadioButton
-        key={selectedField[0]?.name}
-        title={"Field Type"}
-        options={fieldOption}
-        selectedOption={selectedField}
-        setSelectedOption={setSelectedField}
+        />
+        <RadioButton label={"string"} value={"abc"} checked={false} onChange={(e)=>console.log(e)}
       />
     
     <TextInput label="TextInput"/>
      
 
       <p>Selected Option: {selectedOption}</p>
+        <CheckBox value={"abcd"} title={"Ram"} isChecked={true}/>
+        <FileUploader/>
+        <DatePicker title={"Created At"}/>
         <button type="submit">Submit</button>
       </form>
 
