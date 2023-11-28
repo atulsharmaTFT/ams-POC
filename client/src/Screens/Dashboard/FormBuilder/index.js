@@ -1,8 +1,17 @@
 import React, { useState } from "react";
+import { Capitalize } from "../../../helper/commonHelpers";
+import SlideSwitch from "../../../components/Switch";
+import classes from "./form.module.scss";
+import CheckBox from "../../../components/CheckBox/CheckBox";
+import Button from "../../../components/Button/Button";
 export const fieldDetails = [
   {
     elementType: "Text",
     elementAttributes: ["placeholder", "defaultValue"],
+  },
+  {
+    elementType: "Number",
+    elementAttributes: ["placeholder", "defaultValue", "minimum", "maximum"],
   },
   {
     elementType: "Date",
@@ -22,53 +31,49 @@ export const fieldDetails = [
     elementAttributes: ["label", "options", "defaultValue"],
   },
 ];
-const optionsObject ={
-    name: "",
-    variable: "",
-    type: "",
-        // "text",
-        // "radio",
-        // "checkbox",
-        // "dropdown",
-        // "date",
-        // "toggle",
-        // "multiSelect",
-        // "slider",
-    enabled: true,
-    required: false,
-    maxLength: 10,
-    minLength: 0,
-    description: "",
-    radioOptions: [],
-    checkboxLabel: "",
-    checkboxDefault: false,
-    dropdownOptions: [],
-    dateOptions: {
-      format: "YYYY-MM-DD",
-      minDate: "",
-      maxDate: "",
-    },
-    toggleDefault: false,
-    multiSelectOptions: [],
-    sliderOptions: {
-      min: 0,
-      max: 10,
-      step: 2,
-    },
-  }
+const optionsObject = {
+  name: "",
+  variable: "",
+  type: "",
+  // "text",
+  // "radio",
+  // "checkbox",
+  // "dropdown",
+  // "date",
+  // "toggle",
+  // "multiSelect",
+  // "slider",
+  enabled: true,
+  required: false,
+  maxLength: 10,
+  minLength: 0,
+  description: "",
+  radioOptions: [],
+  checkboxLabel: "",
+  checkboxDefault: false,
+  dropdownOptions: [],
+  dateOptions: {
+    format: "YYYY-MM-DD",
+    minDate: "",
+    maxDate: "",
+  },
+  toggleDefault: false,
+  multiSelectOptions: [],
+  sliderOptions: {
+    min: 0,
+    max: 10,
+    step: 2,
+  },
+};
 const FormBuilder = ({ onFormSubmit }) => {
   const [selectedField, setSelectedField] = useState("");
   const [fieldAttributes, setFieldAttributes] = useState({});
-  const [newOption, setNewOption] = useState({
-    name: "",
-    type:"",
-    option: {},
-});
-
+  const [newOption, setNewOption] = useState(optionsObject);
+  const [option, setOption]= useState("")
   const handleFieldSelect = (elementType) => {
     setSelectedField(elementType);
     setFieldAttributes({});
-    setNewOption({...newOption, type: elementType})
+    setNewOption({ ...newOption, type: elementType });
   };
 
   const handleAttributeChange = (attribute, value) => {
@@ -79,12 +84,12 @@ const FormBuilder = ({ onFormSubmit }) => {
   };
 
   const handleAddOption = () => {
-    if (newOption.trim() !== "") {
+    if (option.trim() !== "") {
       const optionsArray = Array.isArray(fieldAttributes.options)
         ? fieldAttributes.options
         : [];
-      handleAttributeChange("options", [...optionsArray, newOption.trim()]);
-      setNewOption("");
+      handleAttributeChange("options", [...optionsArray, option.trim()]);
+      setOption("");
     }
   };
 
@@ -107,55 +112,71 @@ const FormBuilder = ({ onFormSubmit }) => {
       setNewOption("");
     }
   };
-  const customTextStyle={
-    display:"flex", 
-    justifyContent:'space-between',
-    padding:5
-  }
-  const inputStyle={
-    padding:5,
-    width: 300
-  }
-  console.log(optionsObject,"newOption")
+  const customTextStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: 5,
+  };
+  const inputStyle = {
+    padding: 5,
+    width: 300,
+  };
+  console.log(newOption, "newOption");
   return (
     <div>
       <h2>Create Fields</h2>
-      <div style={{display:"flex",flexDirection:'column', width:'50%'}}>
+      <div style={{ display: "flex", flexDirection: "column", width: "50%" }}>
         <div style={customTextStyle}>
-        <label>Name:</label>
-        <input
-        style={inputStyle}
-          type="text"
-          value={newOption?.name}
-          onChange={(e) => setNewOption({...newOption,name: e.target.value})}
+          <label>Name:</label>
+          <input
+            style={inputStyle}
+            type="text"
+            value={newOption?.name}
+            onChange={(e) =>
+              setNewOption({ ...newOption, name: e.target.value })
+            }
+          />
+        </div>
+        <div style={customTextStyle}>
+          <label>Field Type:</label>
+          <select
+            value={selectedField}
+            onChange={(e) => handleFieldSelect(e.target.value)}
+            style={inputStyle}
+          >
+            <option value="">Select Field</option>
+            {fieldDetails.map((field) => (
+              <option key={field.elementType} value={field.elementType}>
+                {field.elementType}
+              </option>
+            ))}
+          </select>
+        </div>
+        <CheckBox
+          title={"Required"}
+          isChecked={newOption?.required}
+          onChange={() =>
+            setNewOption({ ...newOption, required: !newOption?.required })
+          }
         />
-      
-        </div>
-        <div style={customTextStyle}>
-        <label>Field Type:</label>
-        <select
-          value={selectedField}
-          onChange={(e) => handleFieldSelect(e.target.value)}
-          style={inputStyle}
-        >
-          <option value="">Select Field</option>
-          {fieldDetails.map((field) => (
-            <option key={field.elementType} value={field.elementType} >
-              {field.elementType}
-            </option>
-          ))}
-        </select>
-        </div>
+        <CheckBox
+          title={"Enabled"}
+          isChecked={newOption?.enabled}
+          onChange={() =>
+            setNewOption({ ...newOption, enabled: !newOption?.enabled })
+          }
+        />
+        {/* <SlideSwitch label={"Required"} checked={newOption?.required} onChange={()=> setNewOption({...newOption, required: !newOption?.required})}/> */}
       </div>
 
       {selectedField && (
-        <div style={{display:"flex",flexDirection:'column', width:'50%'}}>
+        <div style={{ display: "flex", flexDirection: "column", width: "50%" }}>
           <h3>Add attributes for {selectedField}</h3>
           {fieldDetails
             .find((field) => field.elementType === selectedField)
             ?.elementAttributes.map((attribute) => (
               <div key={attribute} style={customTextStyle}>
-                <label>{attribute.toUpperCase()}:</label>
+                <label>{Capitalize(attribute)}:</label>
                 {attribute === "options" ? (
                   <div>
                     {fieldAttributes[attribute]?.map((option, index) => (
@@ -168,9 +189,9 @@ const FormBuilder = ({ onFormSubmit }) => {
                     ))}
                     <input
                       type="text"
-                      value={newOption}
+                      value={option}
                       style={inputStyle}
-                      onChange={(e) => setNewOption(e.target.value)}
+                      onChange={(e) => setOption(e.target.value)}
                     />
                     <button onClick={handleAddOption}>Add Option</button>
                   </div>
@@ -190,7 +211,14 @@ const FormBuilder = ({ onFormSubmit }) => {
                 )}
               </div>
             ))}
-          <button onClick={handleAddField}>Create Field</button>
+          {/* <button onClick={handleAddField}>Create Field</button> */}
+          <Button
+            type="submit"
+            overrideClassName={classes.createBtn}
+            buttonText={"Create field"}
+            onClick={handleAddField}
+            loading={false}
+          />
         </div>
       )}
     </div>

@@ -1,0 +1,15 @@
+@import '../../../scss/theme';
+
+.createBtn {
+    width: 100% !important;
+    font-size: 18px !important;
+    margin-top: 10px;
+    height: 35px !important;
+    border-radius: 10px;
+    background: $blue;
+    padding: 5px 0 !important;
+    font-weight: 550;
+    color: white;
+    margin-top: 10px;
+    cursor: pointer;
+  }

@@ -1,0 +1,36 @@
+@import '../../scss/theme';
+
+
+.button {
+  padding: 2rem 0;
+  background-color: $blue;
+  @include flexContainer;
+  column-gap: 1.5rem;
+  cursor: pointer;
+  border-radius: 1rem;
+  font-size: 1.7rem;
+  line-height: 2.5rem;
+  color: $white;
+  span {
+    font-size: 2rem;
+  }
+}
+.radio {
+  padding: 15px 0;
+  border: 1px solid lightgrey;
+  cursor: pointer;
+  border-radius: 1rem;
+  display: flex;
+  margin: 10px 0px;
+  align-items: center;
+  justify-content: space-around;
+}
+.radioButton {
+  width: 50%;
+  margin: 0px 30px;
+}
+.radioLabelStyle {
+  color: black;
+  font-size: 1rem;
+  margin-left: 10px;
+}
