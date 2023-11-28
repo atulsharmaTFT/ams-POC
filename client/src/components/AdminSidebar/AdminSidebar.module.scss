@@ -5,6 +5,7 @@
   text-align: center;
   height: 85%;
   border: none;
+  background-color: black;
   .logo {
     display: flex;
     justify-content: space-between;
@@ -85,6 +86,7 @@
   border-radius: 10px;
 }
 .sliderBox {
+  background-color: black;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   padding-top: 40px;
   height: 100%;

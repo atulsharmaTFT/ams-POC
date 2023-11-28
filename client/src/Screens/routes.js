@@ -6,7 +6,7 @@ import AdminLayout from "../layout/AdminLayout/AdminLayout";
 
 export const adminRoutes = (token, role) => [
   {
-    element: <Outlet />,
+    element: <AdminLayout />,
     children: [
       {
         path: AppRoutes.HOME,
@@ -15,7 +15,7 @@ export const adminRoutes = (token, role) => [
     ],
   },
   {
-    element: token ? <AdminLayout /> : <Navigate to={AppRoutes.HOME} />,
+    element:  <AdminLayout /> ,
     children: [
       {
         path: AppRoutes.ADMIN_USERS,

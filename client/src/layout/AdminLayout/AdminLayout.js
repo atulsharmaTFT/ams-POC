@@ -3,11 +3,11 @@ import { Outlet } from "react-router-dom";
 import AdminSidebar from "../../components/AdminSidebar/AdminSidebar";
 import classes from "./AdminLayout.module.scss";
 
-import { useDispatch, useSelector } from "react-redux";
+// import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { getError,useAdminApiService } from "../../helper/commonHelpers";
 const AdminLayout = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   return (
     <div className={classes.AdminLayout}>
       <div
@@ -23,7 +23,7 @@ const AdminLayout = () => {
       </div>
 
       <div className={classes.adminLeft}>
-        {window.location.pathname !== "/print" && <AdminSidebar />}
+        <AdminSidebar />
       </div>
     </div>
   );

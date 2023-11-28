@@ -7,6 +7,7 @@ import FileUploader from "../../components/FileUploader/FileUploader";
 import DateTimePicker from "../../components/DatePicker/DateTimePicker";
 import MultiselectDropdown from "../../components/MultiSelectDropdown/MultiselectDropdown";
 import { options, fieldOption } from "../../helper/constants";
+import FormBuilder from "./FormBuilder";
 
 const Dashboard = () =>{
     const [selectedOption, setSelectedOption] = useState("");
@@ -45,6 +46,9 @@ const Dashboard = () =>{
   function handleData (e, variable){
     setData(...dataSet, {[variable]:e.target.value})
   }
+  const handleFormSubmit = (fields) => {
+    console.log('Form submitted with fields:', fields);
+  };
     return(
         <div
         style={{
@@ -56,7 +60,8 @@ const Dashboard = () =>{
           alignItems: "center",
         }}
       >
-        <h2>{`Create Fields`}</h2>
+        <FormBuilder onFormSubmit={handleFormSubmit}/>
+        {/* <h2>{`Create Fields`}</h2>
         <form
           style={{
             display: "flex",
@@ -117,7 +122,7 @@ const Dashboard = () =>{
                />
                </>
             )}
-        </div>
+        </div> */}
       </div>
     )
 }
