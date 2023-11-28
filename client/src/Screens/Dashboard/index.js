@@ -57,7 +57,7 @@ const Dashboard = () =>{
           padding: "1rem",
           flexDirection: "column",
           justifyContent: "center",
-          alignItems: "center",
+          // alignItems: "center",
         }}
       >
         <FormBuilder onFormSubmit={handleFormSubmit}/>

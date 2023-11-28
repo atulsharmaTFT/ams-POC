@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./inputField.module.scss";
-import ErrorMessage from "../ErrorMessage";
+// import ErrorMessage from "../ErrorMessage";
 
 const InputField = ({
   textColor,
@@ -87,10 +87,10 @@ const InputField = ({
           <div className={styles.suffixIconText}>{suffixIconText}</div>
         )}
       </div>
-      <ErrorMessage
+      {/* <ErrorMessage
         error={error}
         overrideErrorClassName={overrideErrorClassName}
-      />
+      /> */}
     </div>
   );
 };
