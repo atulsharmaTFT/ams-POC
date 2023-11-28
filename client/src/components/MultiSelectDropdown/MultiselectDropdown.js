@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Select from "react-select";
 import classes from "./MultiSelect.module.scss";
-import { Capitalize } from "../../../utils/helpers";
+import { Capitalize } from "../../helper/commonHelpers";
 
 const MultiselectDropdown = (props) => {
   const colourStyles = {
