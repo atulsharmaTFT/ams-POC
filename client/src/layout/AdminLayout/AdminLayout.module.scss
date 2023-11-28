@@ -1,0 +1,26 @@
+@import "../../scss/theme";
+.AdminLayout {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  // background-image: url('../../assets/bg.jpg');
+  // background-color:$primary ;
+  background-image: url("https://img.freepik.com/premium-vector/white-embossed-honeycomb-pattern-ui-background-vector-illustration_200484-200.jpg");
+  .adminRight {
+    width: 85%;
+    // padding-top: 40px;
+    background-size: cover;
+  }
+}
+.printLayout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0px;
+  flex-direction: column;
+}

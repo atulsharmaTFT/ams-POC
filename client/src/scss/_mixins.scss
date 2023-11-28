@@ -1,0 +1,26 @@
+@import "./variables";
+
+@mixin flexContainer(
+  $flexDirection: row,
+  $justifyContent: center,
+  $alignItems: center
+) {
+  display: flex;
+  flex-direction: $flexDirection;
+  justify-content: $justifyContent;
+  align-items: $alignItems;
+}
+
+@mixin disabledInput {
+  background: $grey;
+  border: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  input {
+    background: $grey;
+  }
+}
+
+@mixin invalidField {
+  border: 0.1rem solid $error-color !important;
+}
