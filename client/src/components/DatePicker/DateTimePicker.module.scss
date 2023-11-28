@@ -1,0 +1,5 @@
+.container {
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+}

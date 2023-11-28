@@ -1,0 +1,91 @@
+@import '../../../scss/theme';
+
+.inputAndLabelContainer {
+  position: relative;
+  width: 100%;
+  text-align: start;
+  .label {
+    font-size: 1.6rem;
+    line-height: 2.5rem;
+    color: $coal-black;
+    margin-bottom: 1rem;
+    @include flexContainer(row, space-between);
+    div {
+      font-size: 1.2rem;
+      line-height: 2.5rem;
+      color: $dark-blue;
+    }
+  }
+  .input {
+    height: 5.5rem;
+    width: 100%;
+    padding: 1.3rem 2rem 1.5rem;
+    border-radius: 0.7rem;
+    background: $white;
+    border: 0.1rem solid $grey2;
+    @include flexContainer;
+    position: relative;
+    input {
+      border: 0;
+      width: 100%;
+      height: 100%;
+      font-size: 1.7rem;
+      line-height: 2.5rem;
+      color: #18191b;
+      &:focus {
+        outline-style: none;
+      }
+      @media (max-width: 768px) {
+        border-radius: 1rem;
+      }
+    }
+    .suffixIcon {
+      font-size: 2rem;
+      margin-left: 0.5rem;
+      color: $grey2;
+    }
+    .suffixIconText {
+      font-size: 1.9rem;
+      line-height: 2.8rem;
+      color: $dark-grey;
+      margin-right: 1rem;
+    }
+    .cursor_pointer {
+      cursor: pointer;
+    }
+  }
+  .disabledInput {
+    @include disabledInput;
+  }
+
+  .invalid {
+    @include invalidField;
+    .suffixIcon {
+      color: $error-color !important;
+    }
+  }
+}
+input::placeholder,
+::-webkit-input-placeholder,
+::-moz-placeholder {
+  color: $grey;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+@media only screen and (min-width: 768px) {
+  .inputAndLabelContainer {
+    position: relative;
+    .label {
+      margin-bottom: 0.8rem;
+    }
+  }
+}
