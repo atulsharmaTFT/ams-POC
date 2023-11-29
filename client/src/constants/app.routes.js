@@ -1,6 +1,7 @@
 export const AppRoutes = {
   // Admin Routes
   HOME: "/",
+  NEWFIELD: "/newField",
   SIGNUP: "/register",
   ADMIN_STATS: "/stats",
   ADMIN_USERS: "/users",

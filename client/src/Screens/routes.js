@@ -3,6 +3,7 @@ import { Outlet, Navigate } from "react-router-dom";
 import {AppRoutes} from "../constants/app.routes"
 import Dashboard from "./Dashboard";
 import AdminLayout from "../layout/AdminLayout/AdminLayout";
+import Field from "./Field";
 
 export const adminRoutes = (token, role) => [
   {
@@ -11,6 +12,10 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.HOME,
         element: <Dashboard />,
+      },
+      {
+        path: AppRoutes.NEWFIELD,
+        element: <Field/>,
       }
     ],
   },
