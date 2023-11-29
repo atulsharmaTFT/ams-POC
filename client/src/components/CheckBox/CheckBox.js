@@ -1,4 +1,5 @@
 import React from "react";
+import classes from "./checkbox.module.scss"
 
 function CheckBox({ value, title, isChecked, onChange }) {
   const customTextStyle={
@@ -7,15 +8,16 @@ function CheckBox({ value, title, isChecked, onChange }) {
     padding:5,
   }
   return (
-    <div style={customTextStyle}>
+    <div className={classes.checkboxContainer} style={customTextStyle}>
       <label for={value}>{title}</label>
       <input
         type="checkbox"
+        id={value}
         value={value}
         checked={isChecked}
         onChange={onChange}
+        className={classes.customCheckbox}
       />
-      
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useCallback, useReducer } from 'react';
 import axios from 'axios';
 import get from 'lodash/get';
-import makeAdminRequest from '../api/adminRequest';
+import makeAdminRequest from './adminRequest';
 
 const initialState = {
   loading: false,

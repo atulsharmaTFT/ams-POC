@@ -131,9 +131,9 @@ const FormBuilder = ({ onFormSubmit }) => {
     if (selectedField) {
       const payload = newOption
       onFormSubmit(payload);
-      setSelectedField("");
+    //   setSelectedField("");
       setFieldAttributes({});
-      setNewOption(optionsObject);
+    //   setNewOption(optionsObject);
     }
   };
   const customTextStyle = {
@@ -158,6 +158,17 @@ const FormBuilder = ({ onFormSubmit }) => {
             value={newOption?.name}
             onChange={(e) =>
               setNewOption({ ...newOption, name: e.target.value })
+            }
+          />
+        </div>
+        <div style={customTextStyle}>
+          <label>Variable Name:</label>
+          <input
+            style={inputStyle}
+            type="text"
+            value={newOption?.variable}
+            onChange={(e) =>
+              setNewOption({ ...newOption, variable: e.target.value })
             }
           />
         </div>

@@ -1,41 +1,64 @@
-import React, { useState } from "react";
-import Dropdown from "../../components/DropDown";
-import RadioButton from "../../components/RadioButton";
-import TextInput from "../../components/TextInput";
-import CheckBox from "../../components/CheckBox/CheckBox";
-import FileUploader from "../../components/FileUploader/FileUploader";
-import DateTimePicker from "../../components/DatePicker/DateTimePicker";
-import MultiselectDropdown from "../../components/MultiSelectDropdown/MultiselectDropdown";
-import { options, fieldOption } from "../../helper/constants";
+import React, { useEffect, useState } from "react";
 import FormBuilder from "./FormBuilder";
+import useAdminApiService from "../../helper/useAdminApiService";
+import adminServices from "../../helper/adminServices";
 
 const Dashboard = () =>{
-  const [payload,setPayload]= useState({})
-  const handleFormSubmit = (fields) => {
+
+  const {
+    state: {
+      loading: createFieldsLoading,
+      isSuccess: isCreateFieldsSuccess,
+      data: createFieldsResponse,
+      isError: isCreateFieldsError,
+      error: createFieldsError,
+    },
+    callService: createFieldsServices,
+    resetServiceState: resetCreateFieldsState,
+  } = useAdminApiService(adminServices.createFields);
+  useEffect(()=>{
+    if(isCreateFieldsError && createFieldsError){
+      console.log(createFieldsError, "Error")
+    }
+    if(isCreateFieldsSuccess && createFieldsResponse){
+      console.log(createFieldsResponse, "Response")
+    }
+  })
+  const handleFormSubmit = async(fields) => {
     console.log('Form submitted with fields:', fields);
-    // switch (fields?.type) {
-    //   case 'Radio':
-    //     setPayload();
+    switch (fields?.type) {
+      case 'Radio':
+        // setPayload();
           
-    //     break;
-    //   case 'Dropdown':
-    //     setPayload(prevState => ({
-    //           ...prevState,
-    //           dropdownOptions: [...prevState.dropdownOptions, ...option.trim()] 
-    //         }));
+        break;
+      case 'Dropdown':
+        // setPayload(prevState => ({
+        //       ...prevState,
+        //       dropdownOptions: [...prevState.dropdownOptions, ...option.trim()] 
+        //     }));
           
-    //     break;
-    //   case 'multiSelect':
-    //       setPayload(prevState => ({
-    //           ...prevState,
-    //           multiSelectOptions: [...prevState.multiSelectOptions, ...option.trim()] 
-    //         }));
-          
-     
-    //     break;
-    //   default: 
-    //   break;
-    // }
+        break;
+      case 'multiSelect':
+          // setPayload(prevState => ({
+          //     ...prevState,
+          //     multiSelectOptions: [...prevState.multiSelectOptions, ...option.trim()] 
+          //   }));
+      case 'Number':
+            let payload = {
+              type: fields?.type, 
+              variable: fields?.variable , 
+              name:fields?.name , 
+              defaultValue: fields?.defaultValue , 
+              enabled: fields?.enabled,
+              required: fields?.required,
+              minLength: fields?.minLength,
+              maxLength: fields?.maxLength,
+            };
+            await createFieldsServices(payload)
+        break;
+      default: 
+      break;
+    }
   }
     return(
         <div

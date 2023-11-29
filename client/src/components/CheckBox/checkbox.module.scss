@@ -1,0 +1,30 @@
+/* styles.css or your stylesheet */
+
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .customCheckbox {
+    width: 25px; 
+    height: 25px; 
+    margin-right: 10px; 
+  }
+  
+  
+  .customCheckbox {
+    -webkit-appearance: none; 
+    -moz-appearance: none; 
+    appearance: none; 
+    outline: none; 
+    border: 2px solid #333; 
+    border-radius: 5px; 
+    cursor: pointer; 
+  }
+  
+  
+  .customCheckbox:checked {
+    background-color: #2879ea; 
+  }
+  
