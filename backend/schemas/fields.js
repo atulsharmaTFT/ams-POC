@@ -21,6 +21,7 @@ const fieldSchema = new mongoose.Schema(
         "toggle",
         "multiSelect",
         "slider",
+        "number",
       ],
       required: true,
     },
@@ -54,16 +55,6 @@ const fieldSchema = new mongoose.Schema(
         message: 'radioOptions must be present when type is "radio"',
       },
     },
-    checkboxLabel: {
-      type: String,
-      default: "",
-      validate: {
-        validator: function (value) {
-          return this.type !== "checkbox" || value.trim().length > 0;
-        },
-        message: 'checkboxLabel must be present when type is "checkbox"',
-      },
-    },
     checkboxDefault: {
       type: Boolean,
       default: false,
@@ -81,7 +72,7 @@ const fieldSchema = new mongoose.Schema(
     dateOptions: {
       format: {
         type: String,
-        enum: ["YYYY-MM-DD", "DD-MM-YYYY"],
+        enum: ["DD-MM-YYYY"],
         required: function () {
           return this.type === "date";
         },

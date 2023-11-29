@@ -27,7 +27,8 @@ const validateFields = Joi.object({
       "date",
       "toggle",
       "multiSelect",
-      "slider"
+      "slider",
+      "number"
     )
     .required(),
   enabled: Joi.boolean().required(),
@@ -42,10 +43,6 @@ const validateFields = Joi.object({
       is: "radio",
       then: Joi.array().items(Joi.string().required()).min(1),
     }),
-  checkboxLabel: Joi.string().default("").when("type", {
-    is: "checkbox",
-    then: Joi.string().required(),
-  }),
   checkboxDefault: Joi.boolean().default(false),
   dropdownOptions: Joi.array()
     .items(Joi.string())
@@ -55,13 +52,13 @@ const validateFields = Joi.object({
       then: Joi.array().items(Joi.string().required()).min(1),
     }),
   dateOptions: Joi.object({
-    format: Joi.string().valid("YYYY-MM-DD", "DD-MM-YYYY"),
+    format: Joi.string().valid("DD-MM-YYYY"),
     minDate: Joi.date().required(),
     maxDate: Joi.date().required(),
   }).when("type", {
     is: "date",
     then: Joi.object({
-      format: Joi.string().valid("YYYY-MM-DD", "DD-MM-YYYY").required(),
+      format: Joi.string().valid("DD-MM-YYYY").required(),
       minDate: Joi.date().required(),
       maxDate: Joi.date().required(),
     }).required(),
