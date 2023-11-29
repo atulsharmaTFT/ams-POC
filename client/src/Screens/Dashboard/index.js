@@ -10,45 +10,33 @@ import { options, fieldOption } from "../../helper/constants";
 import FormBuilder from "./FormBuilder";
 
 const Dashboard = () =>{
-    const [selectedOption, setSelectedOption] = useState("");
-  const [selectedField, setSelectedField] = useState("");
-  const [formData, setFormData] = useState({
-    name: "",
-    variable: "",
-    type: selectedOption,
-    fieldType: selectedField,
-    required: false,
-  });
-  const handleChange = (e, variable) => {
-    const { value } = e.target;
-    setFormData({ ...formData, [variable]: value });
-  };
-  const [dataSet, setData] = useState({
-    ram: "",
-  })
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setFormData({
-      ...formData,
-      type: selectedOption,
-      fieldType: selectedField,
-    });
-    console.log("Form submitted:", formData);
-  };
-  const fetchData = {
-    fieldType: "Text",
-    name: "ram",
-    required: false,
-    type: "String",
-    variable: "ram",
-  };
-
-  function handleData (e, variable){
-    setData(...dataSet, {[variable]:e.target.value})
-  }
+  const [payload,setPayload]= useState({})
   const handleFormSubmit = (fields) => {
     console.log('Form submitted with fields:', fields);
-  };
+    // switch (fields?.type) {
+    //   case 'Radio':
+    //     setPayload();
+          
+    //     break;
+    //   case 'Dropdown':
+    //     setPayload(prevState => ({
+    //           ...prevState,
+    //           dropdownOptions: [...prevState.dropdownOptions, ...option.trim()] 
+    //         }));
+          
+    //     break;
+    //   case 'multiSelect':
+    //       setPayload(prevState => ({
+    //           ...prevState,
+    //           multiSelectOptions: [...prevState.multiSelectOptions, ...option.trim()] 
+    //         }));
+          
+     
+    //     break;
+    //   default: 
+    //   break;
+    // }
+  }
     return(
         <div
         style={{

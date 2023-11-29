@@ -20,7 +20,7 @@ export const fieldDetails = [
   },
   {
     elementType: "Radio",
-    elementAttributes: ["label", "options"],
+    elementAttributes: ["options"],
   },
   {
     elementType: "Dropdown",
@@ -69,7 +69,7 @@ const FormBuilder = ({ onFormSubmit }) => {
   const [selectedField, setSelectedField] = useState("");
   const [fieldAttributes, setFieldAttributes] = useState({});
   const [newOption, setNewOption] = useState(optionsObject);
-  const [option, setOption]= useState("")
+  const [option, setOption] = useState("");
   const handleFieldSelect = (elementType) => {
     setSelectedField(elementType);
     setFieldAttributes({});
@@ -77,7 +77,7 @@ const FormBuilder = ({ onFormSubmit }) => {
   };
 
   const handleAttributeChange = (attribute, value) => {
-    setFieldAttributes((prevAttributes) => ({
+    setNewOption((prevAttributes) => ({
       ...prevAttributes,
       [attribute]: value,
     }));
@@ -85,11 +85,38 @@ const FormBuilder = ({ onFormSubmit }) => {
 
   const handleAddOption = () => {
     if (option.trim() !== "") {
-      const optionsArray = Array.isArray(fieldAttributes.options)
-        ? fieldAttributes.options
-        : [];
-      handleAttributeChange("options", [...optionsArray, option.trim()]);
-      setOption("");
+        let type = newOption.type
+    //   const optionsArray = Array.isArray(fieldAttributes.options)
+    //     ? fieldAttributes.options
+    //     : [];
+    //   handleAttributeChange("options", [...optionsArray, option.trim()]);
+    //   setOption("");
+    switch (type) {
+        case 'Radio':
+            setNewOption(prevState => ({
+                ...prevState,
+                radioOptions: [...prevState.radioOptions, ...option.trim()] 
+              }));
+            setOption("");
+          break;
+        case 'Dropdown':
+            setNewOption(prevState => ({
+                ...prevState,
+                dropdownOptions: [...prevState.dropdownOptions, ...option.trim()] 
+              }));
+            setOption("");
+          break;
+        case 'multiSelect':
+            setNewOption(prevState => ({
+                ...prevState,
+                multiSelectOptions: [...prevState.multiSelectOptions, ...option.trim()] 
+              }));
+            setOption("");
+       
+          break;
+        default: 
+        break;
+      }
     }
   };
 
@@ -102,14 +129,11 @@ const FormBuilder = ({ onFormSubmit }) => {
 
   const handleAddField = () => {
     if (selectedField) {
-      const newField = {
-        type: selectedField,
-        attributes: { ...fieldAttributes },
-      };
-      onFormSubmit([newField]);
+      const payload = newOption
+      onFormSubmit(payload);
       setSelectedField("");
       setFieldAttributes({});
-      setNewOption("");
+      setNewOption(optionsObject);
     }
   };
   const customTextStyle = {
@@ -180,11 +204,15 @@ const FormBuilder = ({ onFormSubmit }) => {
                 {attribute === "options" ? (
                   <div>
                     {fieldAttributes[attribute]?.map((option, index) => (
-                      <div key={index}>
+                      <div key={index} className={classes.options}>
                         <span>{option}</span>
-                        <button onClick={() => handleRemoveOption(index)}>
-                          Remove
-                        </button>
+                        <Button
+                          type="button"
+                          overrideClassName={classes.removeBtn}
+                          buttonText={"Remove"}
+                          onClick={handleRemoveOption}
+                          loading={false}
+                        />
                       </div>
                     ))}
                     <input
@@ -193,7 +221,13 @@ const FormBuilder = ({ onFormSubmit }) => {
                       style={inputStyle}
                       onChange={(e) => setOption(e.target.value)}
                     />
-                    <button onClick={handleAddOption}>Add Option</button>
+                    <Button
+                      type="submit"
+                      overrideClassName={classes.addBtn}
+                      buttonText={"Add option"}
+                      onClick={handleAddOption}
+                      loading={false}
+                    />
                   </div>
                 ) : (
                   <input
@@ -203,7 +237,7 @@ const FormBuilder = ({ onFormSubmit }) => {
                       )?.inputType || "text"
                     }
                     style={inputStyle}
-                    value={fieldAttributes[attribute] || ""}
+                    value={newOption[attribute] || ""}
                     onChange={(e) =>
                       handleAttributeChange(attribute, e.target.value)
                     }

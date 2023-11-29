@@ -13,3 +13,37 @@
     margin-top: 10px;
     cursor: pointer;
   }
+.addBtn {
+    width: 100px !important;
+    font-size: 14px !important;
+    margin-top: 10px;
+    height: 25px !important;
+    border-radius: 3px;
+    background: $blue;
+    padding: 2px 0 !important;
+    font-weight: 550;
+    color: white;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  .options{
+    display: flex;
+    width:100%;
+    flex-direction: row;
+    justify-content: space-between;
+    margin:0 0 10px 0;
+
+  }
+  .removeBtn {
+    width: 100px !important;
+    font-size: 14px !important;
+    margin-top: 10px;
+    height: 25px !important;
+    border-radius: 3px;
+    background: rgba(244, 33, 33, 0.829);
+    padding: 2px 0 !important;
+    font-weight: 550;
+    color: white;
+    margin-top: 10px;
+    cursor: pointer;
+  }
