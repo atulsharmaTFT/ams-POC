@@ -41,7 +41,7 @@ const optionsObject = {
   type: "",
   description: "",
   radioOptions: [],
-  checkboxLabel: "",
+  checkboxOptions: [],
   dropdownOptions: [],
   dateOptions: {
     format: "YYYY-MM-DD",
@@ -70,6 +70,9 @@ const FormBuilder = ({ onFormSubmit }) => {
           break;
         case 'Dropdown':
             return "dropdownOptions"
+          break;
+        case 'CheckBox':
+            return "checkboxOptions"
           break;
         case 'multiSelect':
             return "multiSelectOptions"
@@ -102,6 +105,13 @@ const FormBuilder = ({ onFormSubmit }) => {
             setNewOption(prevState => ({
                 ...prevState,
                 radioOptions: [...prevState.radioOptions, option.trim()] 
+              }));
+            setOption("");
+          break;
+        case 'CheckBox':
+            setNewOption(prevState => ({
+                ...prevState,
+                checkboxOptions: [...prevState.checkboxOptions, option.trim()] 
               }));
             setOption("");
           break;

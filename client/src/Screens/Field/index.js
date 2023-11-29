@@ -56,6 +56,16 @@ const Field = () =>{
         }
         await createFieldsServices(payload)
         break;
+      case 'CheckBox':
+        payload={
+          type: fields?.type.toLowerCase(), 
+          variable: toCamelCase(fields?.name),
+          description: fields?.description, 
+          name:fields?.name,
+          checkboxOptions:fields?.checkboxOptions,
+        }
+        await createFieldsServices(payload)
+        break;
       case 'multiSelect':
         payload={
           type: fields?.type, 

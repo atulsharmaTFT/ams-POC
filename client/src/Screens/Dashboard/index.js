@@ -5,8 +5,8 @@ import { useTable } from 'react-table';
 
 // Dummy data for the table
 const data = [
-  { id: 1, name: 'John Doe', age: 30, city: 'New York' },
-  { id: 2, name: 'Jane Smith', age: 25, city: 'San Francisco' },
+  { id: 1, name: 'John Doe', type: 'DropDown'},
+  { id: 2, name: 'Jane Smith', type: 'Text' },
   // Add more dummy data as needed
 ];
 
@@ -14,8 +14,7 @@ const data = [
 const columns = [
   { Header: 'ID', accessor: 'id' },
   { Header: 'Name', accessor: 'name' },
-  { Header: 'Age', accessor: 'age' },
-  { Header: 'City', accessor: 'city' },
+  { Header: 'Type', accessor: 'type' },
   // Add more columns as needed
 ];
 
