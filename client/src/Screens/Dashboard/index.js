@@ -26,6 +26,7 @@ const Dashboard = () =>{
   })
   const handleFormSubmit = async(fields) => {
     console.log('Form submitted with fields:', fields);
+    let payload={}
     switch (fields?.type) {
       case 'Radio':
         // setPayload();
@@ -43,12 +44,23 @@ const Dashboard = () =>{
           //     ...prevState,
           //     multiSelectOptions: [...prevState.multiSelectOptions, ...option.trim()] 
           //   }));
-      case 'Number':
-            let payload = {
-              type: fields?.type, 
+      case 'Text':
+            payload = {
+              type: fields?.type.toLowerCase(), 
               variable: fields?.variable , 
               name:fields?.name , 
-              defaultValue: fields?.defaultValue , 
+              // defaultValue: fields?.defaultValue , 
+              enabled: fields?.enabled,
+              required: fields?.required,
+            };
+            await createFieldsServices(payload)
+        break;
+        case 'Number':
+            payload = {
+              type: fields?.type.toLowerCase(), 
+              variable: fields?.variable , 
+              name:fields?.name , 
+              // defaultValue: fields?.defaultValue , 
               enabled: fields?.enabled,
               required: fields?.required,
               minLength: fields?.minLength,

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const Joi = require("joi");
 const Fields = require("./schemas/fields");
-
+const cors = require("cors");
 const app = express();
 app.use(bodyParser.json());
 
@@ -84,7 +84,8 @@ const validateFields = Joi.object({
     }).required(),
   }),
 });
-
+const corsOptions = { exposedHeaders: "Authorization" };
+app.use(cors(corsOptions));
 app.post("/fields", async (req, res) => {
   const { error, value } = validateFields.validate(req.body);
 

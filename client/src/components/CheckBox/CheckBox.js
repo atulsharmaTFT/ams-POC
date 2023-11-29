@@ -9,7 +9,7 @@ function CheckBox({ value, title, isChecked, onChange }) {
   }
   return (
     <div className={classes.checkboxContainer} style={customTextStyle}>
-      <label for={value}>{title}</label>
+      <label htmlFor={value}>{title}</label>
       <input
         type="checkbox"
         id={value}

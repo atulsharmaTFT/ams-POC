@@ -145,7 +145,7 @@ const FormBuilder = ({ onFormSubmit }) => {
     padding: 5,
     width: 300,
   };
-  console.log(newOption, "newOption");
+//   console.log(newOption, "newOption");
   return (
     <div>
       <h2>Create Fields</h2>
@@ -162,13 +162,13 @@ const FormBuilder = ({ onFormSubmit }) => {
           />
         </div>
         <div style={customTextStyle}>
-          <label>Variable Name:</label>
+          <label>Description:</label>
           <input
             style={inputStyle}
             type="text"
-            value={newOption?.variable}
+            value={newOption?.description}
             onChange={(e) =>
-              setNewOption({ ...newOption, variable: e.target.value })
+              setNewOption({ ...newOption, description: e.target.value })
             }
           />
         </div>
