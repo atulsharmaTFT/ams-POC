@@ -43,8 +43,6 @@ const Dashboard = () =>{
           description: fields?.description, 
           name:fields?.name,
           radioOptions:fields?.radioOptions,
-          enabled: true,
-          required: true
         }
         await createFieldsServices(payload)
         break;
@@ -55,29 +53,24 @@ const Dashboard = () =>{
           description: fields?.description, 
           name:fields?.name,
           dropdownOptions:fields?.dropdownOptions,
-          enabled: true,
-          required: true
         }
         await createFieldsServices(payload)
         break;
       case 'multiSelect':
         payload={
           type: fields?.type, 
-          variable: toCamelCase(fields?.type),
+          variable: toCamelCase(fields?.name),
           description: fields?.description, 
           name:fields?.name,
           multiSelectOptions:fields?.multiSelectOptions,
-          enabled: true,
-          required: true
         }
         await createFieldsServices(payload)
+        break;
       case 'Text':
             payload = {
               type: fields?.type.toLowerCase(), 
               variable: fields?.variable , 
               name:fields?.name,
-              enabled: true,
-              required: true
             };
             await createFieldsServices(payload)
         break;
@@ -86,8 +79,6 @@ const Dashboard = () =>{
               type: fields?.type.toLowerCase(), 
               variable: fields?.variable , 
               name:fields?.name,
-              enabled: true,
-              required: true
             };
             await createFieldsServices(payload)
         break;
