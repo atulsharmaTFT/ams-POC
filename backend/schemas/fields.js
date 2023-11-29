@@ -25,25 +25,23 @@ const fieldSchema = new mongoose.Schema(
       ],
       required: true,
     },
-    enabled: {
-      type: Boolean,
-      required: true,
-    },
-    required: {
-      type: Boolean,
-      required: true,
-    },
-    maxLength: {
-      type: Number,
-      default: 0,
-    },
-    minLength: {
-      type: Number,
-      default: 0,
-    },
     description: {
       type: String,
       default: "",
+    },
+    placeholder: {
+      type: String,
+      default: "",
+    },
+    checkboxOptions: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: function (value) {
+          return this.type !== "checkbox" || value.length > 0;
+        },
+        message: 'checkboxOptions must be present when type is "checkbox"',
+      },
     },
     radioOptions: {
       type: [String],
@@ -54,10 +52,6 @@ const fieldSchema = new mongoose.Schema(
         },
         message: 'radioOptions must be present when type is "radio"',
       },
-    },
-    checkboxDefault: {
-      type: Boolean,
-      default: false,
     },
     dropdownOptions: {
       type: [String],

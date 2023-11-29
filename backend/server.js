@@ -31,25 +31,28 @@ const validateFields = Joi.object({
       "number"
     )
     .required(),
-  enabled: Joi.boolean().required(),
-  required: Joi.boolean().required(),
-  maxLength: Joi.number().default(0),
-  minLength: Joi.number().default(0),
   description: Joi.string().default(""),
+  placeholder: Joi.string().default(""),
+  checkboxOptions: Joi.array()
+    .items(Joi.string())
+    .default([])
+    .when("type", {
+      is: "checkbox",
+      then: Joi.array().items(Joi.string().min(1)).required().min(1),
+    }),
   radioOptions: Joi.array()
     .items(Joi.string())
     .default([])
     .when("type", {
       is: "radio",
-      then: Joi.array().items(Joi.string().required()).min(1),
+      then: Joi.array().items(Joi.string().min(1)).required().min(1),
     }),
-  checkboxDefault: Joi.boolean().default(false),
   dropdownOptions: Joi.array()
     .items(Joi.string())
     .default([])
     .when("type", {
       is: "dropdown",
-      then: Joi.array().items(Joi.string().required()).min(1),
+      then: Joi.array().items(Joi.string().min(1)).required().min(1),
     }),
   dateOptions: Joi.object({
     format: Joi.string().valid("DD-MM-YYYY"),
@@ -69,7 +72,7 @@ const validateFields = Joi.object({
     .default([])
     .when("type", {
       is: "multiSelect",
-      then: Joi.array().items(Joi.string().required()).min(1),
+      then: Joi.array().items(Joi.string().min(1)).required().min(1),
     }),
   sliderOptions: Joi.object({
     min: Joi.number().required(),
@@ -86,15 +89,21 @@ const validateFields = Joi.object({
 });
 const corsOptions = { exposedHeaders: "Authorization" };
 app.use(cors(corsOptions));
+
 app.post("/fields", async (req, res) => {
   const { error, value } = validateFields.validate(req.body);
 
-  if (error) {
-    res.status(400).json({ error: error.details[0].message });
-  } else {
-    const newField = new Fields(value);
-    await newField.save();
-    res.status(200).json(newField);
+  try {
+    if (error) {
+      res.status(400).json({ error: error.details[0].message });
+    } else {
+      const newField = new Fields(value);
+      await newField.save();
+      res.status(200).json(newField);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send("Internal Server Error");
   }
 });
 
