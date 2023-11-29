@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const Joi = require("joi");
 const Fields = require("./schemas/fields");
+const FieldGroups = require("./schemas/fieldGroups");
 const cors = require("cors");
 const app = express();
 app.use(bodyParser.json());
@@ -101,6 +102,16 @@ app.post("/fields", async (req, res) => {
       await newField.save();
       res.status(200).json(newField);
     }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/fields", async (req, res) => {
+  try {
+    const fields = await Fields.find();
+    res.status(200).json(fields);
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Server Error");
