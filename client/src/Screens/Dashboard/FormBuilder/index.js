@@ -7,11 +7,11 @@ import Button from "../../../components/Button/Button";
 export const fieldDetails = [
   {
     elementType: "Text",
-    elementAttributes: ["placeholder", "defaultValue"],
+    elementAttributes: ["placeholder"],
   },
   {
     elementType: "Number",
-    elementAttributes: ["placeholder", "defaultValue", "minimum", "maximum"],
+    elementAttributes: ["placeholder"],
   },
   {
     elementType: "Date",
@@ -24,33 +24,24 @@ export const fieldDetails = [
   },
   {
     elementType: "Dropdown",
-    elementAttributes: ["label", "options"],
+    elementAttributes: ["options"],
   },
   {
     elementType: "CheckBox",
-    elementAttributes: ["label", "options", "defaultValue"],
+    elementAttributes: ["options"],
+  },
+  {
+    elementType: "multiSelect",
+    elementAttributes: ["options"],
   },
 ];
 const optionsObject = {
   name: "",
   variable: "",
   type: "",
-  // "text",
-  // "radio",
-  // "checkbox",
-  // "dropdown",
-  // "date",
-  // "toggle",
-  // "multiSelect",
-  // "slider",
-  enabled: true,
-  required: false,
-  maxLength: 10,
-  minLength: 0,
   description: "",
   radioOptions: [],
   checkboxLabel: "",
-  checkboxDefault: false,
   dropdownOptions: [],
   dateOptions: {
     format: "YYYY-MM-DD",
@@ -70,6 +61,26 @@ const FormBuilder = ({ onFormSubmit }) => {
   const [fieldAttributes, setFieldAttributes] = useState({});
   const [newOption, setNewOption] = useState(optionsObject);
   const [option, setOption] = useState("");
+
+  const getOptionType = () =>{
+    if(selectedField){
+    switch (selectedField) {
+        case 'Radio':
+           return 'radioOptions'
+          break;
+        case 'Dropdown':
+            return "dropdownOptions"
+          break;
+        case 'multiSelect':
+            return "multiSelectOptions"
+          break;
+        default:
+            return Object.keys(newOption).find((key)=> key === selectedField) 
+        break;
+      }
+    }
+  }
+  const keyType= getOptionType();
   const handleFieldSelect = (elementType) => {
     setSelectedField(elementType);
     setFieldAttributes({});
@@ -86,30 +97,25 @@ const FormBuilder = ({ onFormSubmit }) => {
   const handleAddOption = () => {
     if (option.trim() !== "") {
         let type = newOption.type
-    //   const optionsArray = Array.isArray(fieldAttributes.options)
-    //     ? fieldAttributes.options
-    //     : [];
-    //   handleAttributeChange("options", [...optionsArray, option.trim()]);
-    //   setOption("");
     switch (type) {
         case 'Radio':
             setNewOption(prevState => ({
                 ...prevState,
-                radioOptions: [...prevState.radioOptions, ...option.trim()] 
+                radioOptions: [...prevState.radioOptions, option.trim()] 
               }));
             setOption("");
           break;
         case 'Dropdown':
             setNewOption(prevState => ({
                 ...prevState,
-                dropdownOptions: [...prevState.dropdownOptions, ...option.trim()] 
+                dropdownOptions: [...prevState.dropdownOptions, option.trim()] 
               }));
             setOption("");
           break;
         case 'multiSelect':
             setNewOption(prevState => ({
                 ...prevState,
-                multiSelectOptions: [...prevState.multiSelectOptions, ...option.trim()] 
+                multiSelectOptions: [...prevState.multiSelectOptions, option.trim()] 
               }));
             setOption("");
        
@@ -121,19 +127,17 @@ const FormBuilder = ({ onFormSubmit }) => {
   };
 
   const handleRemoveOption = (index) => {
-    const updatedOptions = fieldAttributes["options"].filter(
+    const updatedOptions = newOption[keyType].filter(
       (_, i) => i !== index
     );
-    handleAttributeChange("options", updatedOptions);
+    handleAttributeChange(keyType, updatedOptions);
   };
 
   const handleAddField = () => {
     if (selectedField) {
       const payload = newOption
       onFormSubmit(payload);
-    //   setSelectedField("");
       setFieldAttributes({});
-    //   setNewOption(optionsObject);
     }
   };
   const customTextStyle = {
@@ -145,7 +149,6 @@ const FormBuilder = ({ onFormSubmit }) => {
     padding: 5,
     width: 300,
   };
-//   console.log(newOption, "newOption");
   return (
     <div>
       <h2>Create Fields</h2>
@@ -187,7 +190,7 @@ const FormBuilder = ({ onFormSubmit }) => {
             ))}
           </select>
         </div>
-        <CheckBox
+        {/* <CheckBox
           title={"Required"}
           isChecked={newOption?.required}
           onChange={() =>
@@ -200,7 +203,7 @@ const FormBuilder = ({ onFormSubmit }) => {
           onChange={() =>
             setNewOption({ ...newOption, enabled: !newOption?.enabled })
           }
-        />
+        /> */}
         {/* <SlideSwitch label={"Required"} checked={newOption?.required} onChange={()=> setNewOption({...newOption, required: !newOption?.required})}/> */}
       </div>
 
@@ -214,14 +217,14 @@ const FormBuilder = ({ onFormSubmit }) => {
                 <label>{Capitalize(attribute)}:</label>
                 {attribute === "options" ? (
                   <div>
-                    {fieldAttributes[attribute]?.map((option, index) => (
+                    {newOption[keyType]?.map((option, index) => (
                       <div key={index} className={classes.options}>
                         <span>{option}</span>
                         <Button
                           type="button"
                           overrideClassName={classes.removeBtn}
                           buttonText={"Remove"}
-                          onClick={handleRemoveOption}
+                          onClick={()=>handleRemoveOption(index)}
                           loading={false}
                         />
                       </div>

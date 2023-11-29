@@ -19,39 +19,65 @@ const Dashboard = () =>{
   useEffect(()=>{
     if(isCreateFieldsError && createFieldsError){
       console.log(createFieldsError, "Error")
+      resetCreateFieldsState()
     }
     if(isCreateFieldsSuccess && createFieldsResponse){
       console.log(createFieldsResponse, "Response")
+      resetCreateFieldsState()
     }
   })
+  function toCamelCase(str) {
+    return str.replace(/(?:^\w|[A-Z]|\b\w|\s+|-+)/g, function(word, index) {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    }).replace(/\s+|-+/g, '');
+  }
+
   const handleFormSubmit = async(fields) => {
     console.log('Form submitted with fields:', fields);
     let payload={}
     switch (fields?.type) {
       case 'Radio':
-        // setPayload();
-          
+        payload={
+          type: fields?.type.toLowerCase(), 
+          variable: fields?.name.toLowerCase(),
+          description: fields?.description, 
+          name:fields?.name,
+          radioOptions:fields?.radioOptions,
+          enabled: true,
+          required: true
+        }
+        await createFieldsServices(payload)
         break;
       case 'Dropdown':
-        // setPayload(prevState => ({
-        //       ...prevState,
-        //       dropdownOptions: [...prevState.dropdownOptions, ...option.trim()] 
-        //     }));
-          
+        payload={
+          type: fields?.type.toLowerCase(), 
+          variable: fields?.name.toLowerCase(),
+          description: fields?.description, 
+          name:fields?.name,
+          dropdownOptions:fields?.dropdownOptions,
+          enabled: true,
+          required: true
+        }
+        await createFieldsServices(payload)
         break;
       case 'multiSelect':
-          // setPayload(prevState => ({
-          //     ...prevState,
-          //     multiSelectOptions: [...prevState.multiSelectOptions, ...option.trim()] 
-          //   }));
+        payload={
+          type: fields?.type, 
+          variable: toCamelCase(fields?.type),
+          description: fields?.description, 
+          name:fields?.name,
+          multiSelectOptions:fields?.multiSelectOptions,
+          enabled: true,
+          required: true
+        }
+        await createFieldsServices(payload)
       case 'Text':
             payload = {
               type: fields?.type.toLowerCase(), 
               variable: fields?.variable , 
-              name:fields?.name , 
-              // defaultValue: fields?.defaultValue , 
-              enabled: fields?.enabled,
-              required: fields?.required,
+              name:fields?.name,
+              enabled: true,
+              required: true
             };
             await createFieldsServices(payload)
         break;
@@ -59,12 +85,9 @@ const Dashboard = () =>{
             payload = {
               type: fields?.type.toLowerCase(), 
               variable: fields?.variable , 
-              name:fields?.name , 
-              // defaultValue: fields?.defaultValue , 
-              enabled: fields?.enabled,
-              required: fields?.required,
-              minLength: fields?.minLength,
-              maxLength: fields?.maxLength,
+              name:fields?.name,
+              enabled: true,
+              required: true
             };
             await createFieldsServices(payload)
         break;
