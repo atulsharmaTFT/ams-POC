@@ -7,6 +7,7 @@
   }
   
   .searchContainer {
+    padding-left: 15px;
     width: 96%;
     border: 1px solid #ccc;
     height: 45%;
@@ -14,10 +15,16 @@
   }
   
   .selectedItemsContainer {
+    padding-left: 15px;
     width: 96%;
     border: 1px solid #ccc;
     height: 45%;
     background-color: #fff;
+  }
+
+  input {
+    width: 40%;
+    height: 25px;
   }
 
   table {
@@ -44,4 +51,5 @@
   
   .disabled {
     background: grey;
+    cursor: no-drop;
   }
