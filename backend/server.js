@@ -100,7 +100,7 @@ app.post("/fields", async (req, res) => {
     } else {
       const newField = new Fields(value);
       await newField.save();
-      res.status(200).json(newField);
+      res.status(201).json(newField);
     }
   } catch (e) {
     console.log(e);
@@ -112,6 +112,61 @@ app.get("/fields", async (req, res) => {
   try {
     const fields = await Fields.find();
     res.status(200).json(fields);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+const validateFieldGroups = Joi.object({
+  name: Joi.string().required(),
+  variable: Joi.string().required(),
+  fields: Joi.array()
+    .items(
+      Joi.string().custom((value, helpers) => {
+        if (!mongoose.Types.ObjectId.isValid(value)) {
+          return helpers.error("any.invalid");
+        }
+        return value;
+      })
+    )
+    .min(2)
+    .required(),
+});
+
+app.post("/field-groups", async (req, res) => {
+  try {
+    const { error, value } = validateFieldGroups.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const { name, fields, variable } = value;
+
+    const isValidFields =
+      (await Fields.countDocuments({ _id: { $in: fields } })) === fields.length;
+    if (!isValidFields) {
+      return res.status(400).json({ error: "Invalid fields provided" });
+    }
+
+    const newFieldGroup = new FieldGroups({
+      name,
+      fields,
+      variable,
+    });
+
+    await newFieldGroup.save();
+    res.status(201).json(newFieldGroup);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/field-groups", async (req, res) => {
+  try {
+    const fieldGroups = await FieldGroups.find();
+    res.status(200).json(fieldGroups);
   } catch (e) {
     console.log(e);
     res.status(500).send("Internal Server Error");
