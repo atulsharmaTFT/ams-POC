@@ -1,8 +1,10 @@
 export const AppRoutes = {
   // Admin Routes
   HOME: "/",
+  FIELDS: "/fields",
   NEWFIELD: "/newField",
   FIELDGROUP:"/fieldGroup",
+  NEWFIELDGROUP:"/newFieldGroup",
   SIGNUP: "/register",
   ADMIN_STATS: "/stats",
   ADMIN_USERS: "/users",

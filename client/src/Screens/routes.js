@@ -5,6 +5,7 @@ import Dashboard from "./Dashboard";
 import AdminLayout from "../layout/AdminLayout/AdminLayout";
 import Field from "./Field";
 import FieldGroup from "./FieldGroup";
+import NewField from "./Field/NewField";
 
 export const adminRoutes = (token, role) => [
   {
@@ -15,8 +16,12 @@ export const adminRoutes = (token, role) => [
         element: <Dashboard />,
       },
       {
-        path: AppRoutes.NEWFIELD,
+        path: AppRoutes.FIELDS,
         element: <Field/>,
+      },
+      {
+        path: AppRoutes.NEWFIELD,
+        element: <NewField/>,
       },
       {
         path: AppRoutes.FIELDGROUP,

@@ -48,7 +48,7 @@ const AdminSidebar = () => {
               className={({ isActive }) =>
                 isActive ? `${classes.active}` : ""
               }
-              to={AppRoutes.HOME}
+              to={AppRoutes.FIELDS}
             >
               {open && "Fields"}
             </NavLink>

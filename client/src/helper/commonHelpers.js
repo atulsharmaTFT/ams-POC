@@ -9,6 +9,14 @@ export const getError = (error, customMessage = "") => {
 export const Capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+export const toCamelCase = (str) => {
+  return str
+    .replace(/(?:^\w|[A-Z]|\b\w|\s+|-+)/g, function (word, index) {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+    .replace(/\s+|-+/g, "");
+};
 export const ShortHandText = (text, length) => {
   return text && text.length > length ? text.slice(0, length) + "..." : text;
 };
