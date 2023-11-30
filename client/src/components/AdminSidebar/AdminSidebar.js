@@ -52,6 +52,14 @@ const AdminSidebar = () => {
             >
               {open && "Fields"}
             </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                isActive ? `${classes.active}` : ""
+              }
+              to={AppRoutes.FIELDGROUP}
+            >
+              {open && "FieldGroups"}
+            </NavLink>
         </Scrollbars>
       </div>
     </motion.div>

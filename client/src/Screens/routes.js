@@ -4,6 +4,7 @@ import {AppRoutes} from "../constants/app.routes"
 import Dashboard from "./Dashboard";
 import AdminLayout from "../layout/AdminLayout/AdminLayout";
 import Field from "./Field";
+import FieldGroup from "./FieldGroup";
 
 export const adminRoutes = (token, role) => [
   {
@@ -16,22 +17,26 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.NEWFIELD,
         element: <Field/>,
+      },
+      {
+        path: AppRoutes.FIELDGROUP,
+        element: <FieldGroup/>,
       }
     ],
   },
-  {
-    element:  <AdminLayout /> ,
-    children: [
-      {
-        path: AppRoutes.ADMIN_USERS,
-        element: <Dashboard />,
-      },
-      {
-        path: AppRoutes.FEEDBACK_DATA,
-        element: <Dashboard />,
-      },   
-    ],
-  },
+  // {
+  //   element:  <AdminLayout /> ,
+  //   children: [
+  //     {
+  //       path: AppRoutes.ADMIN_USERS,
+  //       element: <Dashboard />,
+  //     },
+  //     {
+  //       path: AppRoutes.FEEDBACK_DATA,
+  //       element: <Dashboard />,
+  //     },   
+  //   ],
+  // },
 ];
 
 // export const userRoutes = (token) => [
