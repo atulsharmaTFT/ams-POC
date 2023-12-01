@@ -6,6 +6,7 @@ import AdminLayout from "../layout/AdminLayout/AdminLayout";
 import Field from "./Field";
 import FieldGroup from "./FieldGroup";
 import NewField from "./Field/NewField";
+import NewFieldGroup from "./FieldGroup/NewFieldGroup";
 
 export const adminRoutes = (token, role) => [
   {
@@ -26,6 +27,10 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.FIELDGROUP,
         element: <FieldGroup/>,
+      },
+      {
+        path: AppRoutes.NEWFIELDGROUP,
+        element: <NewFieldGroup/>,
       }
     ],
   },
