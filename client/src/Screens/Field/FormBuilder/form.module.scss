@@ -47,3 +47,30 @@
     margin-top: 10px;
     cursor: pointer;
   }
+  .inputContainer {
+    width: 100%;
+  }
+  .inputOverride {
+    height: unset !important;
+    padding: 0 !important;
+    width: 100% !important;
+    border-radius: 5px;
+    input {
+      font-size: 12px !important;
+      padding: 10px 10px;
+      border-radius: 10px;
+    }
+  }
+  .labelClass {
+    font-size: 15px !important;
+    font-weight: 600;
+    margin-top: 8px;
+    margin: 8px 0 !important;
+    line-height: 10px !important;
+  }
+  @media (min-width: 1100px) {
+    .overrideErrorClass {
+      color: red;
+      margin-bottom: 25px;
+    }
+  }
