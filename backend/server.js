@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const Joi = require("joi");
 const Fields = require("./schemas/fields");
 const FieldGroups = require("./schemas/fieldGroups");
+const Products = require("./schemas/products");
 const cors = require("cors");
 const app = express();
 app.use(bodyParser.json());
@@ -130,7 +131,7 @@ const validateFieldGroups = Joi.object({
         return value;
       })
     )
-    .min(2)
+    .min(1)
     .required(),
 });
 
@@ -169,6 +170,88 @@ app.get("/field-groups", async (req, res) => {
     res.status(200).json(fieldGroups);
   } catch (e) {
     console.log(e);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+const validateProducts = Joi.object({
+  name: Joi.string().required(),
+  variable: Joi.string().required(),
+  fieldGroups: Joi.array()
+    .items(
+      Joi.string().custom((value, helpers) => {
+        if (!mongoose.Types.ObjectId.isValid(value)) {
+          return helpers.error("any.invalid");
+        }
+        return value;
+      })
+    )
+    .min(1)
+    .required(),
+});
+
+app.post("/products", async (req, res) => {
+  try {
+    const { error, value } = validateProducts.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const { name, fieldGroups, variable } = value;
+
+    const isValidFields =
+      (await FieldGroups.countDocuments({ _id: { $in: fieldGroups } })) ===
+      fieldGroups.length;
+    if (!isValidFields) {
+      return res.status(400).json({ error: "Invalid field groups provided" });
+    }
+
+    const newProduct = new Products({
+      name,
+      fieldGroups,
+      variable,
+    });
+
+    await newProduct.save();
+
+    const aggregate = FieldGroups.aggregate([
+      {
+        $match: {
+          _id: {
+            $in: fieldGroups.map((id) => new mongoose.Types.ObjectId(id)),
+          },
+        },
+      },
+      {
+        $unwind: "$fields",
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "productFields",
+        },
+      },
+      {
+        $unwind: "$productFields",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$productFields",
+        },
+      },
+    ]);
+
+    const fields = await aggregate.exec();
+    res.status(201).json({
+      _id: newProduct._id,
+      name,
+      variable,
+      fields,
+    });
+  } catch (error) {
+    console.log(error);
     res.status(500).send("Internal Server Error");
   }
 });
