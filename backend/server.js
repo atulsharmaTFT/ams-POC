@@ -256,6 +256,16 @@ app.post("/products", async (req, res) => {
   }
 });
 
+app.get("/products", async (req, res) => {
+  try {
+    const products = await Products.find();
+    res.status(200).json(products);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 // Start the server
 app.listen(8001, () => {
   console.log("Server is running on port 8001");
