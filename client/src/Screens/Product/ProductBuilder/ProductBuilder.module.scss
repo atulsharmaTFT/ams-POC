@@ -1,48 +1,88 @@
 // ProductBuilder.module.scss
 
+.container {
+  display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 5px;
+}
 .product-builder {
-    // Define styles for the container
-    margin: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-  
-    h2 {
-      // Styles for the heading
-      color: #333;
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-    }
-  
-    label {
-      // Styles for labels
-      display: block;
-      margin-bottom: 5px;
-    }
-  
-    input[type="radio"],
-    input[type="checkbox"] {
-      // Styles for radio and checkbox inputs
-      margin-right: 5px;
-    }
-  
-    // Add more styles as needed for other elements
+  // Define styles for the container
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+
+  h2 {
+    // Styles for the heading
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
   }
-  
-  // Add additional styles for different field types
-  .radio-options {
-    // Styles for radio options container
-    margin-top: 5px;
+
+  label {
+    // Styles for labels
+    display: block;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 600;
   }
-  
-  .checkbox-options {
-    // Styles for checkbox options container
-    margin-top: 5px;
+
+  input[type="radio"],
+  input[type="checkbox"] {
+    // Styles for radio and checkbox inputs
+    margin-right: 5px;
   }
-  
-  .multi-select-options {
-    // Styles for multi-select options container
-    margin-top: 5px;
+
+  // Add more styles as needed for other elements
+}
+
+// Add additional styles for different field types
+.radio-options {
+  // Styles for radio options container
+  margin-top: 5px;
+}
+
+.checkbox-options {
+  // Styles for checkbox options container
+  margin-top: 5px;
+}
+
+.multi-select-options {
+  // Styles for multi-select options container
+  margin-top: 5px;
+}
+
+.flex {
+  display: flex;
+}
+
+.inputContainer {
+  width: 100%;
+}
+.inputOverride {
+  height: unset !important;
+  padding: 0 !important;
+  width: 50% !important;
+  border-radius: 5px;
+  input {
+    font-size: 12px !important;
+    padding: 10px 10px;
+    border-radius: 10px;
   }
-  
-  // Add styles for other field types as needed
-  
+}
+.labelClass {
+  font-size: 15px !important;
+  font-weight: 600;
+  margin-top: 8px;
+  margin: 8px 0 !important;
+  line-height: 10px !important;
+}
+@media (min-width: 1100px) {
+  .overrideErrorClass {
+    color: red;
+    margin-bottom: 25px;
+  }
+}
+
+// Add styles for other field types as needed

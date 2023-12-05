@@ -25,6 +25,9 @@ const InputField = ({
   maxlength,
   overrideErrorClassName,
   style,
+  min,
+  max,
+  step,
   ...rest
 }) => {
   const getClassNames = () => {
@@ -70,6 +73,9 @@ const InputField = ({
           placeholder={placeholder}
           onKeyPress={onKeyPress}
           maxLength={maxlength}
+          min={min}
+          max={max}
+          step={step}
           {...register(fieldName, rules)}
           {...rest}
         />

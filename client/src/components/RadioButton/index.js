@@ -1,11 +1,12 @@
 // RadioButton.js
 
 import React from "react";
+import classes from './RadioButton.module.scss';
 
-const RadioButton = ({ label, value, checked, onChange }) => {
+const RadioButton = ({ label,value, checked, onChange }) => {
 
   return (
-    <div>
+    <div className={classes.radioInput}>
       <input
         type="radio"
         id={value}
