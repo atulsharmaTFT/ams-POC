@@ -3,12 +3,13 @@
 .container {
   display: flex;
     flex-direction: column;
-    border: 1px solid black;
+    // border: 1px solid black;
     padding: 10px;
     margin-bottom: 5px;
 }
 .product-builder {
   // Define styles for the container
+  background-color:beige;
   margin: 20px;
   padding: 20px;
   border: 1px solid #ddd;

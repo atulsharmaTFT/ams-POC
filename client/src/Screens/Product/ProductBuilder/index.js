@@ -10,11 +10,25 @@ const ProductBuilder = ({ fields }) => {
   const [selectedDateTime, setSelectedDateTime] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [dropDownOptions, setDropDownOptions] = useState([]);
-  // console.log(fields);
-  // console.log(selectedOptions,"selectedOptions")
+  const [formData, setFormData] = useState({
+    selectedOptions: [],
+    dropDownOptions: [],
+    selectedDateTime: "",
+    radioOptions: [""],
+  });
 
-  const handleRadioChange = (e) => {
-    console.log(e.target.value);
+  const handleRadioChange = (e, idx) => {
+    let selected = e.target.value;
+    const element = fields?.filter((elem) => elem?.type === "radio");
+    const newData = element?.[0]?.radioOptions?.map((elm) => {
+      if (elm?.option === selected) {
+        elm.checked = true;
+      } else {
+        elm.checked = false;
+      }
+      return elm;
+    });
+    setFormData((prev) => ({ ...prev, radioOptions: newData }));
   };
   const handleInputChange = (e) => {
     console.log(e.target.value);
@@ -44,7 +58,7 @@ const ProductBuilder = ({ fields }) => {
     console.log(e.target.value, "check");
   };
   const renderField = (field) => {
-    switch (field.type) {
+    switch (field?.type) {
       case "radio":
         return (
           <div className={styles.flex}>
@@ -54,9 +68,9 @@ const ProductBuilder = ({ fields }) => {
                   key={option.option}
                   label={option.option}
                   value={option.option}
-                  checked={option.checked}
+                  checked={option?.checked}
                   name={field.variable}
-                  onChange={handleRadioChange}
+                  onChange={(e) => handleRadioChange(e, index)}
                 />
               );
             })}
@@ -157,18 +171,22 @@ const ProductBuilder = ({ fields }) => {
         return null;
     }
   };
-
+  console.log(formData, "fieldsaaaaa");
+  if (fields?.length <= 0) return <p>loading</p>;
   return (
     <div className={styles["product-builder"]}>
-      <h2>{fields.name}</h2>
-      {fields.fields.map((field) => (
-        <div className={styles.container} key={field._id}>
-          <label>{field.name}:</label>
-          {renderField(field)}
-        </div>
-      ))}
+      {/* <h2>{fields.name}</h2> */}
+      {fields?.length > 0 &&
+        fields?.map((field) => {
+          return (
+            <div className={styles.container} key={field._id}>
+              <label>{field?.name}:</label>
+              {renderField(field)}
+            </div>
+          );
+        })}
     </div>
   );
 };
 
-export default ProductBuilder;
+export default React.memo(ProductBuilder);

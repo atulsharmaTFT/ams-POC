@@ -19,7 +19,7 @@ mongoose
 
 const options1 = Joi.object({
   option: Joi.string().min(1).required(),
-  checked: Joi.boolean().valid(false).required(),
+  checked: Joi.boolean().required(),
 });
 
 const options2 = Joi.object({
