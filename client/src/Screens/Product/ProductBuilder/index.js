@@ -80,7 +80,7 @@ const ProductBuilder = ({ fields }) => {
           <MultiselectDropdown
             isMulti={true}
             category={field?.placeholder}
-            data={field?.dropdownOptions}
+            data={field?.multiSelectOptions}
             handleChange={(selectedValue, action) =>
               handleOptionChange(selectedValue, action, field?.type)
             }
