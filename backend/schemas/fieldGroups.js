@@ -15,7 +15,7 @@ const fieldGroupsSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { versionKey: false, timestamps: true }
+  { versionKey: false, timestamps: true, collection: "fieldGroups" }
 );
 
 const FieldGroups = mongoose.model("fieldGroups", fieldGroupsSchema);

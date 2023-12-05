@@ -213,43 +213,7 @@ app.post("/products", async (req, res) => {
     });
 
     await newProduct.save();
-
-    const aggregate = FieldGroups.aggregate([
-      {
-        $match: {
-          _id: {
-            $in: fieldGroups.map((id) => new mongoose.Types.ObjectId(id)),
-          },
-        },
-      },
-      {
-        $unwind: "$fields",
-      },
-      {
-        $lookup: {
-          from: "fields",
-          localField: "fields",
-          foreignField: "_id",
-          as: "productFields",
-        },
-      },
-      {
-        $unwind: "$productFields",
-      },
-      {
-        $replaceRoot: {
-          newRoot: "$productFields",
-        },
-      },
-    ]);
-
-    const fields = await aggregate.exec();
-    res.status(201).json({
-      _id: newProduct._id,
-      name,
-      variable,
-      fields,
-    });
+    res.status(201).json(newProduct);
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");
@@ -264,6 +228,73 @@ app.get("/products", async (req, res) => {
     console.log(e);
     res.status(500).send("Internal Server Error");
   }
+});
+
+app.get("/products/:id", async (req, res) => {
+  const productId = req.params.id;
+  const aggregate = Products.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(productId),
+      },
+    },
+    {
+      $unwind: "$fieldGroups",
+    },
+    {
+      $lookup: {
+        from: "fieldGroups",
+        localField: "fieldGroups",
+        foreignField: "_id",
+        as: "fieldGroupsArr",
+      },
+    },
+    {
+      $unwind: "$fieldGroupsArr",
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$fieldGroupsArr",
+      },
+    },
+    {
+      $unwind: "$fields",
+    },
+    {
+      $lookup: {
+        from: "fields",
+        localField: "fields",
+        foreignField: "_id",
+        as: "productFields",
+      },
+    },
+    {
+      $unwind: "$productFields",
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$productFields",
+      },
+    },
+  ]);
+
+  const fields = await aggregate.exec();
+
+  const { name, variable, createdAt, updatedAt } = await Products.findById(
+    productId,
+    {
+      fieldGroups: 0,
+    }
+  );
+
+  res.status(200).json({
+    _id: productId,
+    name,
+    variable,
+    createdAt,
+    updatedAt,
+    fields,
+  });
 });
 
 // Start the server
