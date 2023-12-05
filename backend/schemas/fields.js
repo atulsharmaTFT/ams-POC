@@ -1,5 +1,33 @@
 const mongoose = require("mongoose");
 
+const options1 = new mongoose.Schema(
+  {
+    option: {
+      type: String,
+      required: true,
+    },
+    checked: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
+const options2 = new mongoose.Schema(
+  {
+    value: {
+      type: String,
+      required: true,
+    },
+    label: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const fieldSchema = new mongoose.Schema(
   {
     name: {
@@ -34,7 +62,7 @@ const fieldSchema = new mongoose.Schema(
       default: "",
     },
     checkboxOptions: {
-      type: [String],
+      type: [options1],
       default: [],
       validate: {
         validator: function (value) {
@@ -44,7 +72,7 @@ const fieldSchema = new mongoose.Schema(
       },
     },
     radioOptions: {
-      type: [String],
+      type: [options1],
       default: [],
       validate: {
         validator: function (value) {
@@ -54,7 +82,7 @@ const fieldSchema = new mongoose.Schema(
       },
     },
     dropdownOptions: {
-      type: [String],
+      type: [options2],
       default: [],
       validate: {
         validator: function (value) {
@@ -89,7 +117,7 @@ const fieldSchema = new mongoose.Schema(
       default: false,
     },
     multiSelectOptions: {
-      type: [String],
+      type: [options2],
       default: [],
       validate: {
         validator: function (value) {

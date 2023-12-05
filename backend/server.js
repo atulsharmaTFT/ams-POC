@@ -17,6 +17,16 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Failed to connect to MongoDB", err));
 
+const options1 = Joi.object({
+  option: Joi.string().min(1).required(),
+  checked: Joi.boolean().valid(false).required(),
+});
+
+const options2 = Joi.object({
+  value: Joi.string().min(1).required(),
+  label: Joi.string().min(1).required(),
+});
+
 const validateFields = Joi.object({
   name: Joi.string().required(),
   variable: Joi.string().required(),
@@ -36,25 +46,25 @@ const validateFields = Joi.object({
   description: Joi.string().default(""),
   placeholder: Joi.string().default(""),
   checkboxOptions: Joi.array()
-    .items(Joi.string())
+    .items(options1)
     .default([])
     .when("type", {
       is: "checkbox",
-      then: Joi.array().items(Joi.string().min(1)).required().min(1),
+      then: Joi.array().items(options1).required().min(1),
     }),
   radioOptions: Joi.array()
-    .items(Joi.string())
+    .items(options1)
     .default([])
     .when("type", {
       is: "radio",
-      then: Joi.array().items(Joi.string().min(1)).required().min(1),
+      then: Joi.array().items(options1).required().min(1),
     }),
   dropdownOptions: Joi.array()
-    .items(Joi.string())
+    .items(options2)
     .default([])
     .when("type", {
       is: "dropdown",
-      then: Joi.array().items(Joi.string().min(1)).required().min(1),
+      then: Joi.array().items(options2).required().min(1),
     }),
   dateOptions: Joi.object({
     format: Joi.string().valid("YYYY-MM-DD"),
@@ -70,11 +80,11 @@ const validateFields = Joi.object({
   }),
   toggleDefault: Joi.boolean().default(false),
   multiSelectOptions: Joi.array()
-    .items(Joi.string())
+    .items(options2)
     .default([])
     .when("type", {
       is: "multiSelect",
-      then: Joi.array().items(Joi.string().min(1)).required().min(1),
+      then: Joi.array().items(options2).required().min(1),
     }),
   sliderOptions: Joi.object({
     min: Joi.number().required(),
