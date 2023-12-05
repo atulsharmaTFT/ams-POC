@@ -176,7 +176,38 @@ app.post("/field-groups", async (req, res) => {
 
 app.get("/field-groups", async (req, res) => {
   try {
-    const fieldGroups = await FieldGroups.find();
+    const aggregate = FieldGroups.aggregate([
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "fieldsArr",
+        },
+      },
+      {
+        $addFields: {
+          fields: {
+            $map: {
+              input: "$fieldsArr",
+              as: "field",
+              in: {
+                name: "$$field.name",
+                variable: "$$field.variable",
+                _id: "$$field._id",
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          fieldsArr: 0,
+        },
+      },
+    ]);
+
+    const fieldGroups = await aggregate.exec();
     res.status(200).json(fieldGroups);
   } catch (e) {
     console.log(e);
