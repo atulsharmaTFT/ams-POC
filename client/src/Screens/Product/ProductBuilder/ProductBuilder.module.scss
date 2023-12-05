@@ -1,0 +1,48 @@
+// ProductBuilder.module.scss
+
+.product-builder {
+    // Define styles for the container
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+  
+    h2 {
+      // Styles for the heading
+      color: #333;
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+  
+    label {
+      // Styles for labels
+      display: block;
+      margin-bottom: 5px;
+    }
+  
+    input[type="radio"],
+    input[type="checkbox"] {
+      // Styles for radio and checkbox inputs
+      margin-right: 5px;
+    }
+  
+    // Add more styles as needed for other elements
+  }
+  
+  // Add additional styles for different field types
+  .radio-options {
+    // Styles for radio options container
+    margin-top: 5px;
+  }
+  
+  .checkbox-options {
+    // Styles for checkbox options container
+    margin-top: 5px;
+  }
+  
+  .multi-select-options {
+    // Styles for multi-select options container
+    margin-top: 5px;
+  }
+  
+  // Add styles for other field types as needed
+  

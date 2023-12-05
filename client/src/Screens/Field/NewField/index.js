@@ -95,6 +95,20 @@ const NewField = () => {
         };
         await createFieldsServices(payload);
         break;
+      case "Date":
+        payload = {
+          type: fields?.type.toLowerCase(),
+          variable: toCamelCase(fields?.name),
+          name: fields?.name,
+          description: fields?.description,
+          dateOptions: {
+            minDate: fields?.minDate,
+            maxDate: fields?.maxDate,
+            format: "YYYY-MM-DD",
+          },
+        };
+        await createFieldsServices(payload);
+        break;
       default:
         break;
     }

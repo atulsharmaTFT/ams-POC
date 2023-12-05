@@ -5,9 +5,10 @@ import { useTable } from "react-table";
 const columns = [
   { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
   { Header: "Name", accessor: "name" },
+  { Header: "Action", accessor: "action" },
 ];
 
-const FieldGroup = () => {
+const Product = () => {
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
@@ -15,7 +16,7 @@ const FieldGroup = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8001/field-groups");
+        const response = await fetch("http://localhost:8001/products");
         const apiData = await response.json();
         console.log(apiData);
         setData(apiData);
@@ -25,7 +26,12 @@ const FieldGroup = () => {
     };
 
     fetchData();
-  }, []); // Run the effect only once on mount
+  }, []);
+
+  const handleAddData = (data) => {
+    console.log(data);
+    navigate(`/addProductDetails/${data._id}`)
+  };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
@@ -37,9 +43,9 @@ const FieldGroup = () => {
           padding: "8px",
           fontSize: "16px",
         }}
-        onClick={() => navigate("/newFieldGroup")} // Add your logic here
+        onClick={() => navigate("/newProduct")} // Add your logic here
       >
-        Add New FieldGroup
+        Add New Product
       </button>
       {/* Render the table */}
       <table
@@ -70,17 +76,43 @@ const FieldGroup = () => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td
-                    {...cell.getCellProps()}
-                    style={{
-                      border: "1px solid black",
-                      padding: "8px",
-                    }}
-                  >
-                    {cell.render("Cell")}
-                  </td>
-                ))}
+                {row.cells.map((cell) => {
+                  if (cell.column.Header === "Action") {
+                    // return <td {...cell.getCellProps()}>{`${row.original.img} ${cell.render("Cell")}`}</td>
+                    return (
+                      <td
+                        {...cell.getCellProps()}
+                        style={{
+                          border: "1px solid black",
+                          padding: "8px",
+                        }}
+                      >
+                        <button
+                          style={{
+                            padding: "6px 10px",
+                            fontSize: "14px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleAddData(row.original)}
+                        >
+                          Add Data
+                        </button>
+                      </td>
+                    );
+                  } else {
+                    return (
+                      <td
+                        {...cell.getCellProps()}
+                        style={{
+                          border: "1px solid black",
+                          padding: "8px",
+                        }}
+                      >
+                        {cell.render("Cell")}
+                      </td>
+                    );
+                  }
+                })}
               </tr>
             );
           })}
@@ -89,4 +121,4 @@ const FieldGroup = () => {
     </div>
   );
 };
-export default FieldGroup;
+export default Product;

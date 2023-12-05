@@ -60,6 +60,14 @@ const AdminSidebar = () => {
             >
               {open && "FieldGroups"}
             </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                isActive ? `${classes.active}` : ""
+              }
+              to={AppRoutes.PRODUCT}
+            >
+              {open && "Product"}
+            </NavLink>
         </Scrollbars>
       </div>
     </motion.div>

@@ -66,7 +66,7 @@ const fieldSchema = new mongoose.Schema(
     dateOptions: {
       format: {
         type: String,
-        enum: ["DD-MM-YYYY"],
+        enum: ["YYYY-MM-DD"],
         required: function () {
           return this.type === "date";
         },

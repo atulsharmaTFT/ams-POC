@@ -91,6 +91,7 @@ const FormBuilder = ({ onFormSubmit }) => {
   };
 
   const handleAttributeChange = (attribute, value) => {
+    console.log(attribute, value)
     setNewOption((prevAttributes) => ({
       ...prevAttributes,
       [attribute]: value,
@@ -144,9 +145,11 @@ const FormBuilder = ({ onFormSubmit }) => {
   };
 
   const handleAddField = () => {
+    debugger
     if (selectedField) {
       const payload = newOption
       onFormSubmit(payload);
+      setNewOption(optionsObject)
       setFieldAttributes({});
     }
   };

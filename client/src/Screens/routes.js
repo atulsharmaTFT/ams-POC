@@ -7,6 +7,9 @@ import Field from "./Field";
 import FieldGroup from "./FieldGroup";
 import NewField from "./Field/NewField";
 import NewFieldGroup from "./FieldGroup/NewFieldGroup";
+import Product from "./Product";
+import NewProduct from "./Product/NewProduct";
+import AddProductDetails from "./Product/AddProductDetails";
 
 export const adminRoutes = (token, role) => [
   {
@@ -31,7 +34,19 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.NEWFIELDGROUP,
         element: <NewFieldGroup/>,
-      }
+      },
+      {
+        path: AppRoutes.PRODUCT,
+        element: <Product/>,
+      },
+      {
+        path: AppRoutes.NEWPRODUCT,
+        element: <NewProduct/>,
+      },
+      {
+        path: AppRoutes.ADDPRODUCTDETAILS,
+        element: <AddProductDetails/>,
+      },
     ],
   },
   // {
