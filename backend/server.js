@@ -57,13 +57,13 @@ const validateFields = Joi.object({
       then: Joi.array().items(Joi.string().min(1)).required().min(1),
     }),
   dateOptions: Joi.object({
-    format: Joi.string().valid("DD-MM-YYYY"),
+    format: Joi.string().valid("YYYY-MM-DD"),
     minDate: Joi.date().required(),
     maxDate: Joi.date().required(),
   }).when("type", {
     is: "date",
     then: Joi.object({
-      format: Joi.string().valid("DD-MM-YYYY").required(),
+      format: Joi.string().valid("YYYY-MM-DD").required(),
       minDate: Joi.date().required(),
       maxDate: Joi.date().required(),
     }).required(),
