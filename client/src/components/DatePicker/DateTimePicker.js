@@ -8,7 +8,7 @@ function DateTimePicker({ inputClassOverride, setDateTime, selected, type }) {
   return (
     <div className={classes.container}>
       <input
-        type={type || "datetime-local"}
+        type="date"
         id="datetime"
         name="datetime"
         min={min}
