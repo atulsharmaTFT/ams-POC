@@ -88,6 +88,9 @@ const MultiselectDropdown = (props) => {
       options.push(opt);
     });
   }
+  if(props?.data){
+    options = props?.data
+  }
   return (
     <div className={`${classes.container} ${props.className}`}>
       <Select
