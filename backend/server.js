@@ -5,6 +5,7 @@ const Joi = require("joi");
 const Fields = require("./schemas/fields");
 const FieldGroups = require("./schemas/fieldGroups");
 const Products = require("./schemas/products");
+const Assets = require("./schemas/assets");
 const cors = require("cors");
 const app = express();
 app.use(bodyParser.json());
@@ -336,6 +337,195 @@ app.get("/products/:id", async (req, res) => {
     updatedAt,
     fields,
   });
+});
+
+const validateAssets = Joi.object({
+  name: Joi.string().required(),
+  image: Joi.string(),
+  tag: Joi.string().required(),
+  price: Joi.number().required(),
+  purchaseDate: Joi.date().iso().required(),
+  assignedTo: Joi.string().custom((value, helpers) => {
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      return helpers.error("any.invalid");
+    }
+    return value;
+  }),
+  productId: Joi.string()
+    .custom((value, helpers) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        return helpers.error("any.invalid");
+      }
+      return value;
+    })
+    .required(),
+  data: Joi.object()
+    .pattern(
+      Joi.string(),
+      Joi.alternatives().try(
+        Joi.date().iso(),
+        Joi.string().min(1),
+        Joi.array().items(Joi.string().min(1)).min(1),
+        Joi.number(),
+        Joi.boolean()
+      )
+    )
+    .required(),
+});
+
+app.post("/assets", async (req, res) => {
+  try {
+    const { error, value } = validateAssets.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const {
+      name,
+      image,
+      tag,
+      price,
+      purchaseDate,
+      assignedTo,
+      productId,
+      data,
+    } = value;
+
+    const aggregate = Products.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $unwind: "$fieldGroups",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fieldGroupsArr",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fields",
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "productFields",
+        },
+      },
+      {
+        $unwind: "$productFields",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$productFields",
+        },
+      },
+    ]);
+
+    const fields = await aggregate.exec();
+
+    if (!fields.length) {
+      return res.status(400).json({ error: "Invalid productId" });
+    } else if (fields.length !== Object.keys(data).length) {
+      return res.status(400).json({ error: "Extra attributes added" });
+    }
+
+    const validateData = Joi.object({
+      type: Joi.string().required(),
+      value: Joi.any()
+        .when("type", {
+          is: "radio",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "checkbox",
+          then: Joi.array().items(Joi.string()).required(),
+        })
+        .when("type", {
+          is: "number",
+          then: Joi.number().required(),
+        })
+        .when("type", {
+          is: "toggle",
+          then: Joi.boolean().required(),
+        })
+        .when("type", {
+          is: "multiSelect",
+          then: Joi.array().items(Joi.string()).required(),
+        })
+        .when("type", {
+          is: "text",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "dropdown",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "slider",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "date",
+          then: Joi.date().iso().required(),
+        }),
+    });
+
+    for (const field of fields) {
+      if (!data[field.variable]) {
+        return res
+          .status(400)
+          .json({ error: `Missing field ${field.variable}` });
+      } else {
+        const newData = { type: field.type, value: data[field.variable] };
+
+        const result = validateData.validate(newData);
+
+        if (result.error) {
+          return res.status(400).json({
+            error: `Please provide correct value for attribute ${field.variable}`,
+          });
+        }
+      }
+    }
+
+    const newAsset = new Assets({
+      name,
+      image,
+      tag,
+      price,
+      purchaseDate,
+      assignedTo,
+      productId,
+      data,
+    });
+
+    await newAsset.save();
+    res.status(201).json(newAsset);
+  } catch (error) {
+    if (error.message.startsWith("E11000")) {
+      return res.status(409).json({
+        error: `Duplicate Tag`,
+      });
+    }
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 // Start the server
