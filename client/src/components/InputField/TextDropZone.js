@@ -25,7 +25,7 @@ export const TextAndDropzone = ({ onUpload, serial, value, child }) => {
     setText(event.target.value);
   };
   const submitData = (data, e) => {
-    e.preventDefault;
+    e.preventDefault();
     if (imageData) {
       data.image = imageData;
       onUpload(data);

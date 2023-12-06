@@ -29,7 +29,6 @@ const Product = () => {
   }, []);
 
   const handleAddData = (data) => {
-    console.log(data);
     navigate(`/addProductDetails/${data._id}`)
   };
 

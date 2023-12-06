@@ -21,17 +21,14 @@ const NewField = () => {
   } = useAdminApiService(adminServices.createFields);
   useEffect(() => {
     if (isCreateFieldsError && createFieldsError) {
-      console.log(createFieldsError, "Error");
       resetCreateFieldsState();
     }
     if (isCreateFieldsSuccess && createFieldsResponse) {
-      console.log(createFieldsResponse, "Response");
       resetCreateFieldsState();
     }
   });
 
   const handleFormSubmit = async (fields) => {
-    console.log("Form submitted with fields:", fields);
     let payload = {};
     switch (fields?.type) {
       case "Radio":
@@ -72,7 +69,6 @@ const NewField = () => {
           name: fields?.name,
           multiSelectOptions: fields?.multiSelectOptions,
         };
-        console.log(payload);
         await createFieldsServices(payload);
         break;
       case "Text":
