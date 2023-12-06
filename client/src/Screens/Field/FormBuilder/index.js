@@ -91,7 +91,6 @@ const FormBuilder = ({ onFormSubmit }) => {
   };
 
   const handleAttributeChange = (attribute, value) => {
-    console.log(attribute, value)
     setNewOption((prevAttributes) => ({
       ...prevAttributes,
       [attribute]: value,
@@ -105,28 +104,28 @@ const FormBuilder = ({ onFormSubmit }) => {
         case 'Radio':
             setNewOption(prevState => ({
                 ...prevState,
-                radioOptions: [...prevState.radioOptions, option.trim()] 
+                radioOptions: [...prevState.radioOptions,{option:option.trim(),checked: false}] 
               }));
             setOption("");
           break;
         case 'CheckBox':
             setNewOption(prevState => ({
                 ...prevState,
-                checkboxOptions: [...prevState.checkboxOptions, option.trim()] 
+                checkboxOptions: [...prevState.checkboxOptions, {option:option.trim(),checked: false}] 
               }));
             setOption("");
           break;
         case 'Dropdown':
             setNewOption(prevState => ({
                 ...prevState,
-                dropdownOptions: [...prevState.dropdownOptions, option.trim()] 
+                dropdownOptions: [...prevState.dropdownOptions, {value: (prevState.dropdownOptions?.length +1).toString(), label:option.trim()}] 
               }));
             setOption("");
           break;
         case 'multiSelect':
             setNewOption(prevState => ({
                 ...prevState,
-                multiSelectOptions: [...prevState.multiSelectOptions, option.trim()] 
+                multiSelectOptions: [...prevState.multiSelectOptions, {value: (prevState.multiSelectOptions?.length +1).toString(), label:option.trim()}] 
               }));
             setOption("");
        
@@ -145,7 +144,6 @@ const FormBuilder = ({ onFormSubmit }) => {
   };
 
   const handleAddField = () => {
-    debugger
     if (selectedField) {
       const payload = newOption
       onFormSubmit(payload);
@@ -232,7 +230,7 @@ const FormBuilder = ({ onFormSubmit }) => {
                   <div>
                     {newOption[keyType]?.map((option, index) => (
                       <div key={index} className={classes.options}>
-                        <span>{option}</span>
+                        <span>{keyType === "radioOptions" || keyType === "checkboxOptions" ? option?.option : keyType === "dropdownOptions" || keyType === "multiSelectOptions" ? option?.label : option }</span>
                         <Button
                           type="button"
                           overrideClassName={classes.removeBtn}

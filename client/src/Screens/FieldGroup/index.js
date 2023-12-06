@@ -17,7 +17,6 @@ const FieldGroup = () => {
       try {
         const response = await fetch("http://localhost:8001/field-groups");
         const apiData = await response.json();
-        console.log(apiData);
         setData(apiData);
       } catch (error) {
         console.error("Error fetching data:", error);

@@ -3,7 +3,6 @@ import classes from "./NewFieldGroup.module.scss";
 import { toCamelCase } from "../../../helper/commonHelpers";
 
 const NewFieldGroup = () => {
-
   const [searchTerm, setSearchTerm] = useState("");
   const [userName, setUserName] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -38,7 +37,6 @@ const NewFieldGroup = () => {
         fields: userIds,
       };
 
-      console.log(obj);
       const response = await fetch("http://localhost:8001/field-groups", {
         method: "POST",
         headers: {
@@ -49,7 +47,6 @@ const NewFieldGroup = () => {
       });
 
       const apiData = await response.json();
-      console.log(apiData);
       if (apiData) {
         setSelectedItems([]);
         setUserName("");
@@ -69,12 +66,18 @@ const NewFieldGroup = () => {
   };
 
   const handleAddItem = (item) => {
-    console.log(item);
     setSelectedItems([...selectedItems, item]);
   };
 
   const isItemSelected = (item) =>
     selectedItems.some((selectedItem) => selectedItem._id === item._id);
+
+  const handleRemoveItem = (itemToRemove) => {
+    const updatedSelectedItems = selectedItems.filter(
+      (item) => item._id !== itemToRemove._id
+    );
+    setSelectedItems(updatedSelectedItems);
+  };
 
   return data ? (
     <div className={classes.container}>
@@ -148,6 +151,9 @@ const NewFieldGroup = () => {
               <tr key={item._id}>
                 <td>{item.name}</td>
                 <td>{item.type}</td>
+                <td>
+                  <button onClick={() => handleRemoveItem(item)}>Remove</button>
+                </td>
               </tr>
             ))}
           </tbody>

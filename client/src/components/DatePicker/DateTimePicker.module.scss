@@ -1,5 +1,20 @@
+@import '../../scss/theme';
+
 .container {
   input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
+  }
+
+  .label {
+    font-size: 1.6rem;
+    line-height: 2.5rem;
+    color: $coal-black;
+    margin-bottom: 1rem;
+    @include flexContainer(row, space-between);
+    div {
+      font-size: 1.2rem;
+      line-height: 2.5rem;
+      color: $dark-blue;
+    }
   }
 }

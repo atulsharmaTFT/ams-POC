@@ -3,7 +3,6 @@ import classes from "./NewProduct.module.scss";
 import { toCamelCase } from "../../../helper/commonHelpers";
 
 const NewProduct = () => {
-
   const [searchTerm, setSearchTerm] = useState("");
   const [userName, setUserName] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -75,6 +74,13 @@ const NewProduct = () => {
   const isItemSelected = (item) =>
     selectedItems.some((selectedItem) => selectedItem._id === item._id);
 
+  const handleRemoveItem = (itemToRemove) => {
+    const updatedSelectedItems = selectedItems.filter(
+      (item) => item._id !== itemToRemove._id
+    );
+    setSelectedItems(updatedSelectedItems);
+  };
+
   return data ? (
     <div className={classes.container}>
       <div className={classes.userInputContainer}>
@@ -143,6 +149,9 @@ const NewProduct = () => {
             {selectedItems.map((item) => (
               <tr key={item._id}>
                 <td>{item.name}</td>
+                <td>
+                  <button onClick={() => handleRemoveItem(item)}>Remove</button>
+                </td>
               </tr>
             ))}
           </tbody>

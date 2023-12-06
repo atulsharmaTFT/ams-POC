@@ -18,7 +18,6 @@ const AdminLayout = () => {
         }
       >
         <React.Suspense fallback={<p>Loading</p>}>
-          {console.log('admin called')}
           <Outlet />
         </React.Suspense>
       </div>
