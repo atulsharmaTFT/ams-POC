@@ -388,7 +388,7 @@ const ProductBuilder = ({ fields, productId }) => {
               placeholder="Enter Name"
               register={()=>register("staticName")}
               control={control}
-              error={errors?.staticPrice?.message}
+              error={errors?.staticName?.message}
               defaultValue={getValues("staticName")}
               onChange={(event) =>
                 handleStaticInputHandler(event, "staticName")
@@ -407,7 +407,7 @@ const ProductBuilder = ({ fields, productId }) => {
               label="Enter Tag"
               register={()=>register("staticTag")}
               control={control}
-              error={errors?.staticPrice?.message}
+              error={errors?.staticTag?.message}
               defaultValue={getValues("staticTag")}
               onChange={(event) => handleStaticInputHandler(event, "staticTag")}
               inputOverrideClassName={styles.inputOverride}
@@ -459,8 +459,8 @@ const ProductBuilder = ({ fields, productId }) => {
         </div>
         <div className={styles.fieldsContainer}>
           {/* <span>Dynamic Fields</span> */}
-          {fields?.length > 0 &&
-            fields?.map((field) => {
+          {fields?.fields.length > 0 &&
+            fields?.fields?.map((field) => {
               return (
                 <div className={styles.container} key={field._id}>
                   <label>{field?.name}:</label>

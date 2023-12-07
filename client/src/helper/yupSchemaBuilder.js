@@ -50,7 +50,7 @@ export const staticSchema = {
   staticName: Yup.string().required("Name is required").min(2).max(20).label("Name"),
   staticPrice: Yup.number().required("Price is required").test(
     'Is positive?', 
-    'ERROR: The number must be greater than 0!', 
+    'Price must be greater than 0!', 
     (value) => value > 0
   ).label("Price"),
   staticTag: Yup.string().required("Tag number is required").min(2).max(15).label("Tag number"),
