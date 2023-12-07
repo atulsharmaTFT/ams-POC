@@ -5,6 +5,7 @@ import classes from './RadioButton.module.scss';
 
 const RadioButton = ({ label,value, checked, onChange }) => {
 
+  console.log(checked)
   return (
     <div className={classes.radioInput}>
       <input
