@@ -3,7 +3,7 @@
 .container {
   display: flex;
     flex-direction: column;
-    // border: 1px solid black;
+    border: 1px solid black;
     padding: 10px;
     margin-bottom: 5px;
 }
@@ -35,6 +35,12 @@
     margin-right: 5px;
   }
 
+  .fieldsContainer {
+    border: 1px solid black;
+    max-height: 400px;
+    overflow: auto;
+    margin-bottom: 10px;
+  }
   // Add more styles as needed for other elements
 }
 

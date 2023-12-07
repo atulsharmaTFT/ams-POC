@@ -66,7 +66,23 @@ const AdminSidebar = () => {
               }
               to={AppRoutes.PRODUCT}
             >
-              {open && "Product"}
+              {open && "Product Category"}
+            </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                isActive ? `${classes.active}` : ""
+              }
+              to={AppRoutes.ASSETS}
+            >
+              {open && "Assets"}
+            </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                isActive ? `${classes.active}` : ""
+              }
+              to={AppRoutes.ORGANIZATIONS}
+            >
+              {open && "Organizations"}
             </NavLink>
         </Scrollbars>
       </div>

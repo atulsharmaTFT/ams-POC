@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./ProductBuilder.module.scss";
 import RadioButton from "../../../components/RadioButton";
 import InputField from "../../../components/InputField";
@@ -11,8 +11,10 @@ import { getSchema, staticSchema } from "../../../helper/yupSchemaBuilder";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import useAdminApiService from "../../../helper/useAdminApiService";
+import adminServices from "../../../helper/adminServices";
 
-const ProductBuilder = ({ fields }) => {
+const ProductBuilder = ({ fields, productId }) => {
   const [selectedDateTime, setSelectedDateTime] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [dropDownOptions, setDropDownOptions] = useState([]);
@@ -36,7 +38,7 @@ const ProductBuilder = ({ fields }) => {
       staticPrice: 0,
       staticTag: "",
       staticPurchaseDate: new Date().toISOString().split("T")[0],
-      staticImage: null,
+      // staticImage: null,
     },
     resolver: validatorSchema && yupResolver(validatorSchema),
     mode:"all",
@@ -44,33 +46,62 @@ const ProductBuilder = ({ fields }) => {
   console.log(errors, getValues(), "errors");
 
 
+  const {
+    state: {
+      loading: addNewAssetLoading,
+      isSuccess: isAddNewAssetSuccess,
+      data: addNewAssetResponse,
+      isError: isAddNewAssetError,
+      error: addNewAssetError,
+    },
+    callService: addNewAssetService,
+    resetServiceState: resetAddNewAssetState,
+  } = useAdminApiService(adminServices.addAsset);
+
+  useEffect(() => {
+    if (isAddNewAssetError && addNewAssetError) {
+      console.log(addNewAssetError, "Error");
+      // resetGetProductByIdState();
+    }
+    if (isAddNewAssetSuccess && addNewAssetResponse) {
+      console.log(addNewAssetResponse, "Response");
+      // setTimeout(()=>setLoading(false), 1000)
+      // resetGetProductByIdState();
+    }
+  }, [
+    isAddNewAssetSuccess,
+    addNewAssetResponse,
+    isAddNewAssetError,
+    addNewAssetError,
+  ]);
+
   const acceptedFileTypes = [
     "application/vnd.ms-excel", // .xls
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
     "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml", // .xlsx worksheet
   ];
 
-  let dropzoneCss = {
-    dropzone: {
-      overflow: "hidden",
-      minHeight: "60px",
-      marginTop: "20px",
-      borderRadius: "8px",
-      border: "1px solid #cdcdcd",
-      backgroundColor: "#fff",
-    },
-    inputLabelWithFiles: {
-      display: "none",
-    },
-    inputLabel: {
-      fontSize: "18px",
-      fontWeight: "500",
-      color: "#777",
-    },
-    preview: {
-      padding: "15px",
-    },
-  };
+  // let dropzoneCss = {
+  //   dropzone: {
+  //     overflow: "hidden",
+  //     minHeight: "60px",
+  //     marginTop: "20px",
+  //     borderRadius: "8px",
+  //     border: "1px solid #cdcdcd",
+  //     backgroundColor: "#fff",
+  //   },
+  //   inputLabelWithFiles: {
+  //     display: "none",
+  //   },
+  //   inputLabel: {
+  //     fontSize: "18px",
+  //     fontWeight: "500",
+  //     color: "#777",
+  //   },
+  //   preview: {
+  //     padding: "15px",
+  //   },
+  // };
 
   const handleRadioChange = (e, idx, field) => {
     const data = field.radioOptions
@@ -91,7 +122,7 @@ const ProductBuilder = ({ fields }) => {
     setFormData((prev) => {
       return {
         ...prev,
-        [field.variable]: data[0].option,
+        [field.variable]: data[0],
       };
     });
   };
@@ -118,7 +149,7 @@ const ProductBuilder = ({ fields }) => {
       setFormData((prev) => {
         return {
           ...prev,
-          [name]: options.label,
+          [name]: options,
         };
       });
     }
@@ -132,14 +163,14 @@ const ProductBuilder = ({ fields }) => {
         );
         setSelectedOptions(filterOption);
       }
-      const labels = options.map((item) => {
-        return item.label;
-      });
+      // const labels = options.map((item) => {
+      //   return item.label;
+      // });
 
       setFormData((prev) => {
         return {
           ...prev,
-          [name]: labels,
+          [name]: options,
         };
       });
     }
@@ -156,8 +187,7 @@ const ProductBuilder = ({ fields }) => {
         if (ele.checked === true) {
           return ele;
         }
-      })
-      .map((x) => x.option);
+      });
 
     setFormData((prev) => {
       return {
@@ -170,16 +200,30 @@ const ProductBuilder = ({ fields }) => {
   const formHandler = async (data) => {
     // console.log("data from here", data);
     console.log("formData", formData);
+    const finalData = {
+      name: data?.staticName,
+      tag: data?.staticTag,
+      price: data?.staticPrice,
+      purchaseDate: data?.staticPurchaseDate,
+      productId: productId,
+      data: {
+        ...formData,
+      },
+    };
+
+    console.log(finalData, "FinalData");
+    await addNewAssetService(finalData);
+    console.log("test");
   };
 
-  const handleChangeStatus1 = ({ file }, status) => {
-    const fileType = file?.type;
-    const validFileTypes = [
-      "application/vnd.ms-excel",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.ms-et",
-    ];
-  };
+  // const handleChangeStatus1 = ({ file }, status) => {
+  //   const fileType = file?.type;
+  //   const validFileTypes = [
+  //     "application/vnd.ms-excel",
+  //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  //     "application/vnd.ms-et",
+  //   ];
+  // };
 
   const handleStaticInputHandler = (event, name) => {
     if (name === "staticPurchaseDate") {
@@ -212,6 +256,7 @@ const ProductBuilder = ({ fields }) => {
           <div>
             {field.checkboxOptions.map((option, index) => (
               <CheckBox
+                key={option?.option}
                 value={option?.option}
                 title={option?.option}
                 isChecked={option?.checked}
@@ -224,6 +269,7 @@ const ProductBuilder = ({ fields }) => {
         return (
           <MultiselectDropdown
             isMulti={true}
+            key={field?._id}
             category={field?.placeholder}
             data={field?.multiSelectOptions}
             handleChange={(selectedValue, action) =>
@@ -258,6 +304,7 @@ const ProductBuilder = ({ fields }) => {
         return (
           <MultiselectDropdown
             isMulti={false}
+            key={field?._id}
             category={field?.placeholder}
             data={field?.dropdownOptions}
             handleChange={(selectedValue, action) =>
@@ -276,6 +323,7 @@ const ProductBuilder = ({ fields }) => {
         return (
           <DateTimePicker
             type="date"
+            key={field?._id}
             // selected={selectedDateTime}
             // setDateTime={setSelectedDateTime}
             onChange={(event) =>
@@ -330,93 +378,97 @@ const ProductBuilder = ({ fields }) => {
   return (
     <div className={styles["product-builder"]}>
       <form onSubmit={handleSubmit(formHandler)}>
-        <div>
-          <InputField
-            type="text"
-            key="name"
-            label="Enter Name"
-            fieldName="staticName"
-            placeholder="Enter Name"
-            register={()=>register("staticName")}
-            control={control}
-            error={errors?.staticName?.message}
-            // value={getValues("staticName")}
-            onChange={(event) => handleStaticInputHandler(event, "staticName")}
-            inputOverrideClassName={styles.inputOverride}
-            overrideErrorClassName={styles.overrideErrorClass}
-            containerOverrideClassName={styles.inputContainer}
-          />
-        </div>
-        <div>
-          <InputField
-            type="text"
-            key="tag"
-            fieldName="staticTag"
-            placeholder="Enter Tag"
-            label="Enter Tag"
-            register={()=>register("staticTag")}
-            control={control}
-            error={errors?.staticTag?.message}
-            onChange={(event) => handleStaticInputHandler(event, "staticTag")}
-            inputOverrideClassName={styles.inputOverride}
-            overrideErrorClassName={styles.overrideErrorClass}
-            containerOverrideClassName={styles.inputContainer}
-          />
-        </div>
-        <div>
-          {/* <label>Enter Price</label> */}
-          <InputField
-            type="number"
-            key="number"
-            fieldName="staticPrice"
-            placeholder="Enter Price"
-            label="Enter Price"
-            register={()=>register("staticPrice")}
-            control={control}
-            error={errors?.staticPrice?.message}
-            onChange={(event) => handleStaticInputHandler(event, "staticPrice")}
-            inputOverrideClassName={styles.inputOverride}
-            overrideErrorClassName={styles.overrideErrorClass}
-            containerOverrideClassName={styles.inputContainer}
-          />
-        </div>
-        <div>
-          <DateTimePicker
-            type="date"
-            label="Enter Purchase Date"
-            defaultValue={getValues("staticPurchaseDate")}
-            // register={()=>register("staticPrice")}
-            // control={control}
-            // error={errors?.staticPrice?.message}
-            onChange={(event) =>
-              handleStaticInputHandler(event, "staticPurchaseDate")
-            }
-            inputOverrideClassName={styles.inputContainer}
-            overrideClassName={styles.inputOverride}
-          />
-        </div>
-        <div className={styles.dropZone}>
+        <div className={styles.fieldsContainer}>
+          <div className={styles.container}>
+            <InputField
+              type="text"
+              key="name"
+              label="Enter Name"
+              fieldName="staticName"
+              placeholder="Enter Name"
+              register={()=>register("staticName")}
+              control={control}
+              error={errors?.staticPrice?.message}
+              defaultValue={getValues("staticName")}
+              onChange={(event) =>
+                handleStaticInputHandler(event, "staticName")
+              }
+              inputOverrideClassName={styles.inputOverride}
+              overrideErrorClassName={styles.overrideErrorClass}
+              containerOverrideClassName={styles.inputContainer}
+            />
+          </div>
+          <div className={styles.container}>
+            <InputField
+              type="text"
+              key="tag"
+              fieldName="staticTag"
+              placeholder="Enter Tag"
+              label="Enter Tag"
+              register={()=>register("staticTag")}
+              control={control}
+              error={errors?.staticPrice?.message}
+              defaultValue={getValues("staticTag")}
+              onChange={(event) => handleStaticInputHandler(event, "staticTag")}
+              inputOverrideClassName={styles.inputOverride}
+              overrideErrorClassName={styles.overrideErrorClass}
+              containerOverrideClassName={styles.inputContainer}
+            />
+          </div>
+          <div className={styles.container}>
+            <InputField
+              type="number"
+              key="number"
+              fieldName="staticPrice"
+              placeholder="Enter Price"
+              defaultValue={getValues("staticPrice")}
+              label="Enter Price"
+              register={()=>register("staticPrice")}
+              control={control}
+              error={errors?.staticPrice?.message}
+              onChange={(event) =>
+                handleStaticInputHandler(event, "staticPrice")
+              }
+              inputOverrideClassName={styles.inputOverride}
+              overrideErrorClassName={styles.overrideErrorClass}
+              containerOverrideClassName={styles.inputContainer}
+            />
+          </div>
+          <div className={styles.container}>
+            <DateTimePicker
+              key="date"
+              type="date"
+              label="Enter Purchase Date"
+              defaultValue={getValues("staticPurchaseDate")}
+              onChange={(event) =>
+                handleStaticInputHandler(event, "staticPurchaseDate")
+              }
+              inputOverrideClassName={styles.inputContainer}
+              overrideClassName={styles.inputOverride}
+            />
+          </div>
+          {/* <div className={styles.dropZone}>
           <Dropzone
+            key="file"
             onChangeStatus={handleChangeStatus1}
             accept={acceptedFileTypes.join(",")}
             styles={dropzoneCss}
             multiple={false}
           />
+        </div> */}
         </div>
-        <p>
-          ----------------------------------------------------------------------------
-        </p>
-
-        {/* <h2>{fields.name}</h2> */}
-        {fields?.fields.length > 0 &&
-          fields?.fields.map((field) => {
-            return (
-              <div className={styles.container} key={field._id}>
-                <label>{field?.name}:</label>
-                {renderField(field)}
-              </div>
-            );
-          })}
+        <div className={styles.fieldsContainer}>
+          {/* <span>Dynamic Fields</span> */}
+          {fields?.length > 0 &&
+            fields?.map((field) => {
+              return (
+                <div className={styles.container} key={field._id}>
+                  <label>{field?.name}:</label>
+                  {renderField(field)}
+                </div>
+              );
+            })}
+        </div>
         <button type="submit">Submit</button>
       </form>
     </div>

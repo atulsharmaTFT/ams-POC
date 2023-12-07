@@ -20,7 +20,7 @@ mongoose
 
 const options1 = Joi.object({
   option: Joi.string().min(1).required(),
-  checked: Joi.boolean().valid(false).required(),
+  checked: Joi.boolean().required(),
 });
 
 const options2 = Joi.object({
@@ -365,7 +365,10 @@ const validateAssets = Joi.object({
       Joi.alternatives().try(
         Joi.date().iso(),
         Joi.string().min(1),
-        Joi.array().items(Joi.string().min(1)).min(1),
+        Joi.array().items(options1).min(1),
+        Joi.array().items(options2).min(1),
+        options1,
+        options2,
         Joi.number(),
         Joi.boolean()
       )
@@ -442,7 +445,7 @@ app.post("/assets", async (req, res) => {
     if (!fields.length) {
       return res.status(400).json({ error: "Invalid productId" });
     } else if (fields.length !== Object.keys(data).length) {
-      return res.status(400).json({ error: "Extra attributes added" });
+      return res.status(400).json({ error: "Please send the correct number of attributes" });
     }
 
     const validateData = Joi.object({
@@ -450,11 +453,11 @@ app.post("/assets", async (req, res) => {
       value: Joi.any()
         .when("type", {
           is: "radio",
-          then: Joi.string().required(),
+          then: options1.required(),
         })
         .when("type", {
           is: "checkbox",
-          then: Joi.array().items(Joi.string()).required(),
+          then: Joi.array().items(options1).required(),
         })
         .when("type", {
           is: "number",
@@ -466,7 +469,7 @@ app.post("/assets", async (req, res) => {
         })
         .when("type", {
           is: "multiSelect",
-          then: Joi.array().items(Joi.string()).required(),
+          then: Joi.array().items(options2).required(),
         })
         .when("type", {
           is: "text",
@@ -474,7 +477,7 @@ app.post("/assets", async (req, res) => {
         })
         .when("type", {
           is: "dropdown",
-          then: Joi.string().required(),
+          then: options2.required(),
         })
         .when("type", {
           is: "slider",

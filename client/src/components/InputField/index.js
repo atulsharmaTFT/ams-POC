@@ -8,6 +8,7 @@ const InputField = ({
   label,
   fieldName,
   placeholder,
+  value,
   onChange,
   disabled,
   type,
@@ -71,6 +72,7 @@ const InputField = ({
           type={type}
           name={fieldName}
           register={register}
+          defaultValue={value}
           onChange={onChange}
           placeholder={placeholder}
           onKeyPress={onKeyPress}

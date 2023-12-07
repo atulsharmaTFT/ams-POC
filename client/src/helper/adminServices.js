@@ -33,6 +33,13 @@ export default {
       url: `${ApiUrls.ADMIN_APIS.CREATE_FIELDS}/${getQueryParams(params)}`,
       method: HttpMethods.GET,
     }
+  },
+  addAsset: (data) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}`,
+      method: HttpMethods.POST,
+      data
+    }
   }
   // tambolaOrganizationReport: ({ token, key, id, page, limit }) => {
   //   return {
