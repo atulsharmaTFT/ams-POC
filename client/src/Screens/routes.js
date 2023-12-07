@@ -10,6 +10,8 @@ import NewFieldGroup from "./FieldGroup/NewFieldGroup";
 import Product from "./Product";
 import NewProduct from "./Product/NewProduct";
 import AddProductDetails from "./Product/AddProductDetails";
+import Asset from "./Assets";
+import Organization from "./Organization";
 
 export const adminRoutes = (token, role) => [
   {
@@ -46,6 +48,14 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.ADDPRODUCTDETAILS,
         element: <AddProductDetails/>,
+      },
+      {
+        path: AppRoutes.ASSETS,
+        element: <Asset/>,
+      },
+      {
+        path: AppRoutes.ORGANIZATIONS,
+        element: <Organization/>,
       },
     ],
   },
