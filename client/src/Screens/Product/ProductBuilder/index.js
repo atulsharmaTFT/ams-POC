@@ -7,7 +7,7 @@ import MultiselectDropdown from "../../../components/MultiSelectDropdown/Multise
 import CheckBox from "../../../components/CheckBox/CheckBox";
 import Dropzone from "react-dropzone-uploader";
 import "react-dropzone-uploader/dist/styles.css";
-import { getSchema } from "../../../helper/yupSchemaBuilder";
+import { getSchema, staticSchema } from "../../../helper/yupSchemaBuilder";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -17,10 +17,10 @@ const ProductBuilder = ({ fields }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [dropDownOptions, setDropDownOptions] = useState([]);
   const [formData, setFormData] = useState({});
-  const schema = getSchema(fields);
-  console.log(schema);
-  const validatorSchema = Yup.object().shape(schema);
-  console.log(validatorSchema, "validator");
+  let schema = getSchema(fields);
+  schema = {...schema, ...staticSchema}
+  // console.log(schema, "Schema");
+  const validatorSchema = schema && Yup.object().shape(schema);
   const {
     handleSubmit,
     trigger,
@@ -29,6 +29,7 @@ const ProductBuilder = ({ fields }) => {
     getValues,
     formState: { errors },
     watch,
+    control,
   } = useForm({
     defaultValues: {
       staticName: "",
@@ -36,13 +37,11 @@ const ProductBuilder = ({ fields }) => {
       staticTag: "",
       staticPurchaseDate: new Date().toISOString().split("T")[0],
       staticImage: null,
-      name: "",
-      age: "",
     },
     resolver: validatorSchema && yupResolver(validatorSchema),
-    mode: "onChange",
+    mode:"all",
   });
-  console.log(getValues(), "errors");
+  console.log(errors, getValues(), "errors");
 
 
   const acceptedFileTypes = [
@@ -169,7 +168,7 @@ const ProductBuilder = ({ fields }) => {
   };
 
   const formHandler = async (data) => {
-    console.log("data from here", data);
+    // console.log("data from here", data);
     console.log("formData", formData);
   };
 
@@ -291,13 +290,14 @@ const ProductBuilder = ({ fields }) => {
           <InputField
             key={field._id}
             type="number"
-            fieldName={field.variable}
-            // {...register(field.variable)}
-            {...register(field.variable)}
-            placeholder={field.placeholder}
-            onChange={(event) =>
-              handleInputChange(event, field?.variable, field?.type)
-            }
+            fieldName={field?.variable}
+            register={()=>register(field?.variable)}
+            placeholder={field?.placeholder}
+            control={control}
+            // onChange={(event) =>
+            //   handleInputChange(event, field?.variable, field?.type)
+            // }
+            error={errors?.[field?.variable]?.message}
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
             containerOverrideClassName={styles.inputContainer}
@@ -308,13 +308,14 @@ const ProductBuilder = ({ fields }) => {
           <InputField
             type="text"
             key={field._id}
-            fieldName={field.variable}
-            // {...register(field.variable)}
-            // {...register(field.variable)}
+            fieldName={field?.variable}
+            register={()=>register(field?.variable)}
+            control={control}
+            error={errors?.[field?.variable]?.message}
             placeholder={field.placeholder}
-            onChange={(event) =>
-              handleInputChange(event, field?.variable, field?.type)
-            }
+            // onChange={(event) =>
+            //   handleInputChange(event, field?.variable, field?.type)
+            // }
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
             containerOverrideClassName={styles.inputContainer}
@@ -336,6 +337,9 @@ const ProductBuilder = ({ fields }) => {
             label="Enter Name"
             fieldName="staticName"
             placeholder="Enter Name"
+            register={()=>register("staticName")}
+            control={control}
+            error={errors?.staticName?.message}
             // value={getValues("staticName")}
             onChange={(event) => handleStaticInputHandler(event, "staticName")}
             inputOverrideClassName={styles.inputOverride}
@@ -350,6 +354,9 @@ const ProductBuilder = ({ fields }) => {
             fieldName="staticTag"
             placeholder="Enter Tag"
             label="Enter Tag"
+            register={()=>register("staticTag")}
+            control={control}
+            error={errors?.staticTag?.message}
             onChange={(event) => handleStaticInputHandler(event, "staticTag")}
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
@@ -364,6 +371,9 @@ const ProductBuilder = ({ fields }) => {
             fieldName="staticPrice"
             placeholder="Enter Price"
             label="Enter Price"
+            register={()=>register("staticPrice")}
+            control={control}
+            error={errors?.staticPrice?.message}
             onChange={(event) => handleStaticInputHandler(event, "staticPrice")}
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
@@ -375,6 +385,9 @@ const ProductBuilder = ({ fields }) => {
             type="date"
             label="Enter Purchase Date"
             defaultValue={getValues("staticPurchaseDate")}
+            // register={()=>register("staticPrice")}
+            // control={control}
+            // error={errors?.staticPrice?.message}
             onChange={(event) =>
               handleStaticInputHandler(event, "staticPurchaseDate")
             }

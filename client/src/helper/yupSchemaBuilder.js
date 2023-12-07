@@ -6,7 +6,6 @@ function transformJson(jsonObj) {
   const transformedObj = {
     [variable]: validationSchema(type, validations),
   };
-  console.log(transformedObj);
   return transformedObj;
 }
 
@@ -42,8 +41,19 @@ export function validationSchema(type, validations) {
 
 export function getSchema(data) {
   const newSchema = Object.assign(
-    {},
-    ...data.fields.map((field) => transformJson(field))
+    ...data?.fields.map((field) => transformJson(field))
   );
   return newSchema;
 }
+
+export const staticSchema = {
+  staticName: Yup.string().required("Name is required").min(2).max(20).label("Name"),
+  staticPrice: Yup.number().required("Price is required").test(
+    'Is positive?', 
+    'ERROR: The number must be greater than 0!', 
+    (value) => value > 0
+  ).label("Price"),
+  staticTag: Yup.string().required("Tag number is required").min(2).max(15).label("Tag number"),
+  staticPurchaseDate: Yup.date().required("Date is required").min(new Date(1900, 0, 1)).label("Purchase Date"),
+  staticImage: Yup.string().notRequired().label("Image"),
+};
