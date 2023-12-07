@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.json());
 
 mongoose
-  .connect("mongodb://localhost:27017/AMS", {
+  .connect("mongodb://0.0.0.0:27017/AMS", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

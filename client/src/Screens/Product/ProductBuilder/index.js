@@ -7,6 +7,7 @@ import MultiselectDropdown from "../../../components/MultiSelectDropdown/Multise
 import CheckBox from "../../../components/CheckBox/CheckBox";
 import Dropzone from "react-dropzone-uploader";
 import "react-dropzone-uploader/dist/styles.css";
+import { getSchema } from "../../../helper/yupSchemaBuilder";
 const ProductBuilder = ({ fields }) => {
   const [selectedDateTime, setSelectedDateTime] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -213,6 +214,7 @@ const ProductBuilder = ({ fields }) => {
   };
   console.log(formData, "fieldsaaaaa");
   if (fields?.length <= 0) return <p>loading</p>;
+  const sch=getSchema(fields);
   return (
     <div className={styles["product-builder"]}>
       <div>
@@ -275,8 +277,10 @@ const ProductBuilder = ({ fields }) => {
         />
       </div>
       {/* <h2>{fields.name}</h2> */}
-      {fields?.length > 0 &&
-        fields?.map((field) => {
+      {fields?.fields.length > 0 &&
+        fields?.fields.map((field) => {
+          const {valitdations}=fields.fields;
+          
           return (
             <div className={styles.container} key={field._id}>
               <label>{field?.name}:</label>
