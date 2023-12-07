@@ -19,9 +19,7 @@ const ProductBuilder = ({ fields }) => {
   const [formData, setFormData] = useState({});
   const schema = getSchema(fields);
   console.log(schema);
-  const validatorSchema = Yup.object().shape({
-    schema,
-  });
+  const validatorSchema = Yup.object().shape(schema);
   console.log(validatorSchema, "validator");
   const {
     handleSubmit,
@@ -45,6 +43,7 @@ const ProductBuilder = ({ fields }) => {
     mode: "onChange",
   });
   console.log(getValues(), "errors");
+
 
   const acceptedFileTypes = [
     "application/vnd.ms-excel", // .xls
@@ -293,8 +292,8 @@ const ProductBuilder = ({ fields }) => {
             key={field._id}
             type="number"
             fieldName={field.variable}
+            // {...register(field.variable)}
             {...register(field.variable)}
-            // register={register(field.variable)}
             placeholder={field.placeholder}
             onChange={(event) =>
               handleInputChange(event, field?.variable, field?.type)
@@ -311,7 +310,7 @@ const ProductBuilder = ({ fields }) => {
             key={field._id}
             fieldName={field.variable}
             // {...register(field.variable)}
-            {...register(field.variable)}
+            // {...register(field.variable)}
             placeholder={field.placeholder}
             onChange={(event) =>
               handleInputChange(event, field?.variable, field?.type)

@@ -71,13 +71,12 @@ const InputField = ({
           name={fieldName}
           onChange={onChange}
           placeholder={placeholder}
-          register={register}
           onKeyPress={onKeyPress}
           maxLength={maxlength}
           min={min}
           max={max}
           step={step}
-          // {...register(fieldName)}
+          {...register(fieldName)}
           {...rest}
         />
         {suffixIcon && (
@@ -106,7 +105,7 @@ InputField.defaultProps = {
   type: "text",
   rules: {},
   onChange: null,
-  // register: () => {},
+  register: () => {},
   containerOverrideClassName: "",
   labelClassName: "",
   suffixIconOverrideClassName: "",
