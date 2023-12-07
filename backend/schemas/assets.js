@@ -8,7 +8,7 @@ const assetsSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
+      // required: true, // keeping it optional for now, but it will be needed in future
     },
     tag: {
       type: String,
