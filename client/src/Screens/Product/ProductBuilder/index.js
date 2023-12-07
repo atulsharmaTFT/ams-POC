@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./ProductBuilder.module.scss";
 import RadioButton from "../../../components/RadioButton";
 import InputField from "../../../components/InputField";
@@ -8,6 +8,8 @@ import CheckBox from "../../../components/CheckBox/CheckBox";
 import Dropzone from "react-dropzone-uploader";
 import "react-dropzone-uploader/dist/styles.css";
 import { useForm } from "react-hook-form";
+import useAdminApiService from "../../../helper/useAdminApiService";
+import adminServices from "../../../helper/adminServices";
 const ProductBuilder = ({ fields, productId }) => {
   const [selectedDateTime, setSelectedDateTime] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -29,6 +31,35 @@ const ProductBuilder = ({ fields, productId }) => {
       // staticImage: null,
     },
   });
+
+  const {
+    state: {
+      loading: addNewAssetLoading,
+      isSuccess: isAddNewAssetSuccess,
+      data: addNewAssetResponse,
+      isError: isAddNewAssetError,
+      error: addNewAssetError,
+    },
+    callService: addNewAssetService,
+    resetServiceState: resetAddNewAssetState,
+  } = useAdminApiService(adminServices.addAsset);
+
+  useEffect(() => {
+    if (isAddNewAssetError && addNewAssetError) {
+      console.log(addNewAssetError, "Error");
+      // resetGetProductByIdState();
+    }
+    if (isAddNewAssetSuccess && addNewAssetResponse) {
+      console.log(addNewAssetResponse, "Response");
+      // setTimeout(()=>setLoading(false), 1000)
+      // resetGetProductByIdState();
+    }
+  }, [
+    isAddNewAssetSuccess,
+    addNewAssetResponse,
+    isAddNewAssetError,
+    addNewAssetError,
+  ]);
 
   const acceptedFileTypes = [
     "application/vnd.ms-excel", // .xls
@@ -167,6 +198,8 @@ const ProductBuilder = ({ fields, productId }) => {
     };
 
     console.log(finalData, "FinalData");
+    await addNewAssetService(finalData);
+    console.log("test");
   };
 
   // const handleChangeStatus1 = ({ file }, status) => {

@@ -7,7 +7,8 @@ export const ApiUrls = {
   ADMIN_APIS: {
     USERS: "/users",
     CREATE_FIELDS: "/fields",
-    PRODUCT_BY_ID: "/products"
+    PRODUCT_BY_ID: "/products",
+    ADD_ASSET : "/assets"
   },
 };
 
