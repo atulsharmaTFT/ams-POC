@@ -6,7 +6,7 @@ function transformJson(jsonObj) {
   const transformedObj = {
     [variable]: validationSchema(type, validations),
   };
-
+  console.log(transformedObj);
   return transformedObj;
 }
 
@@ -16,7 +16,7 @@ export function validationSchema(type, validations) {
       if (validations.isRequired) {
         // if(minLength&&maxLength)
         return Yup.string()
-          .required()
+          .required("is required")
           .min(validations.minLength)
           .max(validations.maxLength);
       } else
@@ -24,24 +24,26 @@ export function validationSchema(type, validations) {
           .min(validations.minLength)
           .max(validations.maxLength);
 
-      
     case "number":
       if (validations.isRequired) {
         return Yup.number()
-          .required()
+          .required("is required")
           .min(validations.minLength)
           .max(validations.maxLength);
       } else
         return Yup.number()
           .min(validations.minLength)
           .max(validations.maxLength);
-      
+
     default:
       return;
   }
 }
 
 export function getSchema(data) {
-  const newSchema = data.fields.map((ele) => transformJson(ele));
-  console.log(newSchema);
+  const newSchema = Object.assign(
+    {},
+    ...data.fields.map((field) => transformJson(field))
+  );
+  return newSchema;
 }

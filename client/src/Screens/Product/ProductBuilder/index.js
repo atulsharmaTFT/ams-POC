@@ -9,18 +9,28 @@ import Dropzone from "react-dropzone-uploader";
 import "react-dropzone-uploader/dist/styles.css";
 import { getSchema } from "../../../helper/yupSchemaBuilder";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+
 const ProductBuilder = ({ fields }) => {
   const [selectedDateTime, setSelectedDateTime] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [dropDownOptions, setDropDownOptions] = useState([]);
   const [formData, setFormData] = useState({});
-
+  const schema = getSchema(fields);
+  console.log(schema);
+  const validatorSchema = Yup.object().shape({
+    schema,
+  });
+  console.log(validatorSchema, "validator");
   const {
     handleSubmit,
     trigger,
+    register,
     setValue,
     getValues,
     formState: { errors },
+    watch,
   } = useForm({
     defaultValues: {
       staticName: "",
@@ -28,8 +38,13 @@ const ProductBuilder = ({ fields }) => {
       staticTag: "",
       staticPurchaseDate: new Date().toISOString().split("T")[0],
       staticImage: null,
+      name: "",
+      age: "",
     },
+    resolver: validatorSchema && yupResolver(validatorSchema),
+    mode: "onChange",
   });
+  console.log(getValues(), "errors");
 
   const acceptedFileTypes = [
     "application/vnd.ms-excel", // .xls
@@ -131,7 +146,7 @@ const ProductBuilder = ({ fields }) => {
       });
     }
   };
-  const handleCheckBoxClick = (e,field) => {
+  const handleCheckBoxClick = (e, field) => {
     const data = field.checkboxOptions
       .map((item) => {
         if (item.option === e.target.value) {
@@ -143,7 +158,8 @@ const ProductBuilder = ({ fields }) => {
         if (ele.checked === true) {
           return ele;
         }
-      }).map(x => x.option)
+      })
+      .map((x) => x.option);
 
     setFormData((prev) => {
       return {
@@ -201,7 +217,7 @@ const ProductBuilder = ({ fields }) => {
                 value={option?.option}
                 title={option?.option}
                 isChecked={option?.checked}
-                onChange={(e) => handleCheckBoxClick(e,field)}
+                onChange={(e) => handleCheckBoxClick(e, field)}
               />
             ))}
           </div>
@@ -276,7 +292,9 @@ const ProductBuilder = ({ fields }) => {
           <InputField
             key={field._id}
             type="number"
-            fieldName={field.name}
+            fieldName={field.variable}
+            {...register(field.variable)}
+            // register={register(field.variable)}
             placeholder={field.placeholder}
             onChange={(event) =>
               handleInputChange(event, field?.variable, field?.type)
@@ -291,7 +309,9 @@ const ProductBuilder = ({ fields }) => {
           <InputField
             type="text"
             key={field._id}
-            fieldName={field.name}
+            fieldName={field.variable}
+            // {...register(field.variable)}
+            {...register(field.variable)}
             placeholder={field.placeholder}
             onChange={(event) =>
               handleInputChange(event, field?.variable, field?.type)
@@ -306,7 +326,7 @@ const ProductBuilder = ({ fields }) => {
     }
   };
   if (fields?.length <= 0) return <p>loading</p>;
-  const sch=getSchema(fields);
+
   return (
     <div className={styles["product-builder"]}>
       <form onSubmit={handleSubmit(formHandler)}>
@@ -376,8 +396,8 @@ const ProductBuilder = ({ fields }) => {
         </p>
 
         {/* <h2>{fields.name}</h2> */}
-        {fields?.length > 0 &&
-          fields?.map((field) => {
+        {fields?.fields.length > 0 &&
+          fields?.fields.map((field) => {
             return (
               <div className={styles.container} key={field._id}>
                 <label>{field?.name}:</label>
