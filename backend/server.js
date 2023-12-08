@@ -709,22 +709,6 @@ app.get("/assets/:id", async (req, res) => {
         },
       },
       {
-        $addFields: {
-          fields: {
-            $map: {
-              input: "$fields",
-              as: "field",
-              in: {
-                name: "$$field.name",
-                variable: "$$field.variable",
-                _id: "$$field._id",
-                type: "$$field.type",
-              },
-            },
-          },
-        },
-      },
-      {
         $project: {
           fieldGroupsArr: 0,
           products: 0,
