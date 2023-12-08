@@ -18,6 +18,17 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Failed to connect to MongoDB", err));
 
+const validateId = Joi.string()
+  .custom((value, helpers) => {
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      return helpers.error("any.invalid");
+    }
+    return value;
+  })
+  .messages({
+    "any.invalid": "Invalid Id",
+  });
+
 const options1 = Joi.object({
   option: Joi.string().min(1).required(),
   checked: Joi.boolean().required(),
@@ -273,7 +284,21 @@ app.get("/products", async (req, res) => {
 });
 
 app.get("/products/:id", async (req, res) => {
-  const productId = req.params.id;
+  const { error, value } = validateId.validate(req.params.id);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  const productId = value;
+
+  const product = await Products.findById(productId, {
+    fieldGroups: 0,
+  });
+
+  if (!product) {
+    return res.status(404).json({ error: "Not found" });
+  }
+
   const aggregate = Products.aggregate([
     {
       $match: {
@@ -322,12 +347,7 @@ app.get("/products/:id", async (req, res) => {
 
   const fields = await aggregate.exec();
 
-  const { name, variable, createdAt, updatedAt } = await Products.findById(
-    productId,
-    {
-      fieldGroups: 0,
-    }
-  );
+  const { name, variable, createdAt, updatedAt } = product;
 
   res.status(200).json({
     _id: productId,
