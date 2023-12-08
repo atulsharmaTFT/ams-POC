@@ -653,6 +653,97 @@ app.get("/assets", async (req, res) => {
   }
 });
 
+app.get("/assets/:id", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const aggregate = Assets.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(assetId),
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "products.fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $addFields: {
+          fields: {
+            $reduce: {
+              input: "$fieldGroupsArr",
+              initialValue: [],
+              in: {
+                $concatArrays: ["$$value", "$$this.fields"],
+              },
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "fields",
+        },
+      },
+      {
+        $addFields: {
+          fields: {
+            $map: {
+              input: "$fields",
+              as: "field",
+              in: {
+                name: "$$field.name",
+                variable: "$$field.variable",
+                _id: "$$field._id",
+                type: "$$field.type",
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          fieldGroupsArr: 0,
+          products: 0,
+        },
+      },
+    ]);
+    const assets = await aggregate.exec();
+
+    if (!assets.length) {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    res.status(200).json(assets[0]);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 // Start the server
 app.listen(8001, () => {
   console.log("Server is running on port 8001");
