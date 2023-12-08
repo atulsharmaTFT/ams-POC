@@ -7,6 +7,7 @@ const InputField = ({
   label,
   fieldName,
   placeholder,
+  value,
   onChange,
   disabled,
   type,
@@ -69,6 +70,7 @@ const InputField = ({
           style={{ color: textColor }}
           type={type}
           name={fieldName}
+          defaultValue={value}
           onChange={onChange}
           placeholder={placeholder}
           onKeyPress={onKeyPress}
