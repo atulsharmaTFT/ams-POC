@@ -38,8 +38,8 @@ const Assets = () => {
       console.log(getAllAssetsError, "Error");
     }
     if (isGetAllAssetsSuccess && getAllAssetsResponse) {
-      console.log(getAllAssetsResponse, "Response");
-      console.log(getAllAssetsLoading);
+      // console.log(getAllAssetsResponse, "Response");
+      // console.log(getAllAssetsLoading);
       setData(getAllAssetsResponse.assets);
     }
   }, [
@@ -65,7 +65,7 @@ const Assets = () => {
   };
 
   const handleEditData = (data) => {
-    navigate(`/editProductDetails/${data._id}`);
+    navigate(`/editAsset/${data._id}`);
   };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =

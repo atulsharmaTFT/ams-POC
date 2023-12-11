@@ -10,10 +10,17 @@ import "react-dropzone-uploader/dist/styles.css";
 import { useForm } from "react-hook-form";
 import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
-const ProductBuilder = ({ fields, productId }) => {
-  const [selectedDateTime, setSelectedDateTime] = useState("");
+const ProductBuilder = ({
+  fields,
+  productId,
+  name,
+  purchaseDate,
+  price,
+  tag,
+  buttonName,
+  data,
+}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [dropDownOptions, setDropDownOptions] = useState([]);
   const [formData, setFormData] = useState({});
 
   const {
@@ -24,10 +31,12 @@ const ProductBuilder = ({ fields, productId }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      staticName: "",
-      staticPrice: 0,
-      staticTag: "",
-      staticPurchaseDate: new Date().toISOString().split("T")[0],
+      staticName: name ? name : "",
+      staticPrice: price ? price : 0,
+      staticTag: tag ? tag : "",
+      staticPurchaseDate: purchaseDate
+        ? new Date(purchaseDate).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0],
       // staticImage: null,
     },
   });
@@ -89,10 +98,64 @@ const ProductBuilder = ({ fields, productId }) => {
   //   },
   // };
 
-  const handleRadioChange = (e, idx, field) => {
+  useEffect(() => {
+    if (data && Object.keys(data).length > 0) {
+      fields.forEach((item) => {
+        setDynamicData(item);
+      });
+    }
+  }, []);
+
+  const setDynamicData = (field) => {
+    let variable = field?.variable;
+    switch (field?.type) {
+      case "radio":
+        handleRadioChange(data[variable].option, field);
+        break;
+      case "checkbox":
+        data[variable].forEach((item) => {
+          if (item.checked) {
+            handleCheckBoxClick(item.option, field);
+          }
+        });
+        break;
+      case "multiSelect":
+        handleOptionChange(
+          data[variable],
+          { action: "select-option" },
+          "multiSelect",
+          variable,
+          field
+        );
+        break;
+      case "slider":
+      case "dropdown":
+        handleOptionChange(
+          data[variable],
+          { action: "select-option" },
+          "dropdown",
+          variable,
+          field
+        );
+        break;
+      case "date":
+        handleInputChange(data[variable], variable, field.type, field);
+        break;
+      case "number":
+        handleInputChange(data[variable], variable, field.type, field);
+        break;
+      case "text":
+        handleInputChange(data[variable], variable, field.type, field);
+        break;
+      default:
+        return null;
+    }
+  };
+
+  const handleRadioChange = (e, field) => {
     const data = field.radioOptions
       .map((item) => {
-        if (item.option === e.target.value) {
+        if (item.option === e) {
           item.checked = true;
         } else {
           item.checked = false;
@@ -113,25 +176,31 @@ const ProductBuilder = ({ fields, productId }) => {
     });
   };
 
-  const handleInputChange = (e, name, type) => {
+  const handleInputChange = (e, name, type, field) => {
     if (type === "date") {
+      // setSelectedDate(new Date(e).toISOString().split("T")[0]);
+      field.value = new Date(e).toISOString().split("T")[0];
       setFormData((prev) => {
         return {
           ...prev,
-          [name]: new Date(e.target.value).toISOString().split("T")[0],
+          [name]: new Date(e).toISOString().split("T")[0],
         };
       });
     } else {
+      field.value = e;
       setFormData((prev) => {
         return {
           ...prev,
-          [name]: e.target.value,
+          [name]: e,
         };
       });
     }
   };
-  const handleOptionChange = (options, action, type, name) => {
+  const handleOptionChange = (options, action, type, name, field) => {
+    console.log(options);
     if (type === "dropdown") {
+      // setDropDownOptions(options);
+      field.value = options;
       setFormData((prev) => {
         return {
           ...prev,
@@ -141,13 +210,15 @@ const ProductBuilder = ({ fields, productId }) => {
     }
     if (type === "multiSelect") {
       if (action.action === "select-option") {
-        setSelectedOptions(options);
+        // setSelectedOptions(options);
+        field.value = options;
       }
       if (action.action === "remove-value") {
-        const filterOption = selectedOptions.filter(
-          (elem) => elem?.value !== action?.removedValue?.value
-        );
-        setSelectedOptions(filterOption);
+        // const filterOption = selectedOptions.filter(
+        //   (elem) => elem?.value !== action?.removedValue?.value
+        // );
+        // setSelectedOptions(filterOption);
+        field.value = options;
       }
       // const labels = options.map((item) => {
       //   return item.label;
@@ -164,7 +235,7 @@ const ProductBuilder = ({ fields, productId }) => {
   const handleCheckBoxClick = (e, field) => {
     const data = field.checkboxOptions
       .map((item) => {
-        if (item.option === e.target.value) {
+        if (item.option === e) {
           item.checked = !item.checked;
         }
         return item;
@@ -198,8 +269,9 @@ const ProductBuilder = ({ fields, productId }) => {
     };
 
     console.log(finalData, "FinalData");
-    await addNewAssetService(finalData);
-    console.log("test");
+    if (buttonName === "Submit") {
+      await addNewAssetService(finalData);
+    }
   };
 
   // const handleChangeStatus1 = ({ file }, status) => {
@@ -231,7 +303,7 @@ const ProductBuilder = ({ fields, productId }) => {
                   value={option.option}
                   checked={option?.checked}
                   name={field.variable}
-                  onChange={(e) => handleRadioChange(e, index, field)}
+                  onChange={(e) => handleRadioChange(e.target.value, field)}
                 />
               );
             })}
@@ -246,7 +318,7 @@ const ProductBuilder = ({ fields, productId }) => {
                 value={option?.option}
                 title={option?.option}
                 isChecked={option?.checked}
-                onChange={(e) => handleCheckBoxClick(e, field)}
+                onChange={(e) => handleCheckBoxClick(e.target.value, field)}
               />
             ))}
           </div>
@@ -263,10 +335,31 @@ const ProductBuilder = ({ fields, productId }) => {
                 selectedValue,
                 action,
                 field?.type,
-                field?.variable
+                field?.variable,
+                field
               )
             }
-            selected={selectedOptions}
+            selected={field?.value}
+            className={styles.inputOverride}
+          />
+        );
+      case "dropdown":
+        return (
+          <MultiselectDropdown
+            isMulti={false}
+            key={field?._id}
+            category={field?.placeholder}
+            data={field?.dropdownOptions}
+            handleChange={(selectedValue, action) =>
+              handleOptionChange(
+                selectedValue,
+                action,
+                field?.type,
+                field?.variable,
+                field
+              )
+            }
+            selected={field?.value}
             className={styles.inputOverride}
           />
         );
@@ -286,34 +379,20 @@ const ProductBuilder = ({ fields, productId }) => {
             step={field.sliderOptions.step}
           />
         );
-      case "dropdown":
-        return (
-          <MultiselectDropdown
-            isMulti={false}
-            key={field?._id}
-            category={field?.placeholder}
-            data={field?.dropdownOptions}
-            handleChange={(selectedValue, action) =>
-              handleOptionChange(
-                selectedValue,
-                action,
-                field?.type,
-                field?.variable
-              )
-            }
-            selected={dropDownOptions?.[0]}
-            className={styles.inputOverride}
-          />
-        );
       case "date":
         return (
           <DateTimePicker
             type="date"
             key={field?._id}
-            // selected={selectedDateTime}
+            defaultValue={field.value}
             // setDateTime={setSelectedDateTime}
             onChange={(event) =>
-              handleInputChange(event, field?.variable, field?.type)
+              handleInputChange(
+                event.target.value,
+                field?.variable,
+                field?.type,
+                field
+              )
             }
             inputOverrideClassName={styles.inputContainer}
             overrideClassName={styles.inputOverride}
@@ -325,9 +404,15 @@ const ProductBuilder = ({ fields, productId }) => {
             key={field._id}
             type="number"
             fieldName={field.name}
+            defaultValue={field.value}
             placeholder={field.placeholder}
             onChange={(event) =>
-              handleInputChange(event, field?.variable, field?.type)
+              handleInputChange(
+                event.target.value,
+                field?.variable,
+                field?.type,
+                field
+              )
             }
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
@@ -339,10 +424,16 @@ const ProductBuilder = ({ fields, productId }) => {
           <InputField
             type="text"
             key={field._id}
+            defaultValue={field.value}
             fieldName={field.name}
             placeholder={field.placeholder}
             onChange={(event) =>
-              handleInputChange(event, field?.variable, field?.type)
+              handleInputChange(
+                event.target.value,
+                field?.variable,
+                field?.type,
+                field
+              )
             }
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
@@ -439,7 +530,7 @@ const ProductBuilder = ({ fields, productId }) => {
               );
             })}
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">{buttonName}</button>
       </form>
     </div>
   );
