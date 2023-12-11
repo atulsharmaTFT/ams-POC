@@ -206,7 +206,7 @@ const AddProductDetails = () => {
   return (
     <div>
       {isGetProductByIdSuccess && !loading ? (
-        <ProductBuilder fields={dummyData} productId={params?.id}/>
+        <ProductBuilder fields={getProductByIdResponse} productId={params?.id}/>
       ) : (
         <Loader showOnFullScreen={true} loading={loading} />
       )}

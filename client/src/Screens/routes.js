@@ -13,6 +13,7 @@ import AddProductDetails from "./Product/AddProductDetails";
 import Asset from "./Assets";
 import Organization from "./Organization";
 import ViewAsset from "./Assets/viewAsset";
+import Assets from "./Assets";
 
 export const adminRoutes = (token, role) => [
   {

@@ -195,30 +195,42 @@ const ViewAsset = () => {
     <div>
       {isGetAssetByIdSuccess && !loading ? (
         <div className="container">
-          {/* <div className="staticContainer"> */}
-          <div>Asset Name : {data.name}</div>
-          <div>Asset Tag : {data.tag}</div>
-          <div>Asset price : {data.price}</div>
-          <div>
-            Asset Purchase Date :
-            {new Date(data.purchaseDate).toISOString().split("T")[0]}
+          <div className="card">
+            <div className="image-container">
+              <img
+                src="https://media.wired.com/photos/64daad6b4a854832b16fd3bc/master/pass/How-to-Choose-a-Laptop-August-2023-Gear.jpg"
+                height="500px"
+                width="650px"
+              />
+            </div>
+
+            {/* <div className="staticContainer"> */}
+            <div className="info-container">
+              <div>Asset Name : {data.name}</div>
+              <div>Asset Tag : {data.tag}</div>
+              <div>Asset price : {data.price}</div>
+              <div>
+                Asset Purchase Date :
+                {new Date(data.purchaseDate).toISOString().split("T")[0]}
+              </div>
+              <div>
+                Asset Creation Date :
+                {new Date(data.createdAt).toISOString().split("T")[0]}
+              </div>
+
+              {Object.keys(data.data).map((item) => {
+                return data.fields.map((x) => {
+                  if (x.variable === item) {
+                    return (
+                      <div key={x._id}>
+                        {x.name} : {JSON.stringify(data.data[item])}
+                      </div>
+                    );
+                  }
+                });
+              })}
+            </div>
           </div>
-          <div>
-            Asset Creation Date :
-            {new Date(data.createdAt).toISOString().split("T")[0]}
-          </div>
-          {/* </div> */}
-          {Object.keys(data.data).map((item) => {
-            return data.fields.map((x) => {
-              if (x.variable === item) {
-                return (
-                  <div key={x._id}>
-                    {x.name} : {JSON.stringify(data.data[item])}
-                  </div>
-                );
-              }
-            });
-          })}
         </div>
       ) : (
         <Loader showOnFullScreen={true} loading={loading} />

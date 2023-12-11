@@ -20,7 +20,7 @@ const ProductBuilder = ({ fields, productId }) => {
   const [dropDownOptions, setDropDownOptions] = useState([]);
   const [formData, setFormData] = useState({});
   let schema = getSchema(fields);
-  schema = {...schema, ...staticSchema}
+  schema = { ...schema, ...staticSchema };
   // console.log(schema, "Schema");
   const validatorSchema = schema && Yup.object().shape(schema);
   const {
@@ -41,10 +41,9 @@ const ProductBuilder = ({ fields, productId }) => {
       // staticImage: null,
     },
     resolver: validatorSchema && yupResolver(validatorSchema),
-    mode:"all",
+    mode: "all",
   });
   console.log(errors, getValues(), "errors");
-
 
   const {
     state: {
@@ -200,6 +199,7 @@ const ProductBuilder = ({ fields, productId }) => {
   const formHandler = async (data) => {
     // console.log("data from here", data);
     console.log("formData", formData);
+
     const finalData = {
       name: data?.staticName,
       tag: data?.staticTag,
@@ -207,9 +207,13 @@ const ProductBuilder = ({ fields, productId }) => {
       purchaseDate: data?.staticPurchaseDate,
       productId: productId,
       data: {
-        ...formData,
+        ...data,
       },
     };
+    delete finalData.data.staticName;
+    delete finalData.data.staticTag;
+    delete finalData.data.staticPrice;
+    delete finalData.data.staticPurchaseDate;
 
     console.log(finalData, "FinalData");
     await addNewAssetService(finalData);
@@ -339,7 +343,7 @@ const ProductBuilder = ({ fields, productId }) => {
             key={field._id}
             type="number"
             fieldName={field?.variable}
-            register={()=>register(field?.variable)}
+            register={() => register(field?.variable)}
             placeholder={field?.placeholder}
             control={control}
             // onChange={(event) =>
@@ -357,7 +361,7 @@ const ProductBuilder = ({ fields, productId }) => {
             type="text"
             key={field._id}
             fieldName={field?.variable}
-            register={()=>register(field?.variable)}
+            register={() => register(field?.variable)}
             control={control}
             error={errors?.[field?.variable]?.message}
             placeholder={field.placeholder}
@@ -386,7 +390,7 @@ const ProductBuilder = ({ fields, productId }) => {
               label="Enter Name"
               fieldName="staticName"
               placeholder="Enter Name"
-              register={()=>register("staticName")}
+              register={() => register("staticName")}
               control={control}
               error={errors?.staticName?.message}
               defaultValue={getValues("staticName")}
@@ -405,7 +409,7 @@ const ProductBuilder = ({ fields, productId }) => {
               fieldName="staticTag"
               placeholder="Enter Tag"
               label="Enter Tag"
-              register={()=>register("staticTag")}
+              register={() => register("staticTag")}
               control={control}
               error={errors?.staticTag?.message}
               defaultValue={getValues("staticTag")}
@@ -423,7 +427,7 @@ const ProductBuilder = ({ fields, productId }) => {
               placeholder="Enter Price"
               defaultValue={getValues("staticPrice")}
               label="Enter Price"
-              register={()=>register("staticPrice")}
+              register={() => register("staticPrice")}
               control={control}
               error={errors?.staticPrice?.message}
               onChange={(event) =>
