@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import {AppRoutes} from "../constants/app.routes"
+import { AppRoutes } from "../constants/app.routes";
 import Dashboard from "./Dashboard";
 import AdminLayout from "../layout/AdminLayout/AdminLayout";
 import Field from "./Field";
@@ -12,6 +12,7 @@ import NewProduct from "./Product/NewProduct";
 import AddProductDetails from "./Product/AddProductDetails";
 import Asset from "./Assets";
 import Organization from "./Organization";
+import ViewAsset from "./Assets/viewAsset";
 
 export const adminRoutes = (token, role) => [
   {
@@ -23,31 +24,39 @@ export const adminRoutes = (token, role) => [
       },
       {
         path: AppRoutes.FIELDS,
-        element: <Field/>,
+        element: <Field />,
       },
       {
         path: AppRoutes.NEWFIELD,
-        element: <NewField/>,
+        element: <NewField />,
       },
       {
         path: AppRoutes.FIELDGROUP,
-        element: <FieldGroup/>,
+        element: <FieldGroup />,
       },
       {
         path: AppRoutes.NEWFIELDGROUP,
-        element: <NewFieldGroup/>,
+        element: <NewFieldGroup />,
       },
       {
         path: AppRoutes.PRODUCT,
-        element: <Product/>,
+        element: <Product />,
       },
       {
         path: AppRoutes.NEWPRODUCT,
-        element: <NewProduct/>,
+        element: <NewProduct />,
       },
       {
         path: AppRoutes.ADDPRODUCTDETAILS,
-        element: <AddProductDetails/>,
+        element: <AddProductDetails />,
+      },
+      {
+        path: AppRoutes.ASSETS,
+        element: <Assets />,
+      },
+      {
+        path: AppRoutes.VIEWASSET,
+        element: <ViewAsset />,
       },
       {
         path: AppRoutes.ASSETS,
@@ -69,7 +78,7 @@ export const adminRoutes = (token, role) => [
   //     {
   //       path: AppRoutes.FEEDBACK_DATA,
   //       element: <Dashboard />,
-  //     },   
+  //     },
   //   ],
   // },
 ];
@@ -110,7 +119,7 @@ export const adminRoutes = (token, role) => [
 //         path: AppRoutes.TAMBBOLA,
 //         element: <Tambola />,
 //       },
-      
+
 //       {
 //         path: AppRoutes.PAGE_NOT_FOUND,
 //         element: <Participants />,

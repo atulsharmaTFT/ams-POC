@@ -18,6 +18,17 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Failed to connect to MongoDB", err));
 
+const validateId = Joi.string()
+  .custom((value, helpers) => {
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      return helpers.error("any.invalid");
+    }
+    return value;
+  })
+  .messages({
+    "any.invalid": "Invalid Id",
+  });
+
 const options1 = Joi.object({
   option: Joi.string().min(1).required(),
   checked: Joi.boolean().required(),
@@ -273,7 +284,21 @@ app.get("/products", async (req, res) => {
 });
 
 app.get("/products/:id", async (req, res) => {
-  const productId = req.params.id;
+  const { error, value } = validateId.validate(req.params.id);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  const productId = value;
+
+  const product = await Products.findById(productId, {
+    fieldGroups: 0,
+  });
+
+  if (!product) {
+    return res.status(404).json({ error: "Not found" });
+  }
+
   const aggregate = Products.aggregate([
     {
       $match: {
@@ -322,12 +347,7 @@ app.get("/products/:id", async (req, res) => {
 
   const fields = await aggregate.exec();
 
-  const { name, variable, createdAt, updatedAt } = await Products.findById(
-    productId,
-    {
-      fieldGroups: 0,
-    }
-  );
+  const { name, variable, createdAt, updatedAt } = product;
 
   res.status(200).json({
     _id: productId,
@@ -445,7 +465,9 @@ app.post("/assets", async (req, res) => {
     if (!fields.length) {
       return res.status(400).json({ error: "Invalid productId" });
     } else if (fields.length !== Object.keys(data).length) {
-      return res.status(400).json({ error: "Please send the correct number of attributes" });
+      return res
+        .status(400)
+        .json({ error: "Please send the correct number of attributes" });
     }
 
     const validateData = Joi.object({
@@ -526,6 +548,181 @@ app.post("/assets", async (req, res) => {
         error: `Duplicate Tag`,
       });
     }
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+const paginationSchema = Joi.object({
+  page: Joi.number().integer().min(1),
+  limit: Joi.number().integer().min(1).max(10),
+});
+
+app.get("/assets", async (req, res) => {
+  try {
+    const { error, value } = paginationSchema.validate(req.query);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+    const { page = 1, limit = 10 } = value;
+    const skip = (page - 1) * limit;
+
+    const aggregate = Assets.aggregate([
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "products.fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $addFields: {
+          fields: {
+            $reduce: {
+              input: "$fieldGroupsArr",
+              initialValue: [],
+              in: {
+                $concatArrays: ["$$value", "$$this.fields"],
+              },
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "fields",
+        },
+      },
+      {
+        $addFields: {
+          fields: {
+            $map: {
+              input: "$fields",
+              as: "field",
+              in: {
+                name: "$$field.name",
+                variable: "$$field.variable",
+                _id: "$$field._id",
+                type: "$$field.type",
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          fieldGroupsArr: 0,
+          products: 0,
+        },
+      },
+    ]);
+    const assets = await aggregate.exec();
+    const count = await Assets.countDocuments();
+
+    res.status(200).json({
+      assets,
+      total: count,
+      limit,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/assets/:id", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const aggregate = Assets.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(assetId),
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "products.fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $addFields: {
+          fields: {
+            $reduce: {
+              input: "$fieldGroupsArr",
+              initialValue: [],
+              in: {
+                $concatArrays: ["$$value", "$$this.fields"],
+              },
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "fields",
+        },
+      },
+      {
+        $project: {
+          fieldGroupsArr: 0,
+          products: 0,
+        },
+      },
+    ]);
+    const assets = await aggregate.exec();
+
+    if (!assets.length) {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    res.status(200).json(assets[0]);
+  } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");
   }

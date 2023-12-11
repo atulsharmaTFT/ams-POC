@@ -9,6 +9,7 @@ export const AppRoutes = {
   NEWPRODUCT: "/newProduct",
   ADDPRODUCTDETAILS: "/addProductDetails/:id",
   ASSETS: "/assets",
+  VIEWASSET: "/viewAsset/:id",
   SIGNUP: "/register",
   ADMIN_STATS: "/stats",
   ADMIN_USERS: "/users",

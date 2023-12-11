@@ -71,8 +71,15 @@ const NewProduct = () => {
     setSelectedItems([...selectedItems, item]);
   };
 
+  // const isItemSelected = (item) =>
+  //   selectedItems.some((selectedItem) => selectedItem._id === item._id);
+
   const isItemSelected = (item) =>
-    selectedItems.some((selectedItem) => selectedItem._id === item._id);
+    selectedItems.some((selectedItem) =>
+      selectedItem.fields.some((field) =>
+        item.fields.some((selectedField) => selectedField._id === field._id)
+      )
+    );
 
   const handleRemoveItem = (itemToRemove) => {
     const updatedSelectedItems = selectedItems.filter(

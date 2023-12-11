@@ -30,7 +30,19 @@ export default {
   },
   getProductById: (params) =>{
     return {
-      url: `${ApiUrls.ADMIN_APIS.CREATE_FIELDS}/${getQueryParams(params)}`,
+      url: `${ApiUrls.ADMIN_APIS.PRODUCT_BY_ID}/${params}`,
+      method: HttpMethods.GET,
+    }
+  },
+  getAssetById: (params) =>{
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}`,
+      method: HttpMethods.GET,
+    }
+  },
+  getAllAssets: (params) =>{
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}?${params}`,
       method: HttpMethods.GET,
     }
   },
