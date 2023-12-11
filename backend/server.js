@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.json());
 
 mongoose
-  .connect("mongodb://localhost:27017/AMS", {
+  .connect("mongodb://0.0.0.0:27017/AMS_POC", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -55,6 +55,11 @@ const validateFields = Joi.object({
       "number"
     )
     .required(),
+  validations: Joi.object({
+    isRequired: Joi.boolean(),
+    min: Joi.number(),
+    max: Joi.number()
+  }),
   description: Joi.string().default(""),
   placeholder: Joi.string().default(""),
   checkboxOptions: Joi.array()
