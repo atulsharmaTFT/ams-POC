@@ -728,6 +728,97 @@ app.get("/assets/:id", async (req, res) => {
   }
 });
 
+app.get("/assets/products/:id", async (req, res) => {
+  try {
+    const { error: paginationError, value } = paginationSchema.validate(
+      req.query
+    );
+    const { error, value: productId } = validateId.validate(req.params.id);
+    const badRequestError = error || paginationError;
+    if (badRequestError) {
+      return res
+        .status(400)
+        .json({ error: badRequestError.details[0].message });
+    }
+
+    const { page = 1, limit = 10 } = value;
+    const skip = (page - 1) * limit;
+
+    const aggregate = Assets.aggregate([
+      {
+        $match: {
+          productId: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "products.fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $addFields: {
+          fields: {
+            $reduce: {
+              input: "$fieldGroupsArr",
+              initialValue: [],
+              in: {
+                $concatArrays: ["$$value", "$$this.fields"],
+              },
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "fields",
+        },
+      },
+      {
+        $project: {
+          fieldGroupsArr: 0,
+          products: 0,
+        },
+      },
+    ]);
+    const assets = await aggregate.exec();
+    const count = await Assets.countDocuments({ productId });
+
+    res.status(200).json({
+      assets,
+      total: count,
+      limit,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 // Start the server
 app.listen(8001, () => {
   console.log("Server is running on port 8001");
