@@ -1,9 +1,9 @@
-import React,{useEffect, useState} from "react";
-import ProductBuilder from "../ProductBuilder";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
-import Loader from "../../../components/Loader/index"
+import Loader from "../../../components/Loader/index";
+import ProductBuilder from "../../Product/ProductBuilder";
 // const dummyData = {
 //   _id: "6569d978911450989e129982",
 //   name: "p1",
@@ -156,44 +156,75 @@ import Loader from "../../../components/Loader/index"
 //     },
 //   ],
 // };
-const AddProductDetails = () => {
-  const[loading, setLoading] = useState(true);
+const ViewAsset = () => {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
   const {
     state: {
-      loading: getProductByIdLoading,
-      isSuccess: isGetProductByIdSuccess,
-      data: getProductByIdResponse,
-      isError: isGetProductByIdError,
-      error: getProductByIdError,
+      loading: getAssetByIdLoading,
+      isSuccess: isGetAssetByIdSuccess,
+      data: getAssetByIdResponse,
+      isError: isGetAssetByIdError,
+      error: getAssetByIdError,
     },
-    callService: getProductByIdServices,
-    resetServiceState: resetGetProductByIdState,
-  } = useAdminApiService(adminServices.getProductById);
+    callService: getAssetByIdServices,
+    resetServiceState: resetGetAssetByIdState,
+  } = useAdminApiService(adminServices.getAssetById);
 
   useEffect(() => {
-    if (isGetProductByIdError && getProductByIdError) {
-      console.log(getProductByIdError, "Error");
-      resetGetProductByIdState();
+    if (isGetAssetByIdError && getAssetByIdError) {
+      console.log(getAssetByIdError, "Error");
+      //   resetGetProductByIdState();
     }
-    if (isGetProductByIdSuccess && getProductByIdResponse) {
-      console.log(getProductByIdResponse, "Response");
-      setTimeout(()=>setLoading(false), 1000)
+    if (isGetAssetByIdSuccess && getAssetByIdResponse) {
+      setTimeout(() => setLoading(false), 1000);
+      setData(getAssetByIdResponse);
       // resetGetProductByIdState();
     }
   });
-  useEffect(()=>{
+  useEffect(() => {
     getProductById();
-  },[])
-  const getProductById = async() =>{
-    setLoading(true)
-    await getProductByIdServices(params?.id)
-  }
-const params = useParams();
+  }, []);
+  const getProductById = async () => {
+    setLoading(true);
+    await getAssetByIdServices(params?.id);
+  };
+  const params = useParams();
   return (
+    // <p>view edit asset working!!</p>
     <div>
-      {isGetProductByIdSuccess && !loading ? <ProductBuilder fields={getProductByIdResponse.fields} productId={params?.id}/> :<Loader showOnFullScreen={true} loading={loading}/>}
+      {isGetAssetByIdSuccess && !loading ? (
+        <div className="container">
+          {/* <div className="staticContainer"> */}
+          <div>Asset Name : {data.name}</div>
+          <div>Asset Tag : {data.tag}</div>
+          <div>Asset price : {data.price}</div>
+          <div>
+            Asset Purchase Date :
+            {new Date(data.purchaseDate).toISOString().split("T")[0]}
+          </div>
+          <div>
+            Asset Creation Date :
+            {new Date(data.createdAt).toISOString().split("T")[0]}
+          </div>
+          {/* </div> */}
+          {Object.keys(data.data).map((item) => {
+            return data.fields.map((x) => {
+              if (x.variable === item) {
+                return (
+                  <div key={x._id}>
+                    {x.name} : {JSON.stringify(data.data[item])}
+                  </div>
+                );
+              }
+            });
+          })}
+        </div>
+      ) : (
+        <Loader showOnFullScreen={true} loading={loading} />
+      )}
     </div>
   );
 };
 
-export default AddProductDetails
+export default ViewAsset;

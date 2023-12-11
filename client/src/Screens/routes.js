@@ -11,6 +11,7 @@ import Product from "./Product";
 import NewProduct from "./Product/NewProduct";
 import AddProductDetails from "./Product/AddProductDetails";
 import Assets from "./Assets";
+import ViewAsset from "./Assets/viewAsset";
 
 export const adminRoutes = (token, role) => [
   {
@@ -51,6 +52,10 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.ASSETS,
         element: <Assets />,
+      },
+      {
+        path: AppRoutes.VIEWASSET,
+        element: <ViewAsset />,
       },
     ],
   },
