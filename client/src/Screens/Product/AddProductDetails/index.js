@@ -191,7 +191,7 @@ const AddProductDetails = () => {
 const params = useParams();
   return (
     <div>
-      {isGetProductByIdSuccess && !loading ? <ProductBuilder fields={getProductByIdResponse.fields} productId={params?.id}/> :<Loader showOnFullScreen={true} loading={loading}/>}
+      {isGetProductByIdSuccess && !loading ? <ProductBuilder fields={getProductByIdResponse.fields} productId={params?.id} buttonName="Submit"/> :<Loader showOnFullScreen={true} loading={loading}/>}
     </div>
   );
 };
