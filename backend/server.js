@@ -56,6 +56,7 @@ const validateFields = Joi.object({
     )
     .required(),
   validations: Joi.object({
+    validationType: Joi.string(),
     isRequired: Joi.boolean(),
     min: Joi.number(),
     max: Joi.number()
