@@ -55,6 +55,12 @@ const validateFields = Joi.object({
       "number"
     )
     .required(),
+  validations: Joi.object({
+    validationType: Joi.string(),
+    isRequired: Joi.boolean(),
+    min: Joi.number(),
+    max: Joi.number()
+  }),
   description: Joi.string().default(""),
   placeholder: Joi.string().default(""),
   checkboxOptions: Joi.array()
