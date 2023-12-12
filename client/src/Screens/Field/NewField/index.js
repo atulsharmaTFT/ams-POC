@@ -29,6 +29,15 @@ const NewField = () => {
   });
 
   const handleFormSubmit = async (fields) => {
+    console.log(fields, "fielsd here");
+    const validationObject = {
+      validations: {
+        isRequired: fields.isRequired || false,
+        minLength: fields.minLength || null,
+        maxLength: fields.maxLength || null,
+        validationType: fields.validationType || null,
+      },
+    };
     let payload = {};
     switch (fields?.type) {
       case "Radio":
@@ -38,6 +47,7 @@ const NewField = () => {
           description: fields?.description,
           name: fields?.name,
           radioOptions: fields?.radioOptions,
+          ...validationObject,
         };
         await createFieldsServices(payload);
         break;
@@ -48,6 +58,7 @@ const NewField = () => {
           description: fields?.description,
           name: fields?.name,
           dropdownOptions: fields?.dropdownOptions,
+          ...validationObject,
         };
         await createFieldsServices(payload);
         break;
@@ -58,6 +69,7 @@ const NewField = () => {
           description: fields?.description,
           name: fields?.name,
           checkboxOptions: fields?.checkboxOptions,
+          ...validationObject,
         };
         await createFieldsServices(payload);
         break;
@@ -68,6 +80,7 @@ const NewField = () => {
           description: fields?.description,
           name: fields?.name,
           multiSelectOptions: fields?.multiSelectOptions,
+          ...validationObject,
         };
         await createFieldsServices(payload);
         break;
@@ -78,6 +91,7 @@ const NewField = () => {
           name: fields?.name,
           description: fields?.description,
           placeholder: fields?.placeholder,
+          ...validationObject,
         };
         await createFieldsServices(payload);
         break;
@@ -88,6 +102,7 @@ const NewField = () => {
           name: fields?.name,
           description: fields?.description,
           placeholder: fields?.placeholder,
+          ...validationObject,
         };
         await createFieldsServices(payload);
         break;
@@ -102,6 +117,7 @@ const NewField = () => {
             maxDate: fields?.maxDate,
             format: "YYYY-MM-DD",
           },
+          ...validationObject,
         };
         await createFieldsServices(payload);
         break;
