@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
 import Loader from "../../../components/Loader/index";
+import styles from "../viewAsset/viewAsset.module.scss";
 import ProductBuilder from "../../Product/ProductBuilder";
 // const dummyData = {
 //   _id: "6569d978911450989e129982",
@@ -195,40 +196,102 @@ const ViewAsset = () => {
     <div>
       {isGetAssetByIdSuccess && !loading ? (
         <div className="container">
-          <div className="card">
-            <div className="image-container">
-              <img
-                src="https://media.wired.com/photos/64daad6b4a854832b16fd3bc/master/pass/How-to-Choose-a-Laptop-August-2023-Gear.jpg"
-                height="500px"
-                width="650px"
-              />
+          <div className={styles.card}>
+            <div className={styles.imageContainer}>
+              <img src="https://media.wired.com/photos/64daad6b4a854832b16fd3bc/master/pass/How-to-Choose-a-Laptop-August-2023-Gear.jpg" />
             </div>
 
             {/* <div className="staticContainer"> */}
-            <div className="info-container">
-              <div>Asset Name : {data.name}</div>
-              <div>Asset Tag : {data.tag}</div>
-              <div>Asset price : {data.price}</div>
-              <div>
-                Asset Purchase Date :
-                {new Date(data.purchaseDate).toISOString().split("T")[0]}
+            <div className={styles.infoContainer}>
+              <div className={styles.infoHeader}>
+                <div className={styles.name}>{data.name}</div>
+                <div className={styles.price}>₹ {data.price}</div>
+                <div>Asset Tag : {data.tag}</div>
+                <div>
+                  Asset Purchase Date : &nbsp;
+                  {new Date(data.purchaseDate).toISOString().split("T")[0]}
+                </div>
+                <div>
+                  Asset Creation Date : &nbsp;
+                  {new Date(data.createdAt).toISOString().split("T")[0]}
+                </div>
               </div>
-              <div>
-                Asset Creation Date :
-                {new Date(data.createdAt).toISOString().split("T")[0]}
+              <div className={styles.additionalData}>
+                {Object.keys(data.data).map((item) => {
+                  return data.fields.map((x) => {
+                    if (x.variable === item) {
+                      console.log(x.type, x);
+                      if (x.type === "text" || x.type === "number")
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            <span className={styles.value}>
+                              {data.data[item]}
+                            </span>
+                          </div>
+                        );
+                      if (x.type === "multiSelect") {
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            {data.data[item].map((item) => (
+                              <span className={styles.chip}>{item.label}</span>
+                            ))}
+                          </div>
+                        );
+                      }
+                      if (x.type === "dropdown") {
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            <span className={styles.value}>
+                              {data.data[item].label}
+                            </span>
+                          </div>
+                        );
+                      }
+                      if (x.type === "checkbox") {
+                        console.log(x,"checkbox");
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            {data.data[item].map(item=><span className={styles.chip}>{item.option}</span>)}
+                            {/* <span className={styles.value}>
+                              {JSON.stringify(data.data[item])}
+                            </span> */}
+                          </div>
+                        );
+                        
+                      }
+                      if (x.type === "radio") {
+                        console.log(x,"radio");
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            {/* {data.data[item].map(item=><span className={styles.chip}>{item.option}</span>)} */}
+                            <span className={styles.value}>
+                              {data.data[item].option}
+                            </span>
+                          </div>
+                        );
+                      }
+                      if (x.type === "date") {
+                        console.log(x,"date");
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            {/* {data.data[item].map(item=><span className={styles.chip}>{item.option}</span>)} */}
+                            <span className={styles.value}>
+                            {new Date(data.data[item]).toISOString().split("T")[0]}
+                            
+                            </span>
+                          </div>
+                        );
+                      }
+                    }
+                  });
+                })}
               </div>
-
-              {Object.keys(data.data).map((item) => {
-                return data.fields.map((x) => {
-                  if (x.variable === item) {
-                    return (
-                      <div key={x._id}>
-                        {x.name} : {JSON.stringify(data.data[item])}
-                      </div>
-                    );
-                  }
-                });
-              })}
             </div>
           </div>
         </div>
