@@ -50,7 +50,7 @@ const EditAsset = () => {
       {isGetAssetByIdSuccess && !loading ? (
         <ProductBuilder
           fields={getAssetByIdResponse?.fields}
-          productId={params?.id}
+          productId={getAssetByIdResponse?.productId}
           name={getAssetByIdResponse?.name}
           price={getAssetByIdResponse?.price}
           purchaseDate={getAssetByIdResponse?.purchaseDate}

@@ -10,6 +10,7 @@ import "react-dropzone-uploader/dist/styles.css";
 import { useForm } from "react-hook-form";
 import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
+import { useParams } from "react-router-dom";
 const ProductBuilder = ({
   fields,
   productId,
@@ -53,6 +54,18 @@ const ProductBuilder = ({
     resetServiceState: resetAddNewAssetState,
   } = useAdminApiService(adminServices.addAsset);
 
+  const {
+    state: {
+      loading: updateExistingAssetLoading,
+      isSuccess: isUpdateExistingAssetSuccess,
+      data: updateExistingAssetResponse,
+      isError: isUpdateExistingAssetError,
+      error: updateExistingAssetError,
+    },
+    callService: updateExistingAssetService,
+    resetServiceState: resetUpdateExistingAssetState,
+  } = useAdminApiService(adminServices.updateExistingAsset);
+
   useEffect(() => {
     if (isAddNewAssetError && addNewAssetError) {
       console.log(addNewAssetError, "Error");
@@ -63,12 +76,24 @@ const ProductBuilder = ({
       // setTimeout(()=>setLoading(false), 1000)
       // resetGetProductByIdState();
     }
+    if (isUpdateExistingAssetError && updateExistingAssetError) {
+      console.log(updateExistingAssetError, "Error");
+    }
+    if (isUpdateExistingAssetSuccess && updateExistingAssetResponse) {
+      console.log(updateExistingAssetResponse, "Response");
+    }
   }, [
     isAddNewAssetSuccess,
     addNewAssetResponse,
     isAddNewAssetError,
     addNewAssetError,
+    isUpdateExistingAssetSuccess,
+    updateExistingAssetResponse,
+    isUpdateExistingAssetError,
+    updateExistingAssetError,
   ]);
+
+  const params = useParams()
 
   const acceptedFileTypes = [
     "application/vnd.ms-excel", // .xls
@@ -271,6 +296,8 @@ const ProductBuilder = ({
     console.log(finalData, "FinalData");
     if (buttonName === "Submit") {
       await addNewAssetService(finalData);
+    } else {
+      await updateExistingAssetService(params.id, finalData);
     }
   };
 

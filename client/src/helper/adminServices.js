@@ -52,6 +52,13 @@ export default {
       method: HttpMethods.POST,
       data
     }
+  },
+  updateExistingAsset: (params,data) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}`,
+      method: HttpMethods.PUT,
+      data
+    }
   }
   // tambolaOrganizationReport: ({ token, key, id, page, limit }) => {
   //   return {
