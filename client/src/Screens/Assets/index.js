@@ -33,6 +33,18 @@ const Assets = () => {
     resetServiceState: resetGetAllAssetsState,
   } = useAdminApiService(adminServices.getAllAssets);
 
+  const {
+    state: {
+      loading: deleteExistingAssetsLoading,
+      isSuccess: isDeleteExistingAssetsSuccess,
+      data: deleteExistingAssetsResponse,
+      isError: isDeleteExistingAssetsError,
+      error: deleteExistingAssetsError,
+    },
+    callService: deleteExistingAssetsService,
+    resetServiceState: resetDeleteExistingAssetsState,
+  } = useAdminApiService(adminServices.deleteExistingAsset);
+
   useEffect(() => {
     if (isGetAllAssetsError && getAllAssetsError) {
       console.log(getAllAssetsError, "Error");
@@ -47,6 +59,10 @@ const Assets = () => {
     getAllAssetsResponse,
     isGetAllAssetsError,
     getAllAssetsError,
+    isDeleteExistingAssetsSuccess,
+    deleteExistingAssetsResponse,
+    isDeleteExistingAssetsError,
+    deleteExistingAssetsError,
   ]);
 
   useEffect(() => {
@@ -59,13 +75,20 @@ const Assets = () => {
   };
 
   const handleViewData = (data) => {
-    console.log(data)
-    navigate(`/viewAsset/${data._id}`)
+    console.log(data);
+    navigate(`/viewAsset/${data._id}`);
     // navigate(`/viewProductDetails/${data._id}`);
   };
 
   const handleEditData = (data) => {
     navigate(`/editAsset/${data._id}`);
+  };
+
+  const handleDeleteData = async (data) => {
+    // navigate(`/editAsset/${data._id}`);
+    console.log(data);
+    await deleteExistingAssetsService(data._id);
+    getAllAssets();
   };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -115,12 +138,20 @@ const Assets = () => {
                         >
                           <button
                             onClick={() => handleViewData(row.original)}
-                            style={{ marginRight: "8px" }}
+                            style={{ marginRight: "5px" }}
                           >
                             View
                           </button>
-                          <button onClick={() => handleEditData(row.original)}>
+                          <button
+                            onClick={() => handleEditData(row.original)}
+                            style={{ marginRight: "5px" }}
+                          >
                             Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteData(row.original)}
+                          >
+                            Delete
                           </button>
                         </td>
                       );

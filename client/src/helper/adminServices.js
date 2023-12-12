@@ -59,6 +59,12 @@ export default {
       method: HttpMethods.PUT,
       data
     }
+  },
+  deleteExistingAsset: (params) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}`,
+      method: HttpMethods.DELETE
+    }
   }
   // tambolaOrganizationReport: ({ token, key, id, page, limit }) => {
   //   return {
