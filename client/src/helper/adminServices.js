@@ -52,6 +52,25 @@ export default {
       method: HttpMethods.POST,
       data
     }
+  },
+  updateExistingAsset: (params,data) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}`,
+      method: HttpMethods.PUT,
+      data
+    }
+  },
+  deleteExistingAsset: (params) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}`,
+      method: HttpMethods.DELETE
+    }
+  },
+  moveToInventory: (params) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}${ApiUrls.ADMIN_APIS.MOVE_TO_Inventory}`,
+      method: HttpMethods.PATCH
+    }
   }
   // tambolaOrganizationReport: ({ token, key, id, page, limit }) => {
   //   return {

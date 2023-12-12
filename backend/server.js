@@ -117,7 +117,10 @@ const validateFields = Joi.object({
     }).required(),
   }),
 });
-const corsOptions = { exposedHeaders: "Authorization" };
+const corsOptions = {
+  exposedHeaders: "Authorization",
+  methods: "GET,POST,PATCH,PUT,DELETE",
+};
 app.use(cors(corsOptions));
 
 app.post("/fields", async (req, res) => {
@@ -559,6 +562,175 @@ app.post("/assets", async (req, res) => {
   }
 });
 
+app.put("/assets/:id", async (req, res) => {
+  try {
+    const { error, value } = validateAssets.validate(req.body);
+    const { error: invalidIdError, value: assetId } = validateId.validate(
+      req.params.id
+    );
+    const badRequestError = invalidIdError || error;
+    if (badRequestError) {
+      return res
+        .status(400)
+        .json({ error: badRequestError.details[0].message });
+    }
+
+    const {
+      name,
+      image,
+      tag,
+      price,
+      purchaseDate,
+      assignedTo,
+      productId,
+      data,
+    } = value;
+
+    const aggregate = Products.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $unwind: "$fieldGroups",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fieldGroupsArr",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fields",
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "productFields",
+        },
+      },
+      {
+        $unwind: "$productFields",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$productFields",
+        },
+      },
+    ]);
+
+    const fields = await aggregate.exec();
+
+    if (!fields.length) {
+      return res.status(400).json({ error: "Invalid productId" });
+    } else if (fields.length !== Object.keys(data).length) {
+      return res
+        .status(400)
+        .json({ error: "Please send the correct number of attributes" });
+    }
+
+    const validateData = Joi.object({
+      type: Joi.string().required(),
+      value: Joi.any()
+        .when("type", {
+          is: "radio",
+          then: options1.required(),
+        })
+        .when("type", {
+          is: "checkbox",
+          then: Joi.array().items(options1).required(),
+        })
+        .when("type", {
+          is: "number",
+          then: Joi.number().required(),
+        })
+        .when("type", {
+          is: "toggle",
+          then: Joi.boolean().required(),
+        })
+        .when("type", {
+          is: "multiSelect",
+          then: Joi.array().items(options2).required(),
+        })
+        .when("type", {
+          is: "text",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "dropdown",
+          then: options2.required(),
+        })
+        .when("type", {
+          is: "slider",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "date",
+          then: Joi.date().iso().required(),
+        }),
+    });
+
+    for (const field of fields) {
+      if (!data[field.variable]) {
+        return res
+          .status(400)
+          .json({ error: `Missing field ${field.variable}` });
+      } else {
+        const newData = { type: field.type, value: data[field.variable] };
+
+        const result = validateData.validate(newData);
+
+        if (result.error) {
+          return res.status(400).json({
+            error: `Please provide correct value for attribute ${field.variable}`,
+          });
+        }
+      }
+    }
+
+    const doc = await Assets.updateOne(
+      { _id: assetId },
+      {
+        name,
+        image,
+        tag,
+        price,
+        purchaseDate,
+        assignedTo,
+        productId,
+        data,
+      }
+    );
+
+    if (doc.matchedCount === 0) {
+      return res.status(400).json({ error: `Wrong Asset Id ${assetId}` });
+    }
+
+    res.status(204).json();
+  } catch (error) {
+    if (error.message.startsWith("E11000")) {
+      return res.status(409).json({
+        error: `Duplicate Tag`,
+      });
+    }
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 const paginationSchema = Joi.object({
   page: Joi.number().integer().min(1),
   limit: Joi.number().integer().min(1).max(10),
@@ -728,6 +900,148 @@ app.get("/assets/:id", async (req, res) => {
     }
 
     res.status(200).json(assets[0]);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.delete("/assets/:id", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const asset = await Assets.findOne({ _id: assetId });
+
+    if (asset?.isInInventory) {
+      return res.status(400).json({ error: "Asset is in Inventory" });
+    }
+
+    await Assets.deleteOne({ _id: assetId });
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.patch("/assets/:id/move-to-inventory", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const doc = await Assets.updateOne(
+      { _id: assetId },
+      {
+        isInInventory: true,
+      }
+    );
+
+    if (doc.matchedCount === 0) {
+      return res.status(400).json({ error: `Wrong Asset Id ${assetId}` });
+    }
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/assets/products/:id", async (req, res) => {
+  try {
+    const { error: paginationError, value } = paginationSchema.validate(
+      req.query
+    );
+    const { error, value: productId } = validateId.validate(req.params.id);
+    const badRequestError = error || paginationError;
+    if (badRequestError) {
+      return res
+        .status(400)
+        .json({ error: badRequestError.details[0].message });
+    }
+
+    const { page = 1, limit = 10 } = value;
+    const skip = (page - 1) * limit;
+
+    const aggregate = Assets.aggregate([
+      {
+        $match: {
+          productId: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "products.fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $addFields: {
+          fields: {
+            $reduce: {
+              input: "$fieldGroupsArr",
+              initialValue: [],
+              in: {
+                $concatArrays: ["$$value", "$$this.fields"],
+              },
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "fields",
+        },
+      },
+      {
+        $project: {
+          fieldGroupsArr: 0,
+          products: 0,
+        },
+      },
+    ]);
+    const assets = await aggregate.exec();
+    const count = await Assets.countDocuments({ productId });
+
+    res.status(200).json({
+      assets,
+      total: count,
+      limit,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");

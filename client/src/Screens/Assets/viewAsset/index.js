@@ -182,7 +182,13 @@ const ViewAsset = () => {
       setData(getAssetByIdResponse);
       // resetGetProductByIdState();
     }
-  });
+  }, [
+    getAssetByIdLoading,
+    isGetAssetByIdSuccess,
+    getAssetByIdResponse,
+    isGetAssetByIdError,
+    getAssetByIdError,
+  ]);
   useEffect(() => {
     getProductById();
   }, []);

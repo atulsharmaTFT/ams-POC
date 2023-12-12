@@ -11,6 +11,7 @@ const columns = [
   { Header: "Tag", accessor: "tag" },
   { Header: "Purchase Date", accessor: "purchaseDate" },
   { Header: "Created At", accessor: "createdAt" },
+  { Header: "In Inventory", accessor: "isInInventory" },
   {
     Header: "Action",
     accessor: "action",
@@ -33,13 +34,37 @@ const Assets = () => {
     resetServiceState: resetGetAllAssetsState,
   } = useAdminApiService(adminServices.getAllAssets);
 
+  const {
+    state: {
+      loading: deleteExistingAssetsLoading,
+      isSuccess: isDeleteExistingAssetsSuccess,
+      data: deleteExistingAssetsResponse,
+      isError: isDeleteExistingAssetsError,
+      error: deleteExistingAssetsError,
+    },
+    callService: deleteExistingAssetsService,
+    resetServiceState: resetDeleteExistingAssetsState,
+  } = useAdminApiService(adminServices.deleteExistingAsset);
+ 
+  const {
+    state: {
+      loading: moveExistingAssetToInventoryLoading,
+      isSuccess: isMoveExistingAssetToInventorySuccess,
+      data: moveExistingAssetToInventoryResponse,
+      isError: isMoveExistingAssetToInventoryError,
+      error: moveExistingAssetToInventoryError,
+    },
+    callService: moveExistingAssetToInventoryService,
+    resetServiceState: resetMoveExistingAssetToInventoryState,
+  } = useAdminApiService(adminServices.moveToInventory);
+
   useEffect(() => {
     if (isGetAllAssetsError && getAllAssetsError) {
       console.log(getAllAssetsError, "Error");
     }
     if (isGetAllAssetsSuccess && getAllAssetsResponse) {
-      console.log(getAllAssetsResponse, "Response");
-      console.log(getAllAssetsLoading);
+      // console.log(getAllAssetsResponse, "Response");
+      // console.log(getAllAssetsLoading);
       setData(getAllAssetsResponse.assets);
     }
   }, [
@@ -47,6 +72,10 @@ const Assets = () => {
     getAllAssetsResponse,
     isGetAllAssetsError,
     getAllAssetsError,
+    isDeleteExistingAssetsSuccess,
+    deleteExistingAssetsResponse,
+    isDeleteExistingAssetsError,
+    deleteExistingAssetsError,
   ]);
 
   useEffect(() => {
@@ -59,13 +88,26 @@ const Assets = () => {
   };
 
   const handleViewData = (data) => {
-    console.log(data)
-    navigate(`/viewAsset/${data._id}`)
+    console.log(data);
+    navigate(`/viewAsset/${data._id}`);
     // navigate(`/viewProductDetails/${data._id}`);
   };
 
   const handleEditData = (data) => {
-    navigate(`/editProductDetails/${data._id}`);
+    navigate(`/editAsset/${data._id}`);
+  };
+
+  const handleMoveData = async(data) => {
+    console.log(data);
+    await moveExistingAssetToInventoryService(data._id);
+    getAllAssets();
+  };
+
+  const handleDeleteData = async (data) => {
+    // navigate(`/editAsset/${data._id}`);
+    console.log(data);
+    await deleteExistingAssetsService(data._id);
+    getAllAssets();
   };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -115,12 +157,26 @@ const Assets = () => {
                         >
                           <button
                             onClick={() => handleViewData(row.original)}
-                            style={{ marginRight: "8px" }}
+                            style={{ marginRight: "5px" }}
                           >
                             View
                           </button>
-                          <button onClick={() => handleEditData(row.original)}>
+                          <button
+                            onClick={() => handleEditData(row.original)}
+                            style={{ marginRight: "5px" }}
+                          >
                             Edit
+                          </button>
+                          <button
+                            onClick={() => handleMoveData(row.original)}
+                            style={{ marginRight: "5px" }}
+                          >
+                            Move
+                          </button>
+                          <button
+                            onClick={() => handleDeleteData(row.original)}
+                          >
+                            Delete
                           </button>
                         </td>
                       );
@@ -140,6 +196,19 @@ const Assets = () => {
                           }}
                         >
                           {formattedDate}
+                        </td>
+                      );
+                    } else if (cell.column.Header === "In Inventory") {
+                      // Add a specific check for the "isInInventory" column
+                      return (
+                        <td
+                          {...cell.getCellProps()}
+                          style={{
+                            border: "1px solid black",
+                            padding: "8px",
+                          }}
+                        >
+                          {JSON.stringify(cell.value)}
                         </td>
                       );
                     } else {

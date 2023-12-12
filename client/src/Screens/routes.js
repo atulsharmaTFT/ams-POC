@@ -14,6 +14,7 @@ import Asset from "./Assets";
 import Organization from "./Organization";
 import ViewAsset from "./Assets/viewAsset";
 import Assets from "./Assets";
+import EditAsset from "./Assets/editAsset";
 
 export const adminRoutes = (token, role) => [
   {
@@ -66,6 +67,10 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.ORGANIZATIONS,
         element: <Organization/>,
+      },
+      {
+        path: AppRoutes.EDITASSET,
+        element: <EditAsset />,
       },
     ],
   },
