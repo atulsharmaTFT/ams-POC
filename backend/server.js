@@ -692,7 +692,7 @@ app.put("/assets/:id", async (req, res) => {
       }
     }
 
-    const updatedAsset = await Assets.updateOne(
+    const doc = await Assets.updateOne(
       { _id: assetId },
       {
         name,
@@ -706,7 +706,7 @@ app.put("/assets/:id", async (req, res) => {
       }
     );
 
-    if (updatedAsset.matchedCount === 0) {
+    if (doc.matchedCount === 0) {
       return res.status(400).json({ error: `Wrong Asset Id ${assetId}` });
     }
 
@@ -913,6 +913,33 @@ app.delete("/assets/:id", async (req, res) => {
     }
 
     await Assets.deleteOne({ _id: assetId });
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.patch("/assets/:id/move-to-inventory", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const doc = await Assets.updateOne(
+      { _id: assetId },
+      {
+        isInInventory: true,
+      }
+    );
+
+    if (doc.matchedCount === 0) {
+      return res.status(400).json({ error: `Wrong Asset Id ${assetId}` });
+    }
 
     res.status(204).json();
   } catch (error) {
