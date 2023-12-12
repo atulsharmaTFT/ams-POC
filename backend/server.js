@@ -111,7 +111,10 @@ const validateFields = Joi.object({
     }).required(),
   }),
 });
-const corsOptions = { exposedHeaders: "Authorization" };
+const corsOptions = {
+  exposedHeaders: "Authorization",
+  methods: "GET,POST,PATCH,PUT,DELETE",
+};
 app.use(cors(corsOptions));
 
 app.post("/fields", async (req, res) => {
