@@ -1,5 +1,16 @@
 const mongoose = require("mongoose");
 
+
+
+const validationSchema = new mongoose.Schema({
+  validationType: { type: String },
+  isRequired: { type: Boolean },
+  min: { type: Number },
+  max: { type: Number }
+},
+  { _id: false }
+)
+
 const options1 = new mongoose.Schema(
   {
     option: {
@@ -13,6 +24,7 @@ const options1 = new mongoose.Schema(
   },
   { _id: false }
 );
+
 
 const options2 = new mongoose.Schema(
   {
@@ -52,6 +64,10 @@ const fieldSchema = new mongoose.Schema(
         "number",
       ],
       required: true,
+    },
+    validations: {
+      type: validationSchema,
+      default: { validationType: null, isRequired: false, min: 0, max: 0 }
     },
     description: {
       type: String,
