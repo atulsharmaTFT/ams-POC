@@ -951,6 +951,35 @@ app.patch("/assets/:id/move-to-inventory", async (req, res) => {
   }
 });
 
+app.patch("/assets/:id/move-to-archive", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const asset = await Assets.findOne({ _id: assetId });
+
+    if (!asset?.isInInventory) {
+      return res.status(400).json({ error: "Asset is not in Inventory" });
+    }
+
+    await Assets.updateOne(
+      { _id: assetId },
+      {
+        isArchived: true,
+      }
+    );
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.get("/assets/products/:id", async (req, res) => {
   try {
     const { error: paginationError, value } = paginationSchema.validate(
