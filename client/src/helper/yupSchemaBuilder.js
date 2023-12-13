@@ -1,44 +1,53 @@
 import * as Yup from "yup";
 
 function transformJson(jsonObj) {
+  try{
   const { variable, type, validations } = jsonObj;
-
   const transformedObj = {
     [variable]: validationSchema(type, validations),
   };
   return transformedObj;
 }
+catch(error){
+  console.log(error, "Error Transforming JSON")
+}
+}
 
-export function validationSchema(type, validations) {
+export function validationSchema(type,validations) {
   switch (validations?.validationType) {
     case "string":
-      if (validations.isRequired) {
-        // if(minLength&&maxLength)
-        return Yup.string()
-          .required("is required")
-          .min(validations.minLength)
-          .max(validations.maxLength);
+      if (validations?.isRequired) {
+        if(type === "string" || type === "number"){
+          return Yup.string()
+            .required()
+            .min(validations?.minLength)
+            .max(validations?.maxLength);
+        }
+        else return Yup.string().required()
       } else
         return Yup.string()
-          .min(validations.minLength)
-          .max(validations.maxLength);
+          .min(validations?.minLength)
+          .max(validations?.maxLength );
 
     case "number":
       if (validations.isRequired) {
-        return Yup.number()
-          .required("is required")
-          .min(validations.minLength)
-          .max(validations.maxLength);
+        if(type === "string" || type === "number"){
+          return Yup.string()
+            .required()
+            .min(validations?.minLength)
+            .max(validations?.maxLength);
+        }
+        else return Yup.string().required()
       } else
         return Yup.number()
           .min(validations.minLength)
           .max(validations.maxLength);
     case "dropdown" || "radio":
-      if (validations.isRequired)
+      if (validations?.isRequired)
         return Yup.string().required("Please select an option");
       else return Yup.string();
     case "multiselect":
-      if (validations.isRequired) {
+      if (validations?.isRequired) {
         return Yup.array()
           .required("Please select at least one option")
           .min(1, "Please select at least one option");
@@ -52,10 +61,15 @@ export function validationSchema(type, validations) {
 }
 
 export function getSchema(data) {
+  try{
   const newSchema = Object.assign(
-    ...data?.fields.map((field) => transformJson(field))
+    ...data?.map((field) => transformJson(field))
   );
   return newSchema;
+  }
+  catch(error){
+    console.log(error, "error generating Schema")
+  }
 }
 
 export const staticSchema = {

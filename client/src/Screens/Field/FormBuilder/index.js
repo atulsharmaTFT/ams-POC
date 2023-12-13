@@ -45,24 +45,16 @@ export const fieldDetails = [
   {
     elementType: "multiSelect",
     elementAttributes: ["options"],
-    // validations: {
-    //   minLength: 2,
-    //   maxLength: 10,
-    //   validationType: "string",
-    //   isRequired: true,
-    // }
   },
 ];
 const optionsObject = {
   name: "",
   variable: "",
   type: "",
-
   minLength: 0,
   maxLength: 0,
   validationType: null,
   isRequired: false,
-
   description: "",
   radioOptions: [],
   checkboxOptions: [],
@@ -83,7 +75,6 @@ const optionsObject = {
 
 const FormBuilder = ({ onFormSubmit }) => {
   const [selectedField, setSelectedField] = useState("");
-  const [fieldAttributes, setFieldAttributes] = useState({});
   const [newOption, setNewOption] = useState(optionsObject);
   const [option, setOption] = useState("");
 
@@ -111,7 +102,6 @@ const FormBuilder = ({ onFormSubmit }) => {
   const keyType = getOptionType();
   const handleFieldSelect = (elementType) => {
     setSelectedField(elementType);
-    setFieldAttributes({});
     setNewOption({ ...newOption, type: elementType });
   };
   const handleValidationSelect = (elementType) => {
@@ -192,9 +182,8 @@ const FormBuilder = ({ onFormSubmit }) => {
       const payload = newOption;
       onFormSubmit(payload);
       setNewOption(optionsObject);
-      setFieldAttributes({});
     }
-  };
+  };  
   const customTextStyle = {
     display: "flex",
     justifyContent: "space-between",
@@ -247,7 +236,7 @@ const FormBuilder = ({ onFormSubmit }) => {
           </select>
         </div>
         <CheckBox
-          title={"Required"}
+          title={"Validation Required"}
           isChecked={newOption?.isRequired}
           onChange={() =>
             setNewOption({
@@ -274,14 +263,6 @@ const FormBuilder = ({ onFormSubmit }) => {
           </select>
         </div>)
         }
-        {/* <CheckBox
-          title={"Enabled"}
-          isChecked={newOption?.enabled}
-          onChange={() =>
-            setNewOption({ ...newOption, enabled: !newOption?.enabled })
-          }
-        /> */}
-        {/* <SlideSwitch label={"Required"} checked={newOption?.required} onChange={()=> setNewOption({...newOption, required: !newOption?.required})}/> */}
       </div>
 
       {selectedField && (

@@ -197,11 +197,13 @@ const ViewAsset = () => {
     await getAssetByIdServices(params?.id);
   };
   const params = useParams();
+  console.log(data.data,"data.data")
   return (
     // <p>view edit asset working!!</p>
-    <div>
+    <div className={styles.container}>
       {isGetAssetByIdSuccess && !loading ? (
-        <div className="container">
+        // <div className={styles.container}>
+        <>
           <div className={styles.card}>
             <div className={styles.imageContainer}>
               <img src="https://media.wired.com/photos/64daad6b4a854832b16fd3bc/master/pass/How-to-Choose-a-Laptop-August-2023-Gear.jpg" />
@@ -210,7 +212,10 @@ const ViewAsset = () => {
             {/* <div className="staticContainer"> */}
             <div className={styles.infoContainer}>
               <div className={styles.infoHeader}>
-                <div className={styles.name}>{data.name}</div>
+                <div className={styles.name}>
+                  <p>{data.name}</p>
+                  <button>Move to Inventroy</button>
+                  </div>
                 <div className={styles.price}>₹ {data.price}</div>
                 <div>Asset Tag : {data.tag}</div>
                 <div>
@@ -223,11 +228,11 @@ const ViewAsset = () => {
                 </div>
               </div>
               <div className={styles.additionalData}>
-                {Object.keys(data.data).map((item) => {
-                  return data.fields.map((x) => {
-                    if (x.variable === item) {
+                {Object.keys(data?.data).map((item) => {
+                  return data?.fields.map((x) => {
+                    if (x?.variable === item) {
                       console.log(x.type, x);
-                      if (x.type === "text" || x.type === "number")
+                      if (x?.type === "text" || x?.type === "number")
                         return (
                           <div key={x._id} className={styles.additionalItem}>
                             <span className={styles.key}>{x.name}:</span>{" "}
@@ -299,8 +304,9 @@ const ViewAsset = () => {
                 })}
               </div>
             </div>
-          </div>
-        </div>
+          </div>  
+          </>
+        // </div>
       ) : (
         <Loader showOnFullScreen={true} loading={loading} />
       )}

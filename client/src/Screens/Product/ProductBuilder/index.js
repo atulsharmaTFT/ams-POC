@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./ProductBuilder.module.scss";
 import RadioButton from "../../../components/RadioButton";
 import InputField from "../../../components/InputField";
@@ -28,7 +28,6 @@ const ProductBuilder = ({
   const [formData, setFormData] = useState({});
   let schema = getSchema(fields);
   schema = { ...schema, ...staticSchema };
-  // console.log(schema, "Schema");
   const validatorSchema = schema && Yup.object().shape(schema);
   const {
     handleSubmit,
@@ -52,7 +51,7 @@ const ProductBuilder = ({
     resolver: validatorSchema && yupResolver(validatorSchema),
     mode: "all",
   });
-  console.log(errors, getValues(), "errors");
+  console.log(errors, "errors");
 
   const {
     state: {
@@ -151,7 +150,7 @@ const ProductBuilder = ({
         break;
       case "checkbox":
         data[variable].forEach((item) => {
-          if (item.checked) {
+          if (item?.checked) {
             handleCheckBoxClick(item.option, field);
           }
         });
@@ -339,7 +338,7 @@ const ProductBuilder = ({
       case "radio":
         return (
           <div className={styles.flex}>
-            {field.radioOptions.map((option, index) => {
+            {field?.radioOptions.map((option, index) => {
               return (
                 <RadioButton
                   key={option.option}
@@ -383,6 +382,9 @@ const ProductBuilder = ({
                 field
               )
             }
+            fieldName={fields?.variable}
+            control={control}
+            error={errors?.[field?.variable]?.message}
             selected={field?.value}
             className={styles.inputOverride}
           />
@@ -392,6 +394,8 @@ const ProductBuilder = ({
           <MultiselectDropdown
             isMulti={false}
             key={field?._id}
+            control={control}
+            fieldName={fields?.variable}
             category={field?.placeholder}
             data={field?.dropdownOptions}
             handleChange={(selectedValue, action) =>
@@ -403,6 +407,7 @@ const ProductBuilder = ({
                 field
               )
             }
+            error={errors?.[field?.variable]?.message}
             selected={field?.value}
             className={styles.inputOverride}
           />
@@ -412,15 +417,15 @@ const ProductBuilder = ({
           <InputField
             key={field._id}
             type="range"
-            fieldName={field.name}
+            fieldName={field?.name}
             placeholder={field.placeholder}
             onChange={handleInputChange}
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
             containerOverrideClassName={styles.inputContainer}
-            min={field.sliderOptions.min}
-            max={field.sliderOptions.max}
-            step={field.sliderOptions.step}
+            min={field?.sliderOptions.min}
+            max={field?.sliderOptions.max}
+            step={field?.sliderOptions.step}
           />
         );
       case "date":
@@ -455,15 +460,15 @@ const ProductBuilder = ({
             //   handleInputChange(event, field?.variable, field?.type)
             // }
             error={errors?.[field?.variable]?.message}
-            defaultValue={field.value}
-            onChange={(event) =>
-              handleInputChange(
-                event.target.value,
-                field?.variable,
-                field?.type,
-                field
-              )
-            }
+            defaultValue={field?.value}
+            // onChange={(event) =>
+            //   handleInputChange(
+            //     event.target.value,
+            //     field?.variable,
+            //     field?.type,
+            //     field
+            //   )
+            // }
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
             containerOverrideClassName={styles.inputContainer}
@@ -478,7 +483,7 @@ const ProductBuilder = ({
             register={() => register(field?.variable)}
             control={control}
             error={errors?.[field?.variable]?.message}
-            placeholder={field.placeholder}
+            placeholder={field?.placeholder}
             // onChange={(event) =>
             //   handleInputChange(event, field?.variable, field?.type)
             // }
@@ -501,7 +506,7 @@ const ProductBuilder = ({
     }
   };
   if (fields?.length <= 0) return <p>loading</p>;
-
+  console.log(fields,"fields")
   return (
     <div className={styles["product-builder"]}>
       <form onSubmit={handleSubmit(formHandler)}>
@@ -586,8 +591,8 @@ const ProductBuilder = ({
         </div>
         <div className={styles.fieldsContainer}>
           {/* <span>Dynamic Fields</span> */}
-          {fields?.fields.length > 0 &&
-            fields?.fields?.map((field) => {
+          {fields?.length > 0 &&
+            fields?.map((field) => {
               return (
                 <div className={styles.container} key={field._id}>
                   <label>{field?.name}:</label>
