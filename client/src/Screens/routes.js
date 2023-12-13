@@ -13,6 +13,7 @@ import AddProductDetails from "./Product/AddProductDetails";
 import Assets from "./Assets";
 import ViewAsset from "./Assets/viewAsset";
 import EditAsset from "./Assets/editAsset";
+import Archive from "./Archive";
 
 export const adminRoutes = (token, role) => [
   {
@@ -53,6 +54,10 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.ASSETS,
         element: <Assets />,
+      },
+      {
+        path: AppRoutes.ARCHIVEASSETS,
+        element: <Archive/>,
       },
       {
         path: AppRoutes.VIEWASSET,

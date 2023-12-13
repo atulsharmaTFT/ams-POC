@@ -9,7 +9,8 @@ export const ApiUrls = {
     CREATE_FIELDS: "/fields",
     PRODUCT_BY_ID: "/products",
     ADD_ASSET : "/assets",
-    MOVE_TO_Inventory: '/move-to-inventory'
+    MOVE_TO_Inventory: '/move-to-inventory',
+    ARCHIVE_ASSET: '/move-to-archive',
   },
 };
 
