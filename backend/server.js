@@ -736,16 +736,25 @@ const paginationSchema = Joi.object({
   limit: Joi.number().integer().min(1).max(10),
 });
 
+const validateGetAllAssets = paginationSchema.keys({
+  archived: Joi.boolean().required(),
+});
+
 app.get("/assets", async (req, res) => {
   try {
-    const { error, value } = paginationSchema.validate(req.query);
+    const { error, value } = validateGetAllAssets.validate(req.query);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
-    const { page = 1, limit = 10 } = value;
+    const { page = 1, limit = 10, archived } = value;
     const skip = (page - 1) * limit;
 
     const aggregate = Assets.aggregate([
+      {
+        $match: {
+          isArchived: archived,
+        },
+      },
       {
         $skip: skip,
       },
@@ -816,7 +825,7 @@ app.get("/assets", async (req, res) => {
       },
     ]);
     const assets = await aggregate.exec();
-    const count = await Assets.countDocuments();
+    const count = await Assets.countDocuments({ isArchived: archived });
 
     res.status(200).json({
       assets,
@@ -949,6 +958,35 @@ app.patch("/assets/:id/move-to-inventory", async (req, res) => {
     if (doc.matchedCount === 0) {
       return res.status(400).json({ error: `Wrong Asset Id ${assetId}` });
     }
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.patch("/assets/:id/move-to-archive", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const asset = await Assets.findOne({ _id: assetId });
+
+    if (!asset?.isInInventory) {
+      return res.status(400).json({ error: "Asset is not in Inventory" });
+    }
+
+    await Assets.updateOne(
+      { _id: assetId },
+      {
+        isArchived: true,
+      }
+    );
 
     res.status(204).json();
   } catch (error) {
