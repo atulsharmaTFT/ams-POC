@@ -286,88 +286,105 @@ app.get("/products", async (req, res) => {
   }
 });
 
+const validateGetAProduct = Joi.object({
+  id: validateId.required(),
+  withFieldGroups: Joi.boolean().required(),
+});
+
 app.get("/products/:id", async (req, res) => {
-  const { error, value } = validateId.validate(req.params.id);
-  if (error) {
-    return res.status(400).json({ error: error.details[0].message });
+  try {
+    const { error, value } = validateGetAProduct.validate({
+      id: req.params.id,
+      withFieldGroups: req.query.withFieldGroups,
+    });
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const { id: productId, withFieldGroups } = value;
+
+    const product = await Products.findById(productId, {
+      fieldGroups: 0,
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    const commonAggregate = [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fieldGroupsArr",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$fieldGroupsArr",
+        },
+      },
+    ];
+
+    const aggregate = Products.aggregate([
+      ...commonAggregate,
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "productFields",
+        },
+      },
+      {
+        $unwind: "$productFields",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$productFields",
+        },
+      },
+    ]);
+    const fields = await aggregate.exec();
+
+    const { name, variable, createdAt, updatedAt } = product;
+
+    const response = {
+      _id: productId,
+      name,
+      variable,
+      createdAt,
+      updatedAt,
+      fields,
+    };
+
+    if (withFieldGroups) {
+      const aggregate1 = Products.aggregate([
+        ...commonAggregate,
+        {
+          $project: {
+            fields: 0,
+          },
+        },
+      ]);
+      const fieldGroups = await aggregate1.exec();
+      response.fieldGroups = fieldGroups;
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
   }
-
-  const productId = value;
-
-  const product = await Products.findById(productId, {
-    fieldGroups: 0,
-  });
-
-  if (!product) {
-    return res.status(404).json({ error: "Not found" });
-  }
-
-  const commonAggregate = [
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(productId),
-      },
-    },
-    {
-      $lookup: {
-        from: "fieldGroups",
-        localField: "fieldGroups",
-        foreignField: "_id",
-        as: "fieldGroupsArr",
-      },
-    },
-    {
-      $unwind: "$fieldGroupsArr",
-    },
-    {
-      $replaceRoot: {
-        newRoot: "$fieldGroupsArr",
-      },
-    },
-  ];
-
-  const aggregate = Products.aggregate([
-    ...commonAggregate,
-    {
-      $lookup: {
-        from: "fields",
-        localField: "fields",
-        foreignField: "_id",
-        as: "productFields",
-      },
-    },
-    {
-      $unwind: "$productFields",
-    },
-    {
-      $replaceRoot: {
-        newRoot: "$productFields",
-      },
-    },
-  ]);
-  const fields = await aggregate.exec();
-
-  const aggregate1 = Products.aggregate([
-    ...commonAggregate,
-    {
-      $project: {
-        fields: 0,
-      },
-    },
-  ]);
-  const fieldGroups = await aggregate1.exec();
-
-  const { name, variable, createdAt, updatedAt } = product;
-
-  res.status(200).json({
-    _id: productId,
-    name,
-    variable,
-    createdAt,
-    updatedAt,
-    fields,
-    fieldGroups,
-  });
 });
 
 const validateAssets = Joi.object({
