@@ -302,14 +302,11 @@ app.get("/products/:id", async (req, res) => {
     return res.status(404).json({ error: "Not found" });
   }
 
-  const aggregate = Products.aggregate([
+  const commonAggregate = [
     {
       $match: {
         _id: new mongoose.Types.ObjectId(productId),
       },
-    },
-    {
-      $unwind: "$fieldGroups",
     },
     {
       $lookup: {
@@ -327,9 +324,10 @@ app.get("/products/:id", async (req, res) => {
         newRoot: "$fieldGroupsArr",
       },
     },
-    {
-      $unwind: "$fields",
-    },
+  ];
+
+  const aggregate = Products.aggregate([
+    ...commonAggregate,
     {
       $lookup: {
         from: "fields",
@@ -347,8 +345,17 @@ app.get("/products/:id", async (req, res) => {
       },
     },
   ]);
-
   const fields = await aggregate.exec();
+
+  const aggregate1 = Products.aggregate([
+    ...commonAggregate,
+    {
+      $project: {
+        fields: 0,
+      },
+    },
+  ]);
+  const fieldGroups = await aggregate1.exec();
 
   const { name, variable, createdAt, updatedAt } = product;
 
@@ -359,6 +366,7 @@ app.get("/products/:id", async (req, res) => {
     createdAt,
     updatedAt,
     fields,
+    fieldGroups,
   });
 });
 
