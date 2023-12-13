@@ -276,6 +276,48 @@ app.post("/products", async (req, res) => {
   }
 });
 
+app.put("/products/:id", async (req, res) => {
+  try {
+    const { error, value } = validateProducts.validate(req.body);
+    const { error: invalidIdError, value: productId } = validateId.validate(
+      req.params.id
+    );
+    const badRequestError = invalidIdError || error;
+    if (badRequestError) {
+      return res
+        .status(400)
+        .json({ error: badRequestError.details[0].message });
+    }
+
+    const { name, fieldGroups, variable } = value;
+
+    const isValidFieldGroups =
+      (await FieldGroups.countDocuments({ _id: { $in: fieldGroups } })) ===
+      fieldGroups.length;
+    if (!isValidFieldGroups) {
+      return res.status(400).json({ error: "Invalid field groups provided" });
+    }
+
+    const doc = await Products.updateOne(
+      { _id: productId },
+      {
+        name,
+        fieldGroups,
+        variable,
+      }
+    );
+
+    if (doc.matchedCount === 0) {
+      return res.status(400).json({ error: `Wrong Product Id ${productId}` });
+    }
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.get("/products", async (req, res) => {
   try {
     const products = await Products.find();
