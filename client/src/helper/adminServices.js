@@ -71,6 +71,12 @@ export default {
       url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}${ApiUrls.ADMIN_APIS.MOVE_TO_Inventory}`,
       method: HttpMethods.PATCH
     }
+  },
+  archiveAsset: (params) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}${ApiUrls.ADMIN_APIS.ARCHIVE_ASSET}`,
+      method: HttpMethods.PATCH
+    }
   }
   // tambolaOrganizationReport: ({ token, key, id, page, limit }) => {
   //   return {

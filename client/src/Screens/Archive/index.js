@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import useAdminApiService from "../../helper/useAdminApiService";
 import adminServices from "../../helper/adminServices";
-import classes from "./Assets.module.scss";
 
 const columns = [
   { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
@@ -19,7 +18,7 @@ const columns = [
   },
 ];
 
-const Assets = () => {
+const Archive = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
 
@@ -59,18 +58,6 @@ const Assets = () => {
     resetServiceState: resetMoveExistingAssetToInventoryState,
   } = useAdminApiService(adminServices.moveToInventory);
 
-  const {
-    state: {
-      loading: archiveAssetLoading,
-      isSuccess: isArchiveAssetSuccess,
-      data: archiveAssetResponse,
-      isError: isArchiveAssetError,
-      error: archiveAssetyError,
-    },
-    callService: archiveAssetService,
-    resetServiceState: resetArchiveAssetState,
-  } = useAdminApiService(adminServices.archiveAsset);
-
   useEffect(() => {
     if (isGetAllAssetsError && getAllAssetsError) {
       console.log(getAllAssetsError, "Error");
@@ -96,7 +83,7 @@ const Assets = () => {
   }, []);
 
   const getAllAssets = async () => {
-    const queryParams = `archived=false&page=1&limit=10`;
+    const queryParams = `archived=true&page=1&limit=10`;
     await getAllAssetsService(queryParams);
   };
 
@@ -104,30 +91,6 @@ const Assets = () => {
     console.log(data);
     navigate(`/viewAsset/${data._id}`);
     // navigate(`/viewProductDetails/${data._id}`);
-  };
-
-  const handleEditData = (data) => {
-    navigate(`/editAsset/${data._id}`);
-  };
-
-  const handleMoveData = async (data) => {
-    console.log(data);
-    await moveExistingAssetToInventoryService(data._id);
-    getAllAssets();
-  };
-
-  const handleDeleteData = async (data) => {
-    // navigate(`/editAsset/${data._id}`);
-    console.log(data);
-    await deleteExistingAssetsService(data._id);
-    getAllAssets();
-  };
-
-  const handleArchiveData = async (data) => {
-    // navigate(`/editAsset/${data._id}`);
-    console.log(data);
-    await archiveAssetService(data._id)
-    getAllAssets()
   };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -181,38 +144,6 @@ const Assets = () => {
                           >
                             View
                           </button>
-                          <button
-                            onClick={() => handleEditData(row.original)}
-                            style={{ marginRight: "5px" }}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className={
-                              row.original.isInInventory ? classes.disable : ""
-                            }
-                            onClick={
-                              !row.original.isInInventory
-                                ? () => handleMoveData(row.original)
-                                : () => {}
-                            }
-                            style={{ marginRight: "5px" }}
-                          >
-                            Move
-                          </button>
-                          {row.original.isInInventory ? (
-                            <button
-                              onClick={() => handleArchiveData(row.original)}
-                            >
-                              Archive
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleDeleteData(row.original)}
-                            >
-                              Delete
-                            </button>
-                          )}
                         </td>
                       );
                     } else if (
@@ -270,4 +201,4 @@ const Assets = () => {
   );
 };
 
-export default Assets;
+export default Archive;
