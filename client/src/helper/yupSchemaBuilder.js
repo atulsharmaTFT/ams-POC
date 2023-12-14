@@ -88,7 +88,7 @@ export const staticSchema = {
     .max(15)
     .label("Tag number"),
   purchaseDate: Yup.date()
-    .required("Date is required")
+    // .required("Date is required")
     .min(new Date(1900, 0, 1))
     .label("Purchase Date"),
   image: Yup.string().notRequired().label("Image"),

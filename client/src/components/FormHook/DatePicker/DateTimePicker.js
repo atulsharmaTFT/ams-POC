@@ -17,19 +17,21 @@ function DateTimePicker({overrideClassName, inputClassOverride, fieldName,onChan
           {label}
         </div>
       )}
-      <Controller
+      {/* <Controller
      name={fieldName}
      control={control}
      defaultValue={control?.defaultValues?.fieldName}
-     render={({ field, fieldState: { error } }) => (
+     render={({ field, fieldState: { error } }) => ( */}
       <>
       <input
         type="date"
         id="datetime"
         name="datetime"
         min={min}
-        value={moment(field?.value).format("YYYY-MM-DD")}
-        defaultValue={moment(field?.value).format("YYYY-MM-DD")}
+        // value={moment(field?.value).format("YYYY-MM-DD")}
+        // defaultValue={moment(field?.value).format("YYYY-MM-DD")}
+        value={moment(selected).format("YYYY-MM-DD")}
+        defaultValue={moment(defaultValue).format("YYYY-MM-DD")}
         className={inputClassOverride}
         onChange={onChange}
       />
@@ -38,8 +40,8 @@ function DateTimePicker({overrideClassName, inputClassOverride, fieldName,onChan
         overrideErrorClassName={overrideErrorClassName}
       />
       </>
-      )}
-     />
+      {/* )}
+     /> */}
     </div>
   );
 }

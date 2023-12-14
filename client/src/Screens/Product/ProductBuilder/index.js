@@ -57,9 +57,11 @@ const ProductBuilder = ({
   let defaultValues ={}
   function setDefaultValues(schema){
     try{
+      let values ={data,name,purchaseDate,price,tag}
+      console.log(values,"values");
     Object.keys(schema).forEach((key)=>{
       try{
-        defaultValues[key] = NewJson?.[key]?? NewJson?.data?.[key]
+        defaultValues[key] = values?.[key]?? values?.data?.[key]
       }catch(e){
         console.log(e, "error creating Key Values")
       }
@@ -71,6 +73,7 @@ const ProductBuilder = ({
     }
   }
   const DEFAULT_DATA_VALUE = !!schema && setDefaultValues(schema);
+  console.log(setDefaultValues(schema),"DEFAULT_DATA_VALUE")
   const methods = useForm({
     shouldUnregister: false,
     defaultValues: !!validatorSchema && !!schema && DEFAULT_DATA_VALUE,
@@ -102,7 +105,7 @@ const ProductBuilder = ({
     callService: updateExistingAssetService,
     resetServiceState: resetUpdateExistingAssetState,
   } = useAdminApiService(adminServices.updateExistingAsset);
-
+console.log(errors,fields,getValues(),"errors")
   useEffect(() => {
     if (isAddNewAssetError && addNewAssetError) {
       console.log(addNewAssetError, "Error");
@@ -137,28 +140,6 @@ const ProductBuilder = ({
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
     "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml", // .xlsx worksheet
   ];
-
-  // let dropzoneCss = {
-  //   dropzone: {
-  //     overflow: "hidden",
-  //     minHeight: "60px",
-  //     marginTop: "20px",
-  //     borderRadius: "8px",
-  //     border: "1px solid #cdcdcd",
-  //     backgroundColor: "#fff",
-  //   },
-  //   inputLabelWithFiles: {
-  //     display: "none",
-  //   },
-  //   inputLabel: {
-  //     fontSize: "18px",
-  //     fontWeight: "500",
-  //     color: "#777",
-  //   },
-  //   preview: {
-  //     padding: "15px",
-  //   },
-  // };
 
   useEffect(() => {
     if (data && Object.keys(data).length > 0) {
@@ -316,19 +297,20 @@ const ProductBuilder = ({
     });
   };
   const formHandler = async (data) => {
+    console.log(data,"data")
     const finalData = {
-      name: data?.staticName,
-      tag: data?.staticTag,
-      price: data?.staticPrice,
-      purchaseDate: data?.staticPurchaseDate,
+      name: data?.name,
+      tag: data?.tag,
+      price: data?.price,
+      purchaseDate: data?.purchaseDate,
       productId: productId,
       data: data,
     };
-    delete finalData.data.staticName;
-    delete finalData.data.staticTag;
-    delete finalData.data.staticPrice;
+    delete finalData.data.name;
+    delete finalData.data.tag;
+    delete finalData.data.price;
     delete finalData.data.staticPurchaseDate;
-    console.log(finalData,"finalData")
+    delete finalData.data.purchaseDate;
     if (buttonName === "Submit") {
       await addNewAssetService(finalData);
     } else {
@@ -346,7 +328,7 @@ const ProductBuilder = ({
   // };
 
   const handleStaticInputHandler = (event, name) => {
-    if (name === "staticPurchaseDate") {
+    if (name === "purchaseDate") {
       setValue(name, new Date(event.target.value).toISOString().split("T")[0]);
     } else {
       setValue(name, event.target.value);
@@ -426,7 +408,6 @@ const ProductBuilder = ({
             type="range"
             fieldName={field?.name}
             placeholder={field.placeholder}
-            // onChange={handleInputChange}
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
             containerOverrideClassName={styles.inputContainer}
@@ -460,22 +441,9 @@ const ProductBuilder = ({
             key={field._id}
             type="number"
             fieldName={field?.variable}
-            
             placeholder={field?.placeholder}
-        
-            // onChange={(event) =>
-            //   handleInputChange(event, field?.variable, field?.type)
-            // }
             error={errors?.[field?.variable]?.message}
             defaultValue={field?.value}
-            // onChange={(event) =>
-            //   handleInputChange(
-            //     event.target.value,
-            //     field?.variable,
-            //     field?.type,
-            //     field
-            //   )
-            // }
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
             containerOverrideClassName={styles.inputContainer}
@@ -489,18 +457,7 @@ const ProductBuilder = ({
             fieldName={field?.variable}
             error={errors?.[field?.variable]?.message}
             placeholder={field?.placeholder}
-            // onChange={(event) =>
-            //   handleInputChange(event, field?.variable, field?.type)
-            // }
             defaultValue={field.value}
-            onChange={(event) =>
-              handleInputChange(
-                event.target.value,
-                field?.variable,
-                field?.type,
-                field
-              )
-            }
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
             containerOverrideClassName={styles.inputContainer}
@@ -513,7 +470,6 @@ const ProductBuilder = ({
   if (fields?.length <= 0) return <p>loading</p>;
   return (
     <div className={styles["product-builder"]}>
-      {/* <form onSubmit={handleSubmit(formHandler)}> */}
       <FormProvider  
        methods={methods}
        buttonName={buttonName}
@@ -527,11 +483,8 @@ const ProductBuilder = ({
               label="Enter Name"
               fieldName="name"
               placeholder="Enter Name"
-              error={errors?.staticName?.message}
-              defaultValue={getValues("staticName")}
-              onChange={(event) =>
-                handleStaticInputHandler(event, "staticName")
-              }
+              error={errors?.name?.message}
+              defaultValue={getValues("name")}
               inputOverrideClassName={styles.inputOverride}
               overrideErrorClassName={styles.overrideErrorClass}
               containerOverrideClassName={styles.inputContainer}
@@ -544,10 +497,8 @@ const ProductBuilder = ({
               fieldName="tag"
               placeholder="Enter Tag"
               label="Enter Tag"
-          
-              error={errors?.staticTag?.message}
-              defaultValue={getValues("staticTag")}
-              onChange={(event) => handleStaticInputHandler(event, "staticTag")}
+              error={errors?.tag?.message}
+              defaultValue={getValues("tag")}
               inputOverrideClassName={styles.inputOverride}
               overrideErrorClassName={styles.overrideErrorClass}
               containerOverrideClassName={styles.inputContainer}
@@ -559,12 +510,9 @@ const ProductBuilder = ({
               key="number"
               fieldName="price"
               placeholder="Enter Price"
-              defaultValue={getValues("staticPrice")}
+              defaultValue={getValues("price")}
               label="Enter Price"
-              error={errors?.staticPrice?.message}
-              onChange={(event) =>
-                handleStaticInputHandler(event, "staticPrice")
-              }
+              error={errors?.price?.message}
               inputOverrideClassName={styles.inputOverride}
               overrideErrorClassName={styles.overrideErrorClass}
               containerOverrideClassName={styles.inputContainer}
@@ -578,24 +526,14 @@ const ProductBuilder = ({
               fieldName="purchaseDate"
               defaultValue={getValues("purchaseDate")}
               onChange={(event) =>
-                handleStaticInputHandler(event, "staticPurchaseDate")
+                handleStaticInputHandler(event, "purchaseDate")
               }
               inputOverrideClassName={styles.inputContainer}
               overrideClassName={styles.inputOverride}
             />
           </div>
-          {/* <div className={styles.dropZone}>
-          <Dropzone
-            key="file"
-            onChangeStatus={handleChangeStatus1}
-            accept={acceptedFileTypes.join(",")}
-            styles={dropzoneCss}
-            multiple={false}
-          />
-        </div> */}
         </div>
         <div className={styles.fieldsContainer}>
-          {/* <span>Dynamic Fields</span> */}
           {fields?.length > 0 &&
             fields?.map((field) => {
               return (
@@ -606,8 +544,6 @@ const ProductBuilder = ({
               );
             })}
         </div>
-        {/* <button type="submit">{buttonName}</button> */}
-      {/* </form> */}
       </FormProvider>
     </div>
   );
