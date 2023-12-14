@@ -44,7 +44,7 @@ export function validationSchema(type,validations) {
           .max(validations.maxLength);
     case "dropdown" || "radio":
       if (validations?.isRequired)
-        return Yup.string().required("Please select an option");
+        return Yup.object().required()
       else return Yup.string();
     case "multiselect":
       if (validations?.isRequired) {

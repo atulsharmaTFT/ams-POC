@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Capitalize } from "../../../helper/commonHelpers";
-import SlideSwitch from "../../../components/Switch";
+// import SlideSwitch from "../../../components/Switch";
 import classes from "./form.module.scss";
-import CheckBox from "../../../components/CheckBox/CheckBox";
+import CheckBox from "../../../components/FormHook/CheckBox/CheckBox";
 import Button from "../../../components/Button/Button";
-import { elementType } from "prop-types";
 export const validationDetails =[
   {
     elementType: "string",

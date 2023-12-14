@@ -1,6 +1,9 @@
 import React from "react";
 import classes from "./DateTimePicker.module.scss";
-function DateTimePicker({overrideClassName, inputClassOverride, onChange, selected, defaultValue, type, label, labelClassName }) {
+import { useFormContext, Controller } from "react-hook-form";
+import ErrorMessage from "../../ErrorMessage/ErrorMessage";
+function DateTimePicker({overrideClassName, inputClassOverride, fieldName,onChange, selected, defaultValue, type, label, labelClassName,overrideErrorClassName, error }) {
+  const { control } = useFormContext();
   // const handleDateTimeChange = (event) => {
   //   setDateTime(new Date(event.target.value).toISOString().split('T')[0]);
   // };
@@ -12,16 +15,29 @@ function DateTimePicker({overrideClassName, inputClassOverride, onChange, select
           {label}
         </div>
       )}
+      {/* <Controller
+     name={fieldName}
+     control={control}
+     defaultValue={defaultValue}
+     render={({ field, fieldState: { error } }) => ( */}
+      <>
       <input
         type="date"
         id="datetime"
         name="datetime"
         min={min}
-        // value={selected}
+        value={selected}
         defaultValue={defaultValue}
         className={inputClassOverride}
         onChange={onChange}
       />
+      <ErrorMessage
+        error={error}
+        overrideErrorClassName={overrideErrorClassName}
+      />
+      </>
+     {/* )}
+     /> */}
     </div>
   );
 }

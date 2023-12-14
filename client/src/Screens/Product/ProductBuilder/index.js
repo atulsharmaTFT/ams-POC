@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "./ProductBuilder.module.scss";
-import RadioButton from "../../../components/RadioButton";
-import InputField from "../../../components/InputField";
-import DateTimePicker from "../../../components/DatePicker/DateTimePicker";
-import MultiselectDropdown from "../../../components/MultiSelectDropdown/MultiselectDropdown";
-import CheckBox from "../../../components/CheckBox/CheckBox";
+import RadioButton from "../../../components/FormHook/RadioButton";
+import InputField from "../../../components/FormHook/InputField"
+import DateTimePicker from "../../../components/FormHook/DatePicker/DateTimePicker";
+import MultiselectDropdown from "../../../components/FormHook/MultiSelectDropdown/MultiselectDropdown";
+import CheckBox from "../../../components/FormHook/CheckBox/CheckBox";
 import Dropzone from "react-dropzone-uploader";
 import "react-dropzone-uploader/dist/styles.css";
 import { getSchema, staticSchema } from "../../../helper/yupSchemaBuilder";
@@ -14,6 +14,7 @@ import * as Yup from "yup";
 import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
 import { useParams } from "react-router-dom";
+import { FormProvider } from "../../../components/FormHook";
 const ProductBuilder = ({
   fields,
   productId,
@@ -28,30 +29,25 @@ const ProductBuilder = ({
   const [formData, setFormData] = useState({});
   let schema = getSchema(fields);
   schema = { ...schema, ...staticSchema };
-  const validatorSchema = schema && Yup.object().shape(schema);
-  const {
-    handleSubmit,
-    trigger,
-    register,
-    setValue,
-    getValues,
-    formState: { errors },
-    watch,
-    control,
-  } = useForm({
-    defaultValues: {
-      staticName: name ? name : "",
-      staticPrice: price ? price : 0,
-      staticTag: tag ? tag : "",
-      staticPurchaseDate: purchaseDate
-        ? new Date(purchaseDate).toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0],
-      // staticImage: null,
-    },
+  const validatorSchema = !!schema && Yup.object().shape(schema);
+  function setDefaultValues(){
+    try{
+    console.log(schema,"schema")
+    //get schema object
+    // add values to keys 
+    // return default values object
+    }
+    catch(e){
+      console.log(e)
+    }
+  }
+  const methods = useForm({
+    shouldUnregister: false,
+    // defaultValues: DEFAULT_DATA_VALUE,
     resolver: validatorSchema && yupResolver(validatorSchema),
-    mode: "all",
+    mode: "onChange",
   });
-  console.log(errors, "errors");
+  const { handleSubmit, trigger, watch,setValue, getValues,formState:{errors} } = methods;
 
   const {
     state: {
@@ -141,7 +137,6 @@ const ProductBuilder = ({
       });
     }
   }, []);
-
   const setDynamicData = (field) => {
     let variable = field?.variable;
     switch (field?.type) {
@@ -233,7 +228,6 @@ const ProductBuilder = ({
     }
   };
   const handleOptionChange = (options, action, type, name, field) => {
-    console.log(options);
     if (type === "dropdown") {
       // setDropDownOptions(options);
       field.value = options;
@@ -289,27 +283,20 @@ const ProductBuilder = ({
       };
     });
   };
-
   const formHandler = async (data) => {
-    // console.log("data from here", data);
-    console.log("formData", formData);
-
     const finalData = {
       name: data?.staticName,
       tag: data?.staticTag,
       price: data?.staticPrice,
       purchaseDate: data?.staticPurchaseDate,
       productId: productId,
-      data: {
-        ...data,
-      },
+      data: data,
     };
     delete finalData.data.staticName;
     delete finalData.data.staticTag;
     delete finalData.data.staticPrice;
     delete finalData.data.staticPurchaseDate;
-
-    console.log(finalData, "FinalData");
+    console.log(finalData,"finalData")
     if (buttonName === "Submit") {
       await addNewAssetService(finalData);
     } else {
@@ -333,7 +320,7 @@ const ProductBuilder = ({
       setValue(name, event.target.value);
     }
   };
-  const renderField = (field) => {
+  const renderField = useCallback((field) => {
     switch (field?.type) {
       case "radio":
         return (
@@ -373,19 +360,21 @@ const ProductBuilder = ({
             key={field?._id}
             category={field?.placeholder}
             data={field?.multiSelectOptions}
-            handleChange={(selectedValue, action) =>
-              handleOptionChange(
-                selectedValue,
-                action,
-                field?.type,
-                field?.variable,
-                field
-              )
+            handleChange={(selectedValue, action) =>{
+              setValue(field?.variable,selectedValue);
+              methods.clearErrors(field?.variable);
             }
-            fieldName={fields?.variable}
-            control={control}
+              // handleOptionChange(
+              //   selectedValue,
+              //   action,
+              //   field?.type,
+              //   field?.variable,
+              //   field
+              // )
+            }
             error={errors?.[field?.variable]?.message}
             selected={field?.value}
+            fieldName={field?.variable}
             className={styles.inputOverride}
           />
         );
@@ -394,18 +383,20 @@ const ProductBuilder = ({
           <MultiselectDropdown
             isMulti={false}
             key={field?._id}
-            control={control}
-            fieldName={fields?.variable}
+            fieldName={field?.variable}
             category={field?.placeholder}
             data={field?.dropdownOptions}
-            handleChange={(selectedValue, action) =>
-              handleOptionChange(
-                selectedValue,
-                action,
-                field?.type,
-                field?.variable,
-                field
-              )
+            handleChange={(selectedValue, action) =>{
+              setValue(field?.variable,selectedValue);
+              methods.clearErrors(field?.variable);
+            }
+              // handleOptionChange(
+              //   selectedValue,
+              //   action,
+              //   field?.type,
+              //   field?.variable,
+              //   field
+              // )
             }
             error={errors?.[field?.variable]?.message}
             selected={field?.value}
@@ -419,7 +410,7 @@ const ProductBuilder = ({
             type="range"
             fieldName={field?.name}
             placeholder={field.placeholder}
-            onChange={handleInputChange}
+            // onChange={handleInputChange}
             inputOverrideClassName={styles.inputOverride}
             overrideErrorClassName={styles.overrideErrorClass}
             containerOverrideClassName={styles.inputContainer}
@@ -453,9 +444,9 @@ const ProductBuilder = ({
             key={field._id}
             type="number"
             fieldName={field?.variable}
-            register={() => register(field?.variable)}
+            
             placeholder={field?.placeholder}
-            control={control}
+        
             // onChange={(event) =>
             //   handleInputChange(event, field?.variable, field?.type)
             // }
@@ -480,8 +471,6 @@ const ProductBuilder = ({
             type="text"
             key={field._id}
             fieldName={field?.variable}
-            register={() => register(field?.variable)}
-            control={control}
             error={errors?.[field?.variable]?.message}
             placeholder={field?.placeholder}
             // onChange={(event) =>
@@ -504,12 +493,16 @@ const ProductBuilder = ({
       default:
         return null;
     }
-  };
+  },[fields, errors, setValue]);
   if (fields?.length <= 0) return <p>loading</p>;
-  console.log(fields,"fields")
   return (
     <div className={styles["product-builder"]}>
-      <form onSubmit={handleSubmit(formHandler)}>
+      {/* <form onSubmit={handleSubmit(formHandler)}> */}
+      <FormProvider  
+       methods={methods}
+       buttonName={buttonName}
+       onSubmit={handleSubmit(formHandler)}
+        >
         <div className={styles.fieldsContainer}>
           <div className={styles.container}>
             <InputField
@@ -518,8 +511,6 @@ const ProductBuilder = ({
               label="Enter Name"
               fieldName="staticName"
               placeholder="Enter Name"
-              register={() => register("staticName")}
-              control={control}
               error={errors?.staticName?.message}
               defaultValue={getValues("staticName")}
               onChange={(event) =>
@@ -537,8 +528,7 @@ const ProductBuilder = ({
               fieldName="staticTag"
               placeholder="Enter Tag"
               label="Enter Tag"
-              register={() => register("staticTag")}
-              control={control}
+          
               error={errors?.staticTag?.message}
               defaultValue={getValues("staticTag")}
               onChange={(event) => handleStaticInputHandler(event, "staticTag")}
@@ -555,8 +545,6 @@ const ProductBuilder = ({
               placeholder="Enter Price"
               defaultValue={getValues("staticPrice")}
               label="Enter Price"
-              register={() => register("staticPrice")}
-              control={control}
               error={errors?.staticPrice?.message}
               onChange={(event) =>
                 handleStaticInputHandler(event, "staticPrice")
@@ -601,8 +589,9 @@ const ProductBuilder = ({
               );
             })}
         </div>
-        <button type="submit">{buttonName}</button>
-      </form>
+        {/* <button type="submit">{buttonName}</button> */}
+      {/* </form> */}
+      </FormProvider>
     </div>
   );
 };
