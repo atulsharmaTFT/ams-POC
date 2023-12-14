@@ -52,6 +52,10 @@ export const adminRoutes = (token, role) => [
         element: <AddProductDetails />,
       },
       {
+        path: AppRoutes.EDITPRODUCTFIELDS,
+        element: <NewProduct />,
+      },
+      {
         path: AppRoutes.ASSETS,
         element: <Assets />,
       },

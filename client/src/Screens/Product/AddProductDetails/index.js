@@ -186,7 +186,7 @@ const AddProductDetails = () => {
   },[])
   const getProductById = async() =>{
     setLoading(true)
-    await getProductByIdServices(params?.id)
+    await getProductByIdServices(params?.id, `?withFieldGroups=false`)
   }
 const params = useParams();
   return (
