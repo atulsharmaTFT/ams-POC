@@ -73,23 +73,23 @@ export function getSchema(data) {
 }
 
 export const staticSchema = {
-  staticName: Yup.string()
+  name: Yup.string()
     .required("Name is required")
     .min(2)
     .max(20)
     .label("Name"),
-  staticPrice: Yup.number()
+  price: Yup.number()
     .required("Price is required")
     .test("Is positive?", "Price must be greater than 0!", (value) => value > 0)
     .label("Price"),
-  staticTag: Yup.string()
+  tag: Yup.string()
     .required("Tag number is required")
     .min(2)
     .max(15)
     .label("Tag number"),
-  staticPurchaseDate: Yup.date()
+  purchaseDate: Yup.date()
     .required("Date is required")
     .min(new Date(1900, 0, 1))
     .label("Purchase Date"),
-  staticImage: Yup.string().notRequired().label("Image"),
+  image: Yup.string().notRequired().label("Image"),
 };
