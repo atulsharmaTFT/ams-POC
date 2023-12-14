@@ -410,14 +410,7 @@ app.get("/products/:id", async (req, res) => {
     };
 
     if (withFieldGroups) {
-      const aggregate1 = Products.aggregate([
-        ...commonAggregate,
-        {
-          $project: {
-            fields: 0,
-          },
-        },
-      ]);
+      const aggregate1 = Products.aggregate([...commonAggregate]);
       const fieldGroups = await aggregate1.exec();
       response.fieldGroups = fieldGroups;
     }
