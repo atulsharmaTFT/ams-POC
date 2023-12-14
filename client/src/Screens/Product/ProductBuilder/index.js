@@ -27,25 +27,55 @@ const ProductBuilder = ({
 }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [formData, setFormData] = useState({});
+  const NewJson = {
+  //   _id: "6579b3750140ea218d2e22b3",
+  //   name: "asdasdas",
+  //   tag: "123123",
+  //   price: 123126,
+  //   purchaseDate: "2023-12-13T18:30:00.000+00:00",
+  //   productId: "657884c06043b2bee01ea78a",
+  //   data: {
+  //   supportedOperatingSystem: [
+  //     {value: "3", label:"MacOsx"},
+  //     {value: "4", label:"Rhel"}
+  //   ],
+  //   ramMemory: {value: "1",label:"512MB"},
+  //   ramType: {value: "1",label:"DDR1"},
+  //   storage: {value: "2",label:"256GB"},
+  //     model: "MAaA",
+  //     brandName: "Majsdnkja"
+  // },
+  //     isInInventory: false,
+  //     isArchived: false,
+  //     createdAt: "2023-12-13T13:36:53.874+00:00",
+  //     updatedAt: "2023-12-13T13:36:53.874+00:00"
+    }
+  
   let schema = getSchema(fields);
   schema = { ...schema, ...staticSchema };
   const validatorSchema = !!schema && Yup.object().shape(schema);
-  function setDefaultValues(){
+  let defaultValues ={}
+  function setDefaultValues(schema){
     try{
-    console.log(schema,"schema")
-    //get schema object
-    // add values to keys 
-    // return default values object
+    Object.keys(schema).forEach((key)=>{
+      try{
+        defaultValues[key] = NewJson?.[key]?? NewJson?.data?.[key]
+      }catch(e){
+        console.log(e, "error creating Key Values")
+      }
+    })
+    return defaultValues
     }
     catch(e){
       console.log(e)
     }
   }
+  const DEFAULT_DATA_VALUE = !!schema && setDefaultValues(schema);
   const methods = useForm({
     shouldUnregister: false,
-    // defaultValues: DEFAULT_DATA_VALUE,
+    defaultValues: !!validatorSchema && !!schema && DEFAULT_DATA_VALUE,
     resolver: validatorSchema && yupResolver(validatorSchema),
-    mode: "onChange",
+    mode: "all",
   });
   const { handleSubmit, trigger, watch,setValue, getValues,formState:{errors} } = methods;
 
@@ -363,17 +393,9 @@ const ProductBuilder = ({
             handleChange={(selectedValue, action) =>{
               setValue(field?.variable,selectedValue);
               methods.clearErrors(field?.variable);
-            }
-              // handleOptionChange(
-              //   selectedValue,
-              //   action,
-              //   field?.type,
-              //   field?.variable,
-              //   field
-              // )
-            }
+            }}
             error={errors?.[field?.variable]?.message}
-            selected={field?.value}
+            selected={getValues(field?.variable)}
             fieldName={field?.variable}
             className={styles.inputOverride}
           />
@@ -389,17 +411,9 @@ const ProductBuilder = ({
             handleChange={(selectedValue, action) =>{
               setValue(field?.variable,selectedValue);
               methods.clearErrors(field?.variable);
-            }
-              // handleOptionChange(
-              //   selectedValue,
-              //   action,
-              //   field?.type,
-              //   field?.variable,
-              //   field
-              // )
-            }
+            }}
             error={errors?.[field?.variable]?.message}
-            selected={field?.value}
+            selected={getValues(field?.variable)}
             className={styles.inputOverride}
           />
         );
@@ -509,7 +523,7 @@ const ProductBuilder = ({
               type="text"
               key="name"
               label="Enter Name"
-              fieldName="staticName"
+              fieldName="name"
               placeholder="Enter Name"
               error={errors?.staticName?.message}
               defaultValue={getValues("staticName")}
@@ -525,7 +539,7 @@ const ProductBuilder = ({
             <InputField
               type="text"
               key="tag"
-              fieldName="staticTag"
+              fieldName="tag"
               placeholder="Enter Tag"
               label="Enter Tag"
           
@@ -541,7 +555,7 @@ const ProductBuilder = ({
             <InputField
               type="number"
               key="number"
-              fieldName="staticPrice"
+              fieldName="price"
               placeholder="Enter Price"
               defaultValue={getValues("staticPrice")}
               label="Enter Price"
@@ -559,7 +573,8 @@ const ProductBuilder = ({
               key="date"
               type="date"
               label="Enter Purchase Date"
-              defaultValue={getValues("staticPurchaseDate")}
+              fieldName="purchaseDate"
+              defaultValue={getValues("purchaseDate")}
               onChange={(event) =>
                 handleStaticInputHandler(event, "staticPurchaseDate")
               }

@@ -72,7 +72,7 @@ const InputField = ({
       <Controller
      name={fieldName}
      control={control}
-     defaultValue={value}
+     defaultValue={control?.defaultValues?.fieldName}
      render={({ field, fieldState: { error } }) => (
         <input
           style={{ color: textColor }}
