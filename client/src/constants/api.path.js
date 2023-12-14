@@ -7,6 +7,7 @@ export const ApiUrls = {
   ADMIN_APIS: {
     USERS: "/users",
     CREATE_FIELDS: "/fields",
+    FIELD_GROUPS: "/field-groups",
     PRODUCT_BY_ID: "/products",
     ADD_ASSET : "/assets",
     MOVE_TO_Inventory: '/move-to-inventory',

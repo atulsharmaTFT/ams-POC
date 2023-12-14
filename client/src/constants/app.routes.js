@@ -8,6 +8,7 @@ export const AppRoutes = {
   PRODUCT: "/product",
   NEWPRODUCT: "/newProduct",
   ADDPRODUCTDETAILS: "/addProductDetails/:id",
+  EDITPRODUCTFIELDS: "/editProductfields/:id",
   ASSETS: "/assets",
   ARCHIVEASSETS: "/archiveAssets",
   VIEWASSET: "/viewAsset/:id",

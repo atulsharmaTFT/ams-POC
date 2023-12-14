@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import classes from "./NewProduct.module.scss";
 import { toCamelCase } from "../../../helper/commonHelpers";
+import { useNavigate, useParams } from "react-router-dom";
+import useAdminApiService from "../../../helper/useAdminApiService";
+import adminServices from "../../../helper/adminServices";
 
 const NewProduct = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -9,23 +12,82 @@ const NewProduct = () => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const params = useParams();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:8001/field-groups");
-        const apiData = await response.json();
-        setData(apiData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
+    fetchFieldGroupData();
+    if (params.id) {
+      getProductById();
+    }
   }, []);
 
+  const {
+    state: {
+      loading: getProductByIdLoading,
+      isSuccess: isGetProductByIdSuccess,
+      data: getProductByIdResponse,
+      isError: isGetProductByIdError,
+      error: getProductByIdError,
+    },
+    callService: getProductByIdServices,
+    resetServiceState: resetGetProductByIdState,
+  } = useAdminApiService(adminServices.getProductById);
+
+  const {
+    state: {
+      loading: getFieldGroupsLoading,
+      isSuccess: isGetFieldGroupsSuccess,
+      data: getFieldGroupsResponse,
+      isError: isGetFieldGroupsError,
+      error: getFieldGroupsError,
+    },
+    callService: getFieldGroupsServices,
+    resetServiceState: resetGetFieldGroupsState,
+  } = useAdminApiService(adminServices.getFieldGroups);
+
+  useEffect(() => {
+    if (isGetProductByIdError && getProductByIdError) {
+      resetGetProductByIdState();
+    }
+    if (isGetProductByIdSuccess && getProductByIdResponse) {
+      setTimeout(() => setLoading(false), 1000);
+      setUserName(getProductByIdResponse.name);
+      getProductByIdResponse.fieldGroups.forEach((group) => {
+        handleAddItem(group);
+      });
+    }
+    if (getFieldGroupsResponse && isGetFieldGroupsSuccess) {
+      setTimeout(() => setLoading(false), 1000);
+      setData(getFieldGroupsResponse);
+    }
+    if (isGetFieldGroupsError && getFieldGroupsError) {
+      resetGetFieldGroupsState();
+    }
+  }, [
+    isGetProductByIdSuccess,
+    getProductByIdResponse,
+    isGetProductByIdError,
+    getProductByIdError,
+    isGetFieldGroupsSuccess,
+    getFieldGroupsResponse,
+    isGetFieldGroupsError,
+    getFieldGroupsError,
+  ]);
+
+  const getProductById = async () => {
+    setLoading(true);
+    await getProductByIdServices(params?.id, `?withFieldGroups=true`);
+  };
+
+  const fetchFieldGroupData = async () => {
+    setLoading(true);
+    await getFieldGroupsServices();
+  };
+
   const createProduct = async () => {
-    // console.log(selectedItems, userName);
     try {
       let userIds = [];
       selectedItems.forEach((item) => {
@@ -33,26 +95,37 @@ const NewProduct = () => {
       });
       const obj = {
         name: userName,
-        variable: toCamelCase(userName),
         fieldGroups: userIds,
       };
 
-      console.log(obj);
-      const response = await fetch("http://localhost:8001/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(obj),
-      });
+      if (params.id) {
+        const response = await fetch(
+          `http://localhost:8001/products/${params.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(obj),
+          }
+        );
+        // const apiData = await response.json();
+        // console.log(apiData);
+        if (response.status === 204 && response.statusText === "No Content") {
+          navigate("/product");
+        }
+      } else {
+        obj["variable"] = toCamelCase(userName);
+        const response = await fetch("http://localhost:8001/products", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        });
 
-      const apiData = await response.json();
-      console.log(apiData);
-      if (apiData) {
-        setSelectedItems([]);
-        setUserName("");
-        setSearchTerm("");
-        setSearchResults([]);
+        // const apiData = await response.json();
+        navigate("/product");
       }
     } catch (err) {
       console.log(err);
@@ -67,18 +140,24 @@ const NewProduct = () => {
   };
 
   const handleAddItem = (item) => {
-    console.log(item);
-    setSelectedItems([...selectedItems, item]);
+    setSelectedItems((prev) => {
+      return [...prev, item];
+    });
   };
-
-  // const isItemSelected = (item) =>
-  //   selectedItems.some((selectedItem) => selectedItem._id === item._id);
 
   const isItemSelected = (item) =>
     selectedItems.some((selectedItem) =>
-      selectedItem.fields.some((field) =>
-        item.fields.some((selectedField) => selectedField._id === field._id)
-      )
+      selectedItem.fields.some((field) => {
+        if (params.id) {
+          return item.fields.some(
+            (selectedField) => selectedField._id === field
+          );
+        } else {
+          return item.fields.some(
+            (selectedField) => selectedField._id === field._id
+          );
+        }
+      })
     );
 
   const handleRemoveItem = (itemToRemove) => {
@@ -133,14 +212,6 @@ const NewProduct = () => {
             ))}
           </tbody>
         </table>
-        {/* <ul>
-          {searchResults.map((result) => (
-            <li key={result._id}>
-              {result.name} - {result.type}
-              <button className={isItemSelected(result) ? classes.disabled : ''} onClick={() => handleAddItem(result)} disabled={isItemSelected(result)}>Add</button>
-            </li>
-          ))}
-        </ul> */}
       </div>
 
       {/* Second Container */}
@@ -164,7 +235,15 @@ const NewProduct = () => {
           </tbody>
         </table>
       </div>
-      <button onClick={createProduct}>Save</button>
+      <button
+        className={
+          selectedItems && selectedItems.length < 1 ? classes.disabled : ""
+        }
+        disabled={selectedItems && selectedItems.length < 1}
+        onClick={createProduct}
+      >
+        Save
+      </button>
     </div>
   ) : (
     <p>loading</p>
