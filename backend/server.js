@@ -40,8 +40,8 @@ const options2 = Joi.object({
 });
 
 const validateFields = Joi.object({
-  name: Joi.string().required(),
-  variable: Joi.string().required(),
+  name: Joi.string().trim().required(),
+  variable: Joi.string().trim().required(),
   type: Joi.string()
     .valid(
       "text",
@@ -129,6 +129,11 @@ app.post("/fields", async (req, res) => {
       res.status(201).json(newField);
     }
   } catch (e) {
+    if (e.message.startsWith("E11000")) {
+      return res.status(409).json({
+        error: `Duplicate Variable`,
+      });
+    }
     console.log(e);
     res.status(500).send("Internal Server Error");
   }

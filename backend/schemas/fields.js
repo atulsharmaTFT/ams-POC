@@ -37,6 +37,7 @@ const fieldSchema = new mongoose.Schema(
     variable: {
       type: String,
       required: true,
+      unique: true,
     },
     type: {
       type: String,
