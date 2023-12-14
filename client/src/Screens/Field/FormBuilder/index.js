@@ -4,17 +4,27 @@ import { Capitalize } from "../../../helper/commonHelpers";
 import classes from "./form.module.scss";
 import CheckBox from "../../../components/FormHook/CheckBox/CheckBox";
 import Button from "../../../components/Button/Button";
-export const validationDetails =[
+export const validationDetails = [
   {
     elementType: "string",
   },
   {
-    elementType: "number"
+    elementType: "number",
   },
   {
     elementType: "boolean",
   },
-]
+  {
+    elementType: "email",
+  },
+  {
+    elementType: "phone",
+  },
+  {
+    elementType: "pincode",
+  },
+];
+
 export const fieldDetails = [
   {
     elementType: "Text",
@@ -42,7 +52,7 @@ export const fieldDetails = [
     elementAttributes: ["options"],
   },
   {
-    elementType: "multiSelect",
+    elementType: "MultiSelect",
     elementAttributes: ["options"],
   },
 ];
@@ -89,7 +99,7 @@ const FormBuilder = ({ onFormSubmit }) => {
         case "CheckBox":
           return "checkboxOptions";
           break;
-        case "multiSelect":
+        case "MultiSelect":
           return "multiSelectOptions";
           break;
         default:
@@ -176,13 +186,25 @@ const FormBuilder = ({ onFormSubmit }) => {
     handleAttributeChange(keyType, updatedOptions);
   };
 
+  function disabledState(fieldType) {
+    if (
+      fieldType === "Radio" ||
+      fieldType === "Dropdown" ||
+      fieldType === "CheckBox" ||
+      fieldType === "MultiSelect"
+      ||fieldType==="Date"
+    )
+      return true;
+    return false;
+  }
+
   const handleAddField = () => {
     if (selectedField) {
       const payload = newOption;
       onFormSubmit(payload);
       setNewOption(optionsObject);
     }
-  };  
+  };
   const customTextStyle = {
     display: "flex",
     justifyContent: "space-between",
@@ -192,7 +214,7 @@ const FormBuilder = ({ onFormSubmit }) => {
     padding: 5,
     width: 300,
   };
-  
+
   return (
     <div>
       <h2>Create Fields</h2>
@@ -240,18 +262,18 @@ const FormBuilder = ({ onFormSubmit }) => {
           onChange={() =>
             setNewOption({
               ...newOption,
-                isRequired: !newOption?.isRequired,
+              isRequired: !newOption?.isRequired,
             })
           }
         />
-        {
-          newOption?.isRequired && 
-        (<div style={customTextStyle}>
+
+        <div style={customTextStyle}>
           <label>Validation Type:</label>
           <select
             value={newOption?.validationType}
             onChange={(e) => handleValidationSelect(e.target.value)}
             style={inputStyle}
+            disabled={disabledState(selectedField)}
           >
             <option value="">Select Field</option>
             {validationDetails.map((field) => (
@@ -260,8 +282,7 @@ const FormBuilder = ({ onFormSubmit }) => {
               </option>
             ))}
           </select>
-        </div>)
-        }
+        </div>
       </div>
 
       {selectedField && (
