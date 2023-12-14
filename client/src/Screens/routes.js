@@ -15,6 +15,7 @@ import Organization from "./Organization";
 import ViewAsset from "./Assets/viewAsset";
 import Assets from "./Assets";
 import EditAsset from "./Assets/editAsset";
+import Archive from "./Archive";
 
 export const adminRoutes = (token, role) => [
   {
@@ -53,8 +54,16 @@ export const adminRoutes = (token, role) => [
         element: <AddProductDetails />,
       },
       {
+        path: AppRoutes.EDITPRODUCTFIELDS,
+        element: <NewProduct />,
+      },
+      {
         path: AppRoutes.ASSETS,
         element: <Assets />,
+      },
+      {
+        path: AppRoutes.ARCHIVEASSETS,
+        element: <Archive/>,
       },
       {
         path: AppRoutes.VIEWASSET,

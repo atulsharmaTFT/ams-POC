@@ -21,57 +21,69 @@ export default {
       method: HttpMethods.GET,
     };
   },
-  createFields: (data) =>{
+  createFields: (data) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.CREATE_FIELDS}`,
       method: HttpMethods.POST,
-      data
-    }
+      data,
+    };
   },
-  getProductById: (params) =>{
+  getFieldGroups: () => {
     return {
-      url: `${ApiUrls.ADMIN_APIS.PRODUCT_BY_ID}/${params}`,
+      url: `${ApiUrls.ADMIN_APIS.FIELD_GROUPS}`,
       method: HttpMethods.GET,
-    }
+    };
   },
-  getAssetById: (params) =>{
+  getProductById: (params, query) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.PRODUCT_BY_ID}/${params}${query}`,
+      method: HttpMethods.GET,
+    };
+  },
+  getAssetById: (params) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}`,
       method: HttpMethods.GET,
-    }
+    };
   },
-  getAllAssets: (params) =>{
+  getAllAssets: (params) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}?${params}`,
       method: HttpMethods.GET,
-    }
+    };
   },
   addAsset: (data) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}`,
       method: HttpMethods.POST,
-      data
-    }
+      data,
+    };
   },
-  updateExistingAsset: (params,data) => {
+  updateExistingAsset: (params, data) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}`,
       method: HttpMethods.PUT,
-      data
-    }
+      data,
+    };
   },
   deleteExistingAsset: (params) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}`,
-      method: HttpMethods.DELETE
-    }
+      method: HttpMethods.DELETE,
+    };
   },
   moveToInventory: (params) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}${ApiUrls.ADMIN_APIS.MOVE_TO_Inventory}`,
-      method: HttpMethods.PATCH
-    }
-  }
+      method: HttpMethods.PATCH,
+    };
+  },
+  archiveAsset: (params) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}/${params}${ApiUrls.ADMIN_APIS.ARCHIVE_ASSET}`,
+      method: HttpMethods.PATCH,
+    };
+  },
   // tambolaOrganizationReport: ({ token, key, id, page, limit }) => {
   //   return {
   //     url: `${ApiUrls.ADMIN_APIS.TAMBOLA_ORGANIZATION_REPORT}/${id}?search=${key}&page=${page}&limit=${limit}`,

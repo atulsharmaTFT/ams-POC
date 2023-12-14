@@ -40,8 +40,8 @@ const options2 = Joi.object({
 });
 
 const validateFields = Joi.object({
-  name: Joi.string().required(),
-  variable: Joi.string().required(),
+  name: Joi.string().trim().required(),
+  variable: Joi.string().trim().required(),
   type: Joi.string()
     .valid(
       "text",
@@ -135,6 +135,11 @@ app.post("/fields", async (req, res) => {
       res.status(201).json(newField);
     }
   } catch (e) {
+    if (e.message.startsWith("E11000")) {
+      return res.status(409).json({
+        error: `Duplicate Variable`,
+      });
+    }
     console.log(e);
     res.status(500).send("Internal Server Error");
   }
@@ -162,6 +167,7 @@ const validateFieldGroups = Joi.object({
         return value;
       })
     )
+    .unique()
     .min(1)
     .required(),
 });
@@ -248,6 +254,7 @@ const validateProducts = Joi.object({
         return value;
       })
     )
+    .unique()
     .min(1)
     .required(),
 });
@@ -282,6 +289,63 @@ app.post("/products", async (req, res) => {
   }
 });
 
+const validateEditAProduct = Joi.object({
+  name: Joi.string().required(),
+  fieldGroups: Joi.array()
+    .items(
+      Joi.string().custom((value, helpers) => {
+        if (!mongoose.Types.ObjectId.isValid(value)) {
+          return helpers.error("any.invalid");
+        }
+        return value;
+      })
+    )
+    .unique()
+    .min(1)
+    .required(),
+});
+
+app.put("/products/:id", async (req, res) => {
+  try {
+    const { error, value } = validateEditAProduct.validate(req.body);
+    const { error: invalidIdError, value: productId } = validateId.validate(
+      req.params.id
+    );
+    const badRequestError = invalidIdError || error;
+    if (badRequestError) {
+      return res
+        .status(400)
+        .json({ error: badRequestError.details[0].message });
+    }
+
+    const { name, fieldGroups } = value;
+
+    const isValidFieldGroups =
+      (await FieldGroups.countDocuments({ _id: { $in: fieldGroups } })) ===
+      fieldGroups.length;
+    if (!isValidFieldGroups) {
+      return res.status(400).json({ error: "Invalid field groups provided" });
+    }
+
+    const doc = await Products.updateOne(
+      { _id: productId },
+      {
+        name,
+        fieldGroups,
+      }
+    );
+
+    if (doc.matchedCount === 0) {
+      return res.status(400).json({ error: `Wrong Product Id ${productId}` });
+    }
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.get("/products", async (req, res) => {
   try {
     const products = await Products.find();
@@ -292,80 +356,98 @@ app.get("/products", async (req, res) => {
   }
 });
 
+const validateGetAProduct = Joi.object({
+  id: validateId.required(),
+  withFieldGroups: Joi.boolean().required(),
+});
+
 app.get("/products/:id", async (req, res) => {
-  const { error, value } = validateId.validate(req.params.id);
-  if (error) {
-    return res.status(400).json({ error: error.details[0].message });
+  try {
+    const { error, value } = validateGetAProduct.validate({
+      id: req.params.id,
+      withFieldGroups: req.query.withFieldGroups,
+    });
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const { id: productId, withFieldGroups } = value;
+
+    const product = await Products.findById(productId, {
+      fieldGroups: 0,
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    const commonAggregate = [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fieldGroupsArr",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$fieldGroupsArr",
+        },
+      },
+    ];
+
+    const aggregate = Products.aggregate([
+      ...commonAggregate,
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "productFields",
+        },
+      },
+      {
+        $unwind: "$productFields",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$productFields",
+        },
+      },
+    ]);
+    const fields = await aggregate.exec();
+
+    const { name, variable, createdAt, updatedAt } = product;
+
+    const response = {
+      _id: productId,
+      name,
+      variable,
+      createdAt,
+      updatedAt,
+      fields,
+    };
+
+    if (withFieldGroups) {
+      const aggregate1 = Products.aggregate([...commonAggregate]);
+      const fieldGroups = await aggregate1.exec();
+      response.fieldGroups = fieldGroups;
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
   }
-
-  const productId = value;
-
-  const product = await Products.findById(productId, {
-    fieldGroups: 0,
-  });
-
-  if (!product) {
-    return res.status(404).json({ error: "Not found" });
-  }
-
-  const aggregate = Products.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(productId),
-      },
-    },
-    {
-      $unwind: "$fieldGroups",
-    },
-    {
-      $lookup: {
-        from: "fieldGroups",
-        localField: "fieldGroups",
-        foreignField: "_id",
-        as: "fieldGroupsArr",
-      },
-    },
-    {
-      $unwind: "$fieldGroupsArr",
-    },
-    {
-      $replaceRoot: {
-        newRoot: "$fieldGroupsArr",
-      },
-    },
-    {
-      $unwind: "$fields",
-    },
-    {
-      $lookup: {
-        from: "fields",
-        localField: "fields",
-        foreignField: "_id",
-        as: "productFields",
-      },
-    },
-    {
-      $unwind: "$productFields",
-    },
-    {
-      $replaceRoot: {
-        newRoot: "$productFields",
-      },
-    },
-  ]);
-
-  const fields = await aggregate.exec();
-
-  const { name, variable, createdAt, updatedAt } = product;
-
-  res.status(200).json({
-    _id: productId,
-    name,
-    variable,
-    createdAt,
-    updatedAt,
-    fields,
-  });
 });
 
 const validateAssets = Joi.object({

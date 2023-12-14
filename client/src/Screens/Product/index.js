@@ -29,7 +29,11 @@ const Product = () => {
   }, []);
 
   const handleAddData = (data) => {
-    navigate(`/addProductDetails/${data._id}`)
+    navigate(`/addProductDetails/${data._id}`);
+  };
+
+  const handleEditData = (data) => {
+    navigate(`/editProductfields/${data._id}`);
   };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -91,10 +95,21 @@ const Product = () => {
                             padding: "6px 10px",
                             fontSize: "14px",
                             cursor: "pointer",
+                            marginRight: "5px",
                           }}
                           onClick={() => handleAddData(row.original)}
                         >
                           Add Data
+                        </button>
+                        <button
+                          style={{
+                            padding: "6px 10px",
+                            fontSize: "14px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleEditData(row.original)}
+                        >
+                          Edit Data
                         </button>
                       </td>
                     );

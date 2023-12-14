@@ -130,7 +130,7 @@ const ProductBuilder = ({
     updateExistingAssetError,
   ]);
 
-  const params = useParams()
+  const params = useParams();
 
   const acceptedFileTypes = [
     "application/vnd.ms-excel", // .xls
@@ -171,18 +171,18 @@ const ProductBuilder = ({
     let variable = field?.variable;
     switch (field?.type) {
       case "radio":
-        handleRadioChange(data[variable].option, field);
+        handleRadioChange(data?.[variable]?.option, field);
         break;
       case "checkbox":
-        data[variable].forEach((item) => {
-          if (item?.checked) {
+        data?.[variable]?.forEach((item) => {
+          if (item.checked) {
             handleCheckBoxClick(item.option, field);
           }
         });
         break;
       case "multiSelect":
         handleOptionChange(
-          data[variable],
+          data?.[variable],
           { action: "select-option" },
           "multiSelect",
           variable,
@@ -192,7 +192,7 @@ const ProductBuilder = ({
       case "slider":
       case "dropdown":
         handleOptionChange(
-          data[variable],
+          data?.[variable],
           { action: "select-option" },
           "dropdown",
           variable,
@@ -200,13 +200,15 @@ const ProductBuilder = ({
         );
         break;
       case "date":
-        handleInputChange(data[variable], variable, field.type, field);
+        if (data?.[variable]) {
+          handleInputChange(data?.[variable], variable, field.type, field);
+        }
         break;
       case "number":
-        handleInputChange(data[variable], variable, field.type, field);
+        handleInputChange(data?.[variable], variable, field.type, field);
         break;
       case "text":
-        handleInputChange(data[variable], variable, field.type, field);
+        handleInputChange(data?.[variable], variable, field.type, field);
         break;
       default:
         return null;

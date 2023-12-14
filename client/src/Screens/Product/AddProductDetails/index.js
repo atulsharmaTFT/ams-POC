@@ -197,12 +197,12 @@ const AddProductDetails = () => {
   });
   useEffect(() => {
     getProductById();
-  }, []);
-  const getProductById = async () => {
-    setLoading(true);
-    await getProductByIdServices(params?.id);
-  };
-  const params = useParams();
+  },[])
+  const getProductById = async() =>{
+    setLoading(true)
+    await getProductByIdServices(params?.id, `?withFieldGroups=false`)
+  }
+const params = useParams();
   return (
     <div>
       {isGetProductByIdSuccess && !loading ? <ProductBuilder fields={getProductByIdResponse.fields} productId={params?.id} buttonName="Submit"/> :<Loader showOnFullScreen={true} loading={loading}/>}
