@@ -161,6 +161,7 @@ const validateFieldGroups = Joi.object({
         return value;
       })
     )
+    .unique()
     .min(1)
     .required(),
 });
@@ -247,6 +248,7 @@ const validateProducts = Joi.object({
         return value;
       })
     )
+    .unique()
     .min(1)
     .required(),
 });
@@ -292,6 +294,7 @@ const validateEditAProduct = Joi.object({
         return value;
       })
     )
+    .unique()
     .min(1)
     .required(),
 });
