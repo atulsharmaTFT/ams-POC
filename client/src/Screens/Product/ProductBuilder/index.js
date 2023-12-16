@@ -25,31 +25,7 @@ const ProductBuilder = ({
   buttonName,
   data,
 }) => {
-  const [selectedOptions, setSelectedOptions] = useState([]);
   const [formData, setFormData] = useState({});
-  const NewJson = {
-  //   _id: "6579b3750140ea218d2e22b3",
-  //   name: "asdasdas",
-  //   tag: "123123",
-  //   price: 123126,
-  //   purchaseDate: "2023-12-13T18:30:00.000+00:00",
-  //   productId: "657884c06043b2bee01ea78a",
-  //   data: {
-  //   supportedOperatingSystem: [
-  //     {value: "3", label:"MacOsx"},
-  //     {value: "4", label:"Rhel"}
-  //   ],
-  //   ramMemory: {value: "1",label:"512MB"},
-  //   ramType: {value: "1",label:"DDR1"},
-  //   storage: {value: "2",label:"256GB"},
-  //     model: "MAaA",
-  //     brandName: "Majsdnkja"
-  // },
-  //     isInInventory: false,
-  //     isArchived: false,
-  //     createdAt: "2023-12-13T13:36:53.874+00:00",
-  //     updatedAt: "2023-12-13T13:36:53.874+00:00"
-    }
   
   let schema = getSchema(fields);
   schema = { ...schema, ...staticSchema };
