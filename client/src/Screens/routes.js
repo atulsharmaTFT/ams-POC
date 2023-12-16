@@ -16,10 +16,11 @@ import ViewAsset from "./Assets/viewAsset";
 import Assets from "./Assets";
 import EditAsset from "./Assets/editAsset";
 import Archive from "./Archive";
+import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
 
 export const adminRoutes = (token, role) => [
   {
-    element: <AdminLayout />,
+    element: <DashboardLayout />,
     children: [
       {
         path: AppRoutes.HOME,
