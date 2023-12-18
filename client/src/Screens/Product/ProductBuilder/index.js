@@ -17,6 +17,9 @@ import { useParams } from "react-router-dom";
 import { FormProvider } from "../../../components/FormHook";
 import { GroupCheckBox } from "../../../components/FormHook/CheckBox/GroupCheckBox";
 import GroupRadioButton from "../../../components/FormHook/RadioButton/GroupRadioButton";
+import constants from "../../../helper/constantKeyword/constants";
+import { toCamelCase } from "../../../helper/commonHelpers";
+import messages from "../../../helper/constantKeyword/messages";
 const ProductBuilder = ({
   fields,
   productId,
@@ -27,31 +30,7 @@ const ProductBuilder = ({
   buttonName,
   data,
 }) => {
-  const [selectedOptions, setSelectedOptions] = useState([]);
   const [formData, setFormData] = useState({});
-  const NewJson = {
-    //   _id: "6579b3750140ea218d2e22b3",
-    //   name: "asdasdas",
-    //   tag: "123123",
-    //   price: 123126,
-    //   purchaseDate: "2023-12-13T18:30:00.000+00:00",
-    //   productId: "657884c06043b2bee01ea78a",
-    //   data: {
-    //   supportedOperatingSystem: [
-    //     {value: "3", label:"MacOsx"},
-    //     {value: "4", label:"Rhel"}
-    //   ],
-    //   ramMemory: {value: "1",label:"512MB"},
-    //   ramType: {value: "1",label:"DDR1"},
-    //   storage: {value: "2",label:"256GB"},
-    //     model: "MAaA",
-    //     brandName: "Majsdnkja"
-    // },
-    //     isInInventory: false,
-    //     isArchived: false,
-    //     createdAt: "2023-12-13T13:36:53.874+00:00",
-    //     updatedAt: "2023-12-13T13:36:53.874+00:00"
-  };
 
   let schema = getSchema(fields);
 
@@ -164,44 +143,44 @@ const ProductBuilder = ({
   const setDynamicData = (field) => {
     let variable = field?.variable;
     switch (field?.type) {
-      case "radio":
+      case constants.radio.toLowerCase():
         handleRadioChange(data?.[variable]?.option, field);
         break;
-      case "checkbox":
+      case constants.checkbox.toLowerCase():
         data?.[variable]?.forEach((item) => {
           if (item.checked) {
             handleCheckBoxClick(item.option, field);
           }
         });
         break;
-      case "multiSelect":
+      case toCamelCase(constants.multiselect):
         handleOptionChange(
           data?.[variable],
-          { action: "select-option" },
-          "multiSelect",
+          { action: messages.selectOption },
+          toCamelCase(constants.multiselect),
           variable,
           field
         );
         break;
       case "slider":
-      case "dropdown":
+      case constants.dropdown.toLowerCase():
         handleOptionChange(
           data?.[variable],
-          { action: "select-option" },
-          "dropdown",
+          { action: messages.selectOption },
+          constants.dropdown.toLowerCase(),
           variable,
           field
         );
         break;
-      case "date":
+      case constants.date.toLowerCase():
         if (data?.[variable]) {
           handleInputChange(data?.[variable], variable, field.type, field);
         }
         break;
-      case "number":
+      case constants.number.toLowerCase():
         handleInputChange(data?.[variable], variable, field.type, field);
         break;
-      case "text":
+      case constants.text.toLowerCase():
         handleInputChange(data?.[variable], variable, field.type, field);
         break;
       default:
@@ -234,7 +213,7 @@ const ProductBuilder = ({
   };
 
   const handleInputChange = (e, name, type, field) => {
-    if (type === "date") {
+    if (type === constants.date.toLowerCase()) {
       // setSelectedDate(new Date(e).toISOString().split("T")[0]);
       field.value = new Date(e).toISOString().split("T")[0];
       setFormData((prev) => {
@@ -254,7 +233,7 @@ const ProductBuilder = ({
     }
   };
   const handleOptionChange = (options, action, type, name, field) => {
-    if (type === "dropdown") {
+    if (type === constants.dropdown.toLowerCase()) {
       // setDropDownOptions(options);
       field.value = options;
       setFormData((prev) => {
@@ -264,12 +243,12 @@ const ProductBuilder = ({
         };
       });
     }
-    if (type === "multiSelect") {
-      if (action.action === "select-option") {
+    if (type === toCamelCase(constants.multiselect)) {
+      if (action.action === messages.selectOption) {
         // setSelectedOptions(options);
         field.value = options;
       }
-      if (action.action === "remove-value") {
+      if (action.action === messages.removeValue) {
         // const filterOption = selectedOptions.filter(
         //   (elem) => elem?.value !== action?.removedValue?.value
         // );
@@ -351,18 +330,17 @@ const ProductBuilder = ({
   const renderField = useCallback(
     (field) => {
       switch (field?.type) {
-        case "radio":
-          console.log(getValues(field?.variable),"fieldaa")
+        case constants.radio.toLowerCase():
           return (
-           
             <GroupRadioButton
               options={field?.radioOptions}
               name={field.variable}
               defaultValue={getValues(field.variable)}
               handleChange={(selectedValue, action) => {
-                reset(formValues => ({
+                reset((formValues) => ({
                   ...formValues,
-      [field.variable]: undefined}));
+                  [field.variable]: undefined,
+                }));
                 console.log(selectedValue);
                 setValue(field?.variable, selectedValue);
               }}
@@ -382,7 +360,7 @@ const ProductBuilder = ({
             //   })}
             // </div>
           );
-        case "checkbox":
+        case constants.checkbox.toLowerCase():
           return (
             <GroupCheckBox
               options={field.checkboxOptions}
@@ -400,7 +378,7 @@ const ProductBuilder = ({
             //   ))}
             // </div>
           );
-        case "multiSelect":
+        case toCamelCase(constants.multiselect):
           return (
             <MultiselectDropdown
               isMulti={true}
@@ -417,7 +395,7 @@ const ProductBuilder = ({
               className={styles.inputOverride}
             />
           );
-        case "dropdown":
+        case constants.dropdown.toLowerCase():
           return (
             <MultiselectDropdown
               isMulti={false}
@@ -434,7 +412,7 @@ const ProductBuilder = ({
               className={styles.inputOverride}
             />
           );
-        case "slider":
+        case constants.slider:
           return (
             <InputField
               key={field._id}
@@ -449,7 +427,7 @@ const ProductBuilder = ({
               step={field?.sliderOptions.step}
             />
           );
-        case "date":
+        case constants.date.toLowerCase():
           return (
             <DateTimePicker
               type="date"
@@ -468,7 +446,7 @@ const ProductBuilder = ({
               overrideClassName={styles.inputOverride}
             />
           );
-        case "number":
+        case constants.number.toLowerCase():
           return (
             <InputField
               key={field._id}
@@ -482,7 +460,7 @@ const ProductBuilder = ({
               containerOverrideClassName={styles.inputContainer}
             />
           );
-        case "text":
+        case constants.text.toLowerCase():
           return (
             <InputField
               type="text"

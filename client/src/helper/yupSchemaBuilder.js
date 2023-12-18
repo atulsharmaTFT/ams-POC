@@ -1,4 +1,7 @@
 import * as Yup from "yup";
+import constants from "./constantKeyword/constants";
+import messages from "./constantKeyword/messages";
+import errors from "./constantKeyword/errors";
 
 function transformJson(jsonObj) {
   try{
@@ -9,15 +12,15 @@ function transformJson(jsonObj) {
   return transformedObj;
 }
 catch(error){
-  console.log(error, "Error Transforming JSON")
+  console.log(error, errors.errorTransformingJSON)
 }
 }
 
 export function validationSchema(type,validations) {
   switch (validations?.validationType) {
-    case "string":
+    case constants.string.toLowerCase():
       if (validations?.isRequired) {
-        if(type === "string" || type === "number"){
+        if(type === constants.string.toLowerCase() || type === constants.number.toLowerCase()){
           return Yup.string()
             .required()
             .min(validations?.minLength)
@@ -29,9 +32,9 @@ export function validationSchema(type,validations) {
           .min(validations?.minLength)
           .max(validations?.maxLength );
 
-    case "number":
+    case constants.number.toLowerCase():
       if (validations.isRequired) {
-        if(type === "string" || type === "number"){
+        if(type === constants.string.toLowerCase() || type === constants.number.toLowerCase()){
           return Yup.string()
             .required()
             .min(validations?.minLength)
@@ -42,15 +45,15 @@ export function validationSchema(type,validations) {
         return Yup.number()
           .min(validations.minLength)
           .max(validations.maxLength);
-    case "dropdown" || "radio":
+    case constants.dropdown.toLowerCase() || constants.radio.toLowerCase():
       if (validations?.isRequired)
         return Yup.object().required()
       else return Yup.string();
-    case "multiselect":
+    case constants.multiselect.toLowerCase():
       if (validations?.isRequired) {
         return Yup.array()
-          .required("Please select at least one option")
-          .min(1, "Please select at least one option");
+          .required(messages.pleaseSelect)
+          .min(1, messages.pleaseSelect);
       } else {
         return Yup.array();
       }
@@ -68,28 +71,28 @@ export function getSchema(data) {
   return newSchema;
   }
   catch(error){
-    console.log(error, "error generating Schema")
+    console.log(error, errors.errorGeneratingSchema)
   }
 }
 
 export const staticSchema = {
   name: Yup.string()
-    .required("Name is required")
+    .required(messages.nameRequired)
     .min(2)
     .max(20)
-    .label("Name"),
+    .label(constants.name),
   price: Yup.number()
-    .required("Price is required")
-    .test("Is positive?", "Price must be greater than 0!", (value) => value > 0)
-    .label("Price"),
+    .required(messages.priceRequired)
+    .test(messages.isPositive, messages.priceGreaterThanZero, (value) => value > 0)
+    .label(constants.price),
   tag: Yup.string()
-    .required("Tag number is required")
+    .required(messages.tagNumberRequired)
     .min(2)
     .max(15)
-    .label("Tag number"),
+    .label(constants.tagNumber),
   purchaseDate: Yup.date()
     // .required("Date is required")
     .min(new Date(1900, 0, 1))
-    .label("Purchase Date"),
-  image: Yup.string().notRequired().label("Image"),
+    .label(constants.purchaseDate),
+  image: Yup.string().notRequired().label(constants.image),
 };

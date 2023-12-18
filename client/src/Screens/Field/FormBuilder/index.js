@@ -1,59 +1,60 @@
 import React, { useState } from "react";
-import { Capitalize } from "../../../helper/commonHelpers";
+import { Capitalize, toCamelCase } from "../../../helper/commonHelpers";
 // import SlideSwitch from "../../../components/Switch";
 import classes from "./form.module.scss";
 import CheckBox from "../../../components/FormHook/CheckBox/CheckBox";
 import Button from "../../../components/Button/Button";
+import constants from "../../../helper/constantKeyword/constants";
 export const validationDetails = [
   {
-    elementType: "string",
+    elementType: constants.string.toLowerCase(),
   },
   {
-    elementType: "number",
+    elementType: constants.number.toLowerCase(),
   },
   {
-    elementType: "boolean",
+    elementType: constants.boolean.toLowerCase(),
   },
   {
-    elementType: "email",
+    elementType: constants.email.toLowerCase(),
   },
   {
-    elementType: "phone",
+    elementType: constants.phone.toLowerCase(),
   },
   {
-    elementType: "pincode",
+    elementType: constants.pincode.toLowerCase(),
   },
 ];
 
 export const fieldDetails = [
   {
-    elementType: "Text",
-    elementAttributes: ["placeholder", "minLength", "maxLength"],
+    elementType: constants.text,
+    elementAttributes: [constants.placeholder.toLowerCase(), toCamelCase(constants.minLength), toCamelCase(constants.maxLength)],
   },
   {
-    elementType: "Number",
-    elementAttributes: ["placeholder", "minLength", "maxLength"],
+    elementType: constants.number,
+    elementAttributes: [constants.placeholder.toLowerCase(), toCamelCase(constants.minLength), toCamelCase(constants.maxLength)],
   },
   {
-    elementType: "Date",
-    elementAttributes: ["maxDate", "minDate"],
-    inputType: "date",
+    elementType: constants.date,
+    elementAttributes: [constants.maxDate, constants.minDate],
+    inputType: constants.date.toLowerCase(),
   },
   {
-    elementType: "Radio",
-    elementAttributes: ["options"],
+    elementType: constants.radio,
+    elementAttributes: [constants.options],
   },
   {
-    elementType: "Dropdown",
-    elementAttributes: ["options"],
+    elementType: constants.dropdown,
+    elementAttributes: [constants.options],
   },
   {
-    elementType: "CheckBox",
-    elementAttributes: ["options"],
+    elementType: constants.checkbox,
+    elementAttributes: [constants.options],
   },
   {
-    elementType: "MultiSelect",
-    elementAttributes: ["options"],
+    elementType: constants.multiselect,
+    elementAttributes: [constants.options],
   },
 ];
 const optionsObject = {
@@ -90,17 +91,17 @@ const FormBuilder = ({ onFormSubmit }) => {
   const getOptionType = () => {
     if (selectedField) {
       switch (selectedField) {
-        case "Radio":
-          return "radioOptions";
+        case constants.radio:
+          return constants.radioOptions;
           break;
-        case "Dropdown":
-          return "dropdownOptions";
+        case constants.dropdown:
+          return constants.dropdownOptions;
           break;
-        case "CheckBox":
-          return "checkboxOptions";
+        case constants.checkbox:
+          return constants.checkboxOptions;
           break;
-        case "MultiSelect":
-          return "multiSelectOptions";
+        case constants.multiselect:
+          return constants.multiSelectOptions;
           break;
         default:
           return Object.keys(newOption).find((key) => key === selectedField);
@@ -128,7 +129,7 @@ const FormBuilder = ({ onFormSubmit }) => {
     if (option.trim() !== "") {
       let type = newOption.type;
       switch (type) {
-        case "Radio":
+        case constants.radio:
           setNewOption((prevState) => ({
             ...prevState,
             radioOptions: [
@@ -138,7 +139,7 @@ const FormBuilder = ({ onFormSubmit }) => {
           }));
           setOption("");
           break;
-        case "CheckBox":
+        case constants.checkbox:
           setNewOption((prevState) => ({
             ...prevState,
             checkboxOptions: [
@@ -148,7 +149,7 @@ const FormBuilder = ({ onFormSubmit }) => {
           }));
           setOption("");
           break;
-        case "Dropdown":
+        case constants.dropdown:
           setNewOption((prevState) => ({
             ...prevState,
             dropdownOptions: [
@@ -161,7 +162,7 @@ const FormBuilder = ({ onFormSubmit }) => {
           }));
           setOption("");
           break;
-        case "multiSelect":
+        case toCamelCase(constants.multiselect):
           setNewOption((prevState) => ({
             ...prevState,
             multiSelectOptions: [
@@ -188,11 +189,11 @@ const FormBuilder = ({ onFormSubmit }) => {
 
   function disabledState(fieldType) {
     if (
-      fieldType === "Radio" ||
-      fieldType === "Dropdown" ||
-      fieldType === "CheckBox" ||
-      fieldType === "MultiSelect"
-      ||fieldType==="Date"
+      fieldType === constants.radio ||
+      fieldType === constants.dropdown ||
+      fieldType === constants.checkbox ||
+      fieldType === constants.multiselect
+      ||fieldType===constants.date
     )
       return true;
     return false;
@@ -293,16 +294,16 @@ const FormBuilder = ({ onFormSubmit }) => {
             ?.elementAttributes.map((attribute) => (
               <div key={attribute} style={customTextStyle}>
                 <label>{Capitalize(attribute)}:</label>
-                {attribute === "options" ? (
+                {attribute === constants.options? (
                   <div>
                     {newOption[keyType]?.map((option, index) => (
                       <div key={index} className={classes.options}>
                         <span>
-                          {keyType === "radioOptions" ||
-                          keyType === "checkboxOptions"
+                          {keyType === constants.radioOptions ||
+                          keyType === constants.checkboxOptions
                             ? option?.option
-                            : keyType === "dropdownOptions" ||
-                              keyType === "multiSelectOptions"
+                            : keyType === constants.dropdownOptions ||
+                              keyType === constants.multiSelectOptions
                             ? option?.label
                             : option}
                         </span>

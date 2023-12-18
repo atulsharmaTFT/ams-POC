@@ -5,6 +5,8 @@ import adminServices from "../../../helper/adminServices";
 import Loader from "../../../components/Loader/index";
 import styles from "../viewAsset/viewAsset.module.scss";
 import ProductBuilder from "../../Product/ProductBuilder";
+import constants from "../../../helper/constantKeyword/constants";
+import { toCamelCase } from "../../../helper/commonHelpers";
 // const dummyData = {
 //   _id: "6569d978911450989e129982",
 //   name: "p1",
@@ -232,7 +234,7 @@ const ViewAsset = () => {
                   return data?.fields.map((x) => {
                     if (x?.variable === item) {
                       console.log(x.type, x);
-                      if (x?.type === "text" || x?.type === "number")
+                      if (x?.type === constants.text.toLowerCase() || x?.type === constants.number.toLowerCase())
                         return (
                           <div key={x._id} className={styles.additionalItem}>
                             <span className={styles.key}>{x.name}:</span>{" "}
@@ -241,7 +243,7 @@ const ViewAsset = () => {
                             </span>
                           </div>
                         );
-                      if (x.type === "multiSelect") {
+                      if (x.type === toCamelCase(constants.multiselect)) {
                         return (
                           <div key={x._id} className={styles.additionalItem}>
                             <span className={styles.key}>{x.name}:</span>{" "}
@@ -251,7 +253,7 @@ const ViewAsset = () => {
                           </div>
                         );
                       }
-                      if (x.type === "dropdown") {
+                      if (x.type === constants.dropdown.toLowerCase()) {
                         return (
                           <div key={x._id} className={styles.additionalItem}>
                             <span className={styles.key}>{x.name}:</span>{" "}
@@ -261,7 +263,7 @@ const ViewAsset = () => {
                           </div>
                         );
                       }
-                      if (x.type === "checkbox") {
+                      if (x.type === constants.checkbox.toLowerCase()) {
                         console.log(x,"checkbox");
                         return (
                           <div key={x._id} className={styles.additionalItem}>
@@ -274,7 +276,7 @@ const ViewAsset = () => {
                         );
                         
                       }
-                      if (x.type === "radio") {
+                      if (x.type === constants.radio.toLowerCase()) {
                         console.log(x,"radio");
                         return (
                           <div key={x._id} className={styles.additionalItem}>
@@ -286,7 +288,7 @@ const ViewAsset = () => {
                           </div>
                         );
                       }
-                      if (x.type === "date") {
+                      if (x.type === constants.date.toLowerCase()) {
                         console.log(x,"date");
                         return (
                           <div key={x._id} className={styles.additionalItem}>
