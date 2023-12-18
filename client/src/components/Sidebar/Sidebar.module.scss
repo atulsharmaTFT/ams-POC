@@ -1,0 +1,101 @@
+@import "../../scss/theme";
+.sidebar {
+  text-align: center;
+  justify-content: space-between;
+  // padding: 0 25px;
+  height: 100%;
+  .logo {
+    display: flex;
+    justify-content: space-between;
+    background-color: $themeWhite;
+    align-items: center;
+    height: 88px;
+    a {
+      display: flex;
+      color: $themeWhite;
+      align-items: center;
+      text-decoration: none;
+      img {
+        width: 50px;
+        height: 42px;
+        margin: 0 10px;
+        display: inline-block;
+      }
+      p {
+        font-size: 25px;
+      }
+      h4 {
+        font-size: 17px;
+        color: $primaryDark;
+      }
+    }
+
+    .toggleBtn {
+      width: 30px;
+      margin: 0 10px;
+    }
+  }
+  .links {
+    margin-top: 20px;
+    margin-left: 10px;
+    a {
+      // font-size: 20px;
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: $themeWhite;
+      padding: 7px 0;
+      img {
+        margin: 10px;
+        width: 30px;
+      }
+      &:hover {
+        background-color:$shadow;
+        border-radius: 10px;
+        width: 15rem;
+      }
+    }
+  }
+}
+.active {
+  // font-weight: 700;
+  color: $themeWhite !important;
+  background-color: $secondary;
+  border-radius: 10px;
+  width: 15rem;
+}
+.sliderBox {
+  box-shadow: 0px 4px 4px $shadow;
+  // padding-top: 40px;
+  background: linear-gradient(20deg, $primaryLight, $primaryDark, $primaryLight);
+  height: 100%;
+  position: fixed;
+  left: 0;
+}
+.icon {
+  margin: 0 10px 0 10px;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  justify-content: space-between;
+}
+.signout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $brightRed;
+  color: $themeWhite;
+  font-weight: 800;
+  width: 200px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 2px 2px 2px $shadow-grey;
+  &:hover {
+    background-color: $blac-shade-3;
+    border-radius: 10px;
+  }
+}

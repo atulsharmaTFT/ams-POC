@@ -1,0 +1,17 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  .right {
+    width: 82%;
+    height: 6.5rem;
+    background-size: cover;
+  }
+  .main {
+    padding-top: 1rem;
+    margin-top: 5.5rem;
+    // margin: 1rem;
+    height: calc(100vh - 6rem);
+  }
+}
