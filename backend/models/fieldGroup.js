@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const productsSchema = new mongoose.Schema(
+const fieldGroupsSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -10,14 +10,14 @@ const productsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    fieldGroups: {
+    fields: {
       type: [mongoose.Schema.Types.ObjectId],
       required: true,
     },
   },
-  { versionKey: false, timestamps: true }
+  { versionKey: false, timestamps: true, collection: "fieldGroups" }
 );
 
-const Products = mongoose.model("products", productsSchema);
+const FieldGroup = mongoose.model("fieldGroups", fieldGroupsSchema);
 
-module.exports = Products;
+module.exports = FieldGroup;

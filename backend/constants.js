@@ -1,0 +1,4 @@
+module.exports = {
+  MAIN_DB_NAME: "AMS_MAIN",
+  INTERNAL_SERVER_ERROR: "INTERNAL_SERVER_ERROR",
+};

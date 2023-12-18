@@ -2,21 +2,70 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const Joi = require("joi");
-const Fields = require("./schemas/fields");
-const FieldGroups = require("./schemas/fieldGroups");
-const Products = require("./schemas/products");
-const Assets = require("./schemas/assets");
 const cors = require("cors");
-const app = express();
-app.use(bodyParser.json());
+require("dotenv").config({
+  path: "./.env",
+});
+const { errorHandler } = require("./middlewares/error.middlewares.js");
+const authRouter = require("./routes/auth.routes.js");
+const { connectDB } = require("./db");
+const { adminSchema } = require("./models/admin.js");
 
-mongoose
-  .connect("mongodb://localhost:27017/AMS", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Failed to connect to MongoDB", err));
+const app = express();
+
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true }));
+
+const corsOptions = {
+  exposedHeaders: "Authorization",
+  methods: "GET,POST,PATCH,PUT,DELETE",
+};
+app.use(cors(corsOptions));
+
+app.use("/api/v1", authRouter);
+
+// mongoose
+//   .connect("mongodb://localhost:27017/AMS", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("Connected to MongoDB"))
+//   .catch((err) => console.error("Failed to connect to MongoDB", err));
+
+// Connect to the main database and create super admin on server start
+const mainDb = connectDB();
+const Admin = mainDb.model("admins", adminSchema);
+
+// Connect to the database and create admin if it doesn't exist
+const createSuperAdminOnServerStart = async () => {
+  try {
+    // Check if super admin already exists
+    const superAdminExists = await Admin.exists({ type: "SUPERADMIN" });
+
+    if (superAdminExists) {
+      console.log("Super Admin already exists. Skipping creation.");
+      return;
+    }
+
+    // Create new admin
+    const newAdmin = new Admin({
+      name: "John Doe",
+      email: "johndoe@example.com",
+      type: "SUPERADMIN",
+      password: process.env.SUPERADMIN_PASSWORD,
+    });
+
+    const savedAdmin = await newAdmin.save();
+    console.log("New super admin created:", savedAdmin);
+  } catch (error) {
+    console.log("Error creating super admin:", error);
+  }
+};
+
+(async function () {
+  await createSuperAdminOnServerStart();
+  await mainDb.close();
+})();
 
 const validateId = Joi.string()
   .custom((value, helpers) => {
@@ -111,11 +160,6 @@ const validateFields = Joi.object({
     }).required(),
   }),
 });
-const corsOptions = {
-  exposedHeaders: "Authorization",
-  methods: "GET,POST,PATCH,PUT,DELETE",
-};
-app.use(cors(corsOptions));
 
 app.post("/fields", async (req, res) => {
   const { error, value } = validateFields.validate(req.body);
@@ -839,7 +883,7 @@ app.get("/assets", async (req, res) => {
       },
       {
         $lookup: {
-          from: "products",
+          from: "productCategories",
           localField: "productId",
           foreignField: "_id",
           as: "products",
@@ -933,7 +977,7 @@ app.get("/assets/:id", async (req, res) => {
       },
       {
         $lookup: {
-          from: "products",
+          from: "productCategories",
           localField: "productId",
           foreignField: "_id",
           as: "products",
@@ -1101,7 +1145,7 @@ app.get("/assets/products/:id", async (req, res) => {
       },
       {
         $lookup: {
-          from: "products",
+          from: "productCategories",
           localField: "productId",
           foreignField: "_id",
           as: "products",
@@ -1161,6 +1205,9 @@ app.get("/assets/products/:id", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+// common error handling middleware
+app.use(errorHandler);
 
 // Start the server
 app.listen(8001, () => {
