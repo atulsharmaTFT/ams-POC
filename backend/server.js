@@ -13,7 +13,7 @@ const { adminSchema } = require("./models/admin.js");
 
 const app = express();
 
-app.use(express.json()); // for parsing application/json
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
@@ -24,19 +24,10 @@ app.use(cors(corsOptions));
 
 app.use("/api/v1", authRouter);
 
-// mongoose
-//   .connect("mongodb://localhost:27017/AMS", {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => console.log("Connected to MongoDB"))
-//   .catch((err) => console.error("Failed to connect to MongoDB", err));
-
 // Connect to the main database and create super admin on server start
 const mainDb = connectDB();
 const Admin = mainDb.model("admins", adminSchema);
 
-// Connect to the database and create admin if it doesn't exist
 const createSuperAdminOnServerStart = async () => {
   try {
     // Check if super admin already exists
@@ -47,7 +38,6 @@ const createSuperAdminOnServerStart = async () => {
       return;
     }
 
-    // Create new admin
     const newAdmin = new Admin({
       name: "John Doe",
       email: "johndoe@example.com",
