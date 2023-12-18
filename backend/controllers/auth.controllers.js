@@ -17,7 +17,6 @@ const adminLogin = async (req, res, next) => {
 
       if (!superAdmin) {
         throw new ApiError(401, "Invalid Credentials");
-        ne;
       }
 
       await db.close();
