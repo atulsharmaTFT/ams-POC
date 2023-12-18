@@ -12,7 +12,9 @@ const messages = {
     nameAtmost: 'Name must be at most 20 characters',
     tagAtmost: 'Tag number must be at most 15 characters',
     priceMustBeNUmber: 'Price must be a `number` type, but the final value was: `NaN` (cast from the value `""`).',
-    errorFetchingData: 'Error fetching data:'
+    isPositive: 'Is positive?',
+    selectOption: 'select-option',
+    removeValue: 'remove-value',
   };
   
   export default messages;

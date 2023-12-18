@@ -5,6 +5,7 @@ import FormBuilder from "../FormBuilder";
 import adminServices from "../../../helper/adminServices";
 import { toCamelCase } from "../../../helper/commonHelpers";
 import { v4 as uuidv4 } from "uuid";
+import constants from "../../../helper/constantKeyword/constants";
 
 const NewField = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const NewField = () => {
   });
 
   const handleFormSubmit = async (fields) => {
-    console.log(fields, "fielsd here");
+    console.log(fields, "fields here");
     const validationObject = {
       isRequired: fields.isRequired || false,
       min: fields.minLength || 0,
@@ -42,7 +43,7 @@ const NewField = () => {
     // { validationType: null, isRequired: false, min: 0, max: 0 }
     let payload = {};
     switch (fields?.type) {
-      case "Radio":
+      case constants.radio:
         payload = {
           type: fields?.type.toLowerCase(),
           variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
@@ -53,7 +54,7 @@ const NewField = () => {
         };
         await createFieldsServices(payload);
         break;
-      case "Dropdown":
+      case constants.dropdown:
         payload = {
           type: fields?.type.toLowerCase(),
           variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
@@ -64,7 +65,7 @@ const NewField = () => {
         };
         await createFieldsServices(payload);
         break;
-      case "CheckBox":
+      case constants.checkbox:
         payload = {
           type: fields?.type.toLowerCase(),
           variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
@@ -75,7 +76,7 @@ const NewField = () => {
         };
         await createFieldsServices(payload);
         break;
-      case "multiSelect":
+      case toCamelCase(constants.multiselect):
         payload = {
           type: fields?.type,
           variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
@@ -86,7 +87,7 @@ const NewField = () => {
         };
         await createFieldsServices(payload);
         break;
-      case "Text":
+      case constants.text:
         payload = {
           type: fields?.type.toLowerCase(),
           variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
@@ -97,7 +98,7 @@ const NewField = () => {
         };
         await createFieldsServices(payload);
         break;
-      case "Number":
+      case constants.number:
         payload = {
           type: fields?.type.toLowerCase(),
           variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
@@ -108,7 +109,7 @@ const NewField = () => {
         };
         await createFieldsServices(payload);
         break;
-      case "Date":
+      case constants.date:
         payload = {
           type: fields?.type.toLowerCase(),
           variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,

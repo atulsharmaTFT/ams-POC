@@ -13,7 +13,7 @@ const constants = {
     radio: 'Radio',
     multiselect: 'MultiSelect',
     date: 'Date',
-    tagNumber: 'tagNumber',
+    tagNumber: 'Tag number',
     name: 'Name',
     price: 'Price',
     purchaseDate: 'Purchase Date',
@@ -22,7 +22,6 @@ const constants = {
     string: 'String',
     boolean: 'Boolean',
     isRequired: 'isRequired',
-    isPositive: 'isPositive',
     pincode: 'Pincode',
     createField: 'Create Field',
     fieldType: 'Field Type',
@@ -34,6 +33,14 @@ const constants = {
     description: 'Description',
     addNewField: 'Add New Field',
     addNewFieldGroup: 'Add New FieldGroup',
+    minDate: 'minDate',
+    maxDate: 'maxDate',
+    options: 'options',
+    radioOptions: 'radioOptions',
+    dropdownOptions: 'dropdownOptions',
+    checkboxOptions: 'checkboxOptions',
+    multiSelectOptions: 'multiSelectOptions',
+    slider: 'slider',
     
   };
   

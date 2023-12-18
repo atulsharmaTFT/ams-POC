@@ -15,6 +15,9 @@ import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
 import { useParams } from "react-router-dom";
 import { FormProvider } from "../../../components/FormHook";
+import constants from "../../../helper/constantKeyword/constants";
+import { toCamelCase } from "../../../helper/commonHelpers";
+import messages from "../../../helper/constantKeyword/messages";
 const ProductBuilder = ({
   fields,
   productId,
@@ -127,44 +130,44 @@ console.log(errors,fields,getValues(),"errors")
   const setDynamicData = (field) => {
     let variable = field?.variable;
     switch (field?.type) {
-      case "radio":
+      case constants.radio.toLowerCase():
         handleRadioChange(data?.[variable]?.option, field);
         break;
-      case "checkbox":
+      case constants.checkbox.toLowerCase():
         data?.[variable]?.forEach((item) => {
           if (item.checked) {
             handleCheckBoxClick(item.option, field);
           }
         });
         break;
-      case "multiSelect":
+      case toCamelCase(constants.multiselect):
         handleOptionChange(
           data?.[variable],
-          { action: "select-option" },
-          "multiSelect",
+          { action: messages.selectOption },
+          toCamelCase(constants.multiselect),
           variable,
           field
         );
         break;
       case "slider":
-      case "dropdown":
+      case constants.dropdown.toLowerCase():
         handleOptionChange(
           data?.[variable],
-          { action: "select-option" },
-          "dropdown",
+          { action: messages.selectOption },
+          constants.dropdown.toLowerCase(),
           variable,
           field
         );
         break;
-      case "date":
+      case constants.date.toLowerCase():
         if (data?.[variable]) {
           handleInputChange(data?.[variable], variable, field.type, field);
         }
         break;
-      case "number":
+      case constants.number.toLowerCase():
         handleInputChange(data?.[variable], variable, field.type, field);
         break;
-      case "text":
+      case constants.text.toLowerCase():
         handleInputChange(data?.[variable], variable, field.type, field);
         break;
       default:
@@ -197,7 +200,7 @@ console.log(errors,fields,getValues(),"errors")
   };
 
   const handleInputChange = (e, name, type, field) => {
-    if (type === "date") {
+    if (type === constants.date.toLowerCase()) {
       // setSelectedDate(new Date(e).toISOString().split("T")[0]);
       field.value = new Date(e).toISOString().split("T")[0];
       setFormData((prev) => {
@@ -217,7 +220,7 @@ console.log(errors,fields,getValues(),"errors")
     }
   };
   const handleOptionChange = (options, action, type, name, field) => {
-    if (type === "dropdown") {
+    if (type === constants.dropdown.toLowerCase()) {
       // setDropDownOptions(options);
       field.value = options;
       setFormData((prev) => {
@@ -227,12 +230,12 @@ console.log(errors,fields,getValues(),"errors")
         };
       });
     }
-    if (type === "multiSelect") {
-      if (action.action === "select-option") {
+    if (type === toCamelCase(constants.multiselect)) {
+      if (action.action === messages.selectOption) {
         // setSelectedOptions(options);
         field.value = options;
       }
-      if (action.action === "remove-value") {
+      if (action.action === messages.removeValue) {
         // const filterOption = selectedOptions.filter(
         //   (elem) => elem?.value !== action?.removedValue?.value
         // );
@@ -312,7 +315,7 @@ console.log(errors,fields,getValues(),"errors")
   };
   const renderField = useCallback((field) => {
     switch (field?.type) {
-      case "radio":
+      case constants.radio.toLowerCase():
         return (
           <div className={styles.flex}>
             {field?.radioOptions.map((option, index) => {
@@ -329,7 +332,7 @@ console.log(errors,fields,getValues(),"errors")
             })}
           </div>
         );
-      case "checkbox":
+      case constants.checkbox.toLowerCase():
         return (
           <div>
             {field.checkboxOptions.map((option, index) => (
@@ -343,7 +346,7 @@ console.log(errors,fields,getValues(),"errors")
             ))}
           </div>
         );
-      case "multiSelect":
+      case toCamelCase(constants.multiselect):
         return (
           <MultiselectDropdown
             isMulti={true}
@@ -360,7 +363,7 @@ console.log(errors,fields,getValues(),"errors")
             className={styles.inputOverride}
           />
         );
-      case "dropdown":
+      case constants.dropdown.toLowerCase():
         return (
           <MultiselectDropdown
             isMulti={false}
@@ -377,7 +380,7 @@ console.log(errors,fields,getValues(),"errors")
             className={styles.inputOverride}
           />
         );
-      case "slider":
+      case constants.slider:
         return (
           <InputField
             key={field._id}
@@ -392,7 +395,7 @@ console.log(errors,fields,getValues(),"errors")
             step={field?.sliderOptions.step}
           />
         );
-      case "date":
+      case constants.date.toLowerCase():
         return (
           <DateTimePicker
             type="date"
@@ -411,7 +414,7 @@ console.log(errors,fields,getValues(),"errors")
             overrideClassName={styles.inputOverride}
           />
         );
-      case "number":
+      case constants.number.toLowerCase():
         return (
           <InputField
             key={field._id}
@@ -425,7 +428,7 @@ console.log(errors,fields,getValues(),"errors")
             containerOverrideClassName={styles.inputContainer}
           />
         );
-      case "text":
+      case constants.text.toLowerCase():
         return (
           <InputField
             type="text"
