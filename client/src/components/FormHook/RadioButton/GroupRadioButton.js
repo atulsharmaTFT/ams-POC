@@ -1,9 +1,10 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import styles from "./RadioButton.module.scss";
+import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 
 function GroupRadioButton({ name, options, defaultValue, disabled }) {
-  const { control } = useFormContext();
+  const { control  , formState: { errors },} = useFormContext();
   return (
     <div>
       {options.map((option, index) => (
@@ -41,6 +42,9 @@ function GroupRadioButton({ name, options, defaultValue, disabled }) {
           />
         </div>
       ))}
+      {errors[name]?.message?.length > 0 && (
+        <ErrorMessage error={errors[name]?.message} />
+      )}
     </div>
   );
 }

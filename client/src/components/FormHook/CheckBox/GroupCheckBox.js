@@ -1,8 +1,12 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 
 function GroupCheckBox({ name, options, onChange, defaultValue }) {
-  const { control } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
 
   return (
     <div>
@@ -32,6 +36,9 @@ function GroupCheckBox({ name, options, onChange, defaultValue }) {
           />
         </div>
       ))}
+      {errors[name]?.message?.length > 0 && (
+        <ErrorMessage error={errors[name]?.message} />
+      )}
     </div>
   );
 }
