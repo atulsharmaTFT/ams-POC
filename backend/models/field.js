@@ -165,6 +165,6 @@ const fieldSchema = new mongoose.Schema(
   { versionKey: false, timestamps: true }
 );
 
-const Fields = mongoose.model("fields", fieldSchema);
+const Field = mongoose.model("fields", fieldSchema);
 
-module.exports = Fields;
+module.exports = Field;
