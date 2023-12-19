@@ -1,15 +1,14 @@
 const mongoose = require("mongoose");
 
-
-
-const validationSchema = new mongoose.Schema({
-  validationType: { type: String, default: "" },
-  isRequired: { type: Boolean, default: false },
-  min: { type: String, default: 0 },
-  max: { type: String, default: 0 }
-},
+const validationSchema = new mongoose.Schema(
+  {
+    validationType: { type: String, default: "" },
+    isRequired: { type: Boolean, default: false },
+    min: { type: Number, default: 0 },
+    max: { type: Number, default: 0 },
+  },
   { _id: false }
-)
+);
 
 const options1 = new mongoose.Schema(
   {
@@ -24,7 +23,6 @@ const options1 = new mongoose.Schema(
   },
   { _id: false }
 );
-
 
 const options2 = new mongoose.Schema(
   {

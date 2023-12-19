@@ -1,5 +1,7 @@
 import React from "react";
 import styles from "./inputField.module.scss";
+import ErrorMessage from "../../ErrorMessage/ErrorMessage";
+import { useFormContext, Controller } from 'react-hook-form';
 // import ErrorMessage from "../ErrorMessage";
 
 const InputField = ({
@@ -31,6 +33,7 @@ const InputField = ({
   step,
   ...rest
 }) => {
+  const { control } = useFormContext();
   const getClassNames = () => {
     const classNames = [styles.input];
     if (inputOverrideClassName) {
@@ -66,21 +69,30 @@ const InputField = ({
         </div>
       )}
       <div className={getClassNames()}>
+      <Controller
+     name={fieldName}
+     control={control}
+     defaultValue={control?.defaultValues?.fieldName}
+     render={({ field, fieldState: { error } }) => (
         <input
           style={{ color: textColor }}
           type={type}
-          name={fieldName}
+          name={field?.name}
+          register={register}
           defaultValue={value}
-          onChange={onChange}
+          onChange={field?.onChange}
           placeholder={placeholder}
           onKeyPress={onKeyPress}
           maxLength={maxlength}
           min={min}
           max={max}
           step={step}
-          {...register(fieldName, rules)}
+          {...field}
+          {...register(fieldName)}
           {...rest}
         />
+     )}
+     />
         {suffixIcon && (
           <i
             onClick={onIconClick}
@@ -95,10 +107,10 @@ const InputField = ({
           <div className={styles.suffixIconText}>{suffixIconText}</div>
         )}
       </div>
-      {/* <ErrorMessage
+      <ErrorMessage
         error={error}
         overrideErrorClassName={overrideErrorClassName}
-      /> */}
+      />
     </div>
   );
 };

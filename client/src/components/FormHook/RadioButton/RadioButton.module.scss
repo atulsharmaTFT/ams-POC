@@ -1,0 +1,21 @@
+@import "../../../scss/theme";
+
+.radio {
+  padding: 15px 0;
+  border: 1px solid lightgrey;
+  cursor: pointer;
+  border-radius: 1rem;
+  display: flex;
+  margin: 10px 0px;
+  align-items: center;
+  justify-content: space-around;
+}
+.radioButton {
+  width: 100%;
+  margin: 0px 30px;
+}
+.radioLabelStyle {
+  color: black;
+  font-size: 1rem;
+  margin-left: 10px;
+}

@@ -1,5 +1,11 @@
 @import '../../../scss/theme';
-
+.container{
+  height: 80vh;
+  background-color: $hawkes-blue;
+  padding: 10px;
+.formContainer{
+  width: 50%;
+}
 .createBtn {
     width: 100% !important;
     font-size: 18px !important;
@@ -74,3 +80,4 @@
       margin-bottom: 25px;
     }
   }
+}

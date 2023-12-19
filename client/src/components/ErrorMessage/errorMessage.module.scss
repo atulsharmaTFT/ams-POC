@@ -1,0 +1,15 @@
+@import "../../scss/theme";
+
+.error {
+  width: 100%;
+  color: $error-color;
+  font-size: 1rem;
+  height: 0.7rem;
+  // line-height: 1.7rem;
+  // margin: 0.8rem 0;
+  // text-align: start;
+  @media screen and (max-width: 767px) {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+  }
+}

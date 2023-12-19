@@ -3,7 +3,10 @@ import { useParams } from "react-router-dom";
 import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
 import Loader from "../../../components/Loader/index";
+import styles from "../viewAsset/viewAsset.module.scss";
 import ProductBuilder from "../../Product/ProductBuilder";
+import constants from "../../../helper/constantKeyword/constants";
+import { toCamelCase } from "../../../helper/commonHelpers";
 // const dummyData = {
 //   _id: "6569d978911450989e129982",
 //   name: "p1",
@@ -196,36 +199,116 @@ const ViewAsset = () => {
     await getAssetByIdServices(params?.id);
   };
   const params = useParams();
+  console.log(data.data,"data.data")
   return (
     // <p>view edit asset working!!</p>
-    <div>
+    <div className={styles.container}>
       {isGetAssetByIdSuccess && !loading ? (
-        <div className="container">
-          {/* <div className="staticContainer"> */}
-          <div>Asset Name : {data.name}</div>
-          <div>Asset Tag : {data.tag}</div>
-          <div>Asset price : {data.price}</div>
-          <div>
-            Asset Purchase Date :
-            {new Date(data.purchaseDate).toISOString().split("T")[0]}
-          </div>
-          <div>
-            Asset Creation Date :
-            {new Date(data.createdAt).toISOString().split("T")[0]}
-          </div>
-          {/* </div> */}
-          {Object.keys(data.data).map((item) => {
-            return data.fields.map((x) => {
-              if (x.variable === item) {
-                return (
-                  <div key={x._id}>
-                    {x.name} : {JSON.stringify(data.data[item])}
+        // <div className={styles.container}>
+        <>
+          <div className={styles.card}>
+            <div className={styles.imageContainer}>
+              <img src="https://media.wired.com/photos/64daad6b4a854832b16fd3bc/master/pass/How-to-Choose-a-Laptop-August-2023-Gear.jpg" />
+            </div>
+
+            {/* <div className="staticContainer"> */}
+            <div className={styles.infoContainer}>
+              <div className={styles.infoHeader}>
+                <div className={styles.name}>
+                  <p>{data.name}</p>
+                  <button>Move to Inventroy</button>
                   </div>
-                );
-              }
-            });
-          })}
-        </div>
+                <div className={styles.price}>₹ {data.price}</div>
+                <div>Asset Tag : {data.tag}</div>
+                <div>
+                  Asset Purchase Date : &nbsp;
+                  {new Date(data.purchaseDate).toISOString().split("T")[0]}
+                </div>
+                <div>
+                  Asset Creation Date : &nbsp;
+                  {new Date(data.createdAt).toISOString().split("T")[0]}
+                </div>
+              </div>
+              <div className={styles.additionalData}>
+                {Object.keys(data?.data).map((item) => {
+                  return data?.fields.map((x) => {
+                    if (x?.variable === item) {
+                      console.log(x.type, x);
+                      if (x?.type === constants.text.toLowerCase() || x?.type === constants.number.toLowerCase())
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            <span className={styles.value}>
+                              {data.data[item]}
+                            </span>
+                          </div>
+                        );
+                      if (x.type === toCamelCase(constants.multiselect)) {
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            {data.data[item].map((item) => (
+                              <span className={styles.chip}>{item.label}</span>
+                            ))}
+                          </div>
+                        );
+                      }
+                      if (x.type === constants.dropdown.toLowerCase()) {
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            <span className={styles.value}>
+                              {data.data[item].label}
+                            </span>
+                          </div>
+                        );
+                      }
+                      if (x.type === constants.checkbox.toLowerCase()) {
+                        console.log(x,"checkbox");
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            {data.data[item].map(item=><span className={styles.chip}>{item.option}</span>)}
+                            {/* <span className={styles.value}>
+                              {JSON.stringify(data.data[item])}
+                            </span> */}
+                          </div>
+                        );
+                        
+                      }
+                      if (x.type === constants.radio.toLowerCase()) {
+                        console.log(x,"radio");
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            {/* {data.data[item].map(item=><span className={styles.chip}>{item.option}</span>)} */}
+                            <span className={styles.value}>
+                              {data.data[item].option}
+                            </span>
+                          </div>
+                        );
+                      }
+                      if (x.type === constants.date.toLowerCase()) {
+                        console.log(x,"date");
+                        return (
+                          <div key={x._id} className={styles.additionalItem}>
+                            <span className={styles.key}>{x.name}:</span>{" "}
+                            {/* {data.data[item].map(item=><span className={styles.chip}>{item.option}</span>)} */}
+                            <span className={styles.value}>
+                            {new Date(data.data[item]).toISOString().split("T")[0]}
+                            
+                            </span>
+                          </div>
+                        );
+                      }
+                    }
+                  });
+                })}
+              </div>
+            </div>
+          </div>  
+          </>
+        // </div>
       ) : (
         <Loader showOnFullScreen={true} loading={loading} />
       )}

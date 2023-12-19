@@ -1,16 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./ProductBuilder.module.scss";
-import RadioButton from "../../../components/RadioButton";
-import InputField from "../../../components/InputField";
-import DateTimePicker from "../../../components/DatePicker/DateTimePicker";
-import MultiselectDropdown from "../../../components/MultiSelectDropdown/MultiselectDropdown";
-import CheckBox from "../../../components/CheckBox/CheckBox";
+import RadioButton from "../../../components/FormHook/RadioButton";
+import InputField from "../../../components/FormHook/InputField";
+import DateTimePicker from "../../../components/FormHook/DatePicker/DateTimePicker";
+import MultiselectDropdown from "../../../components/FormHook/MultiSelectDropdown/MultiselectDropdown";
+import CheckBox from "../../../components/FormHook/CheckBox/CheckBox";
 import Dropzone from "react-dropzone-uploader";
 import "react-dropzone-uploader/dist/styles.css";
+import { getSchema, staticSchema } from "../../../helper/yupSchemaBuilder";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
 import { useParams } from "react-router-dom";
+import { FormProvider } from "../../../components/FormHook";
+import { GroupCheckBox } from "../../../components/FormHook/CheckBox/GroupCheckBox";
+import GroupRadioButton from "../../../components/FormHook/RadioButton/GroupRadioButton";
+import constants from "../../../helper/constantKeyword/constants";
+import { toCamelCase } from "../../../helper/commonHelpers";
+import messages from "../../../helper/constantKeyword/messages";
+import moment from "moment";
 const ProductBuilder = ({
   fields,
   productId,
@@ -21,26 +31,44 @@ const ProductBuilder = ({
   buttonName,
   data,
 }) => {
-  const [selectedOptions, setSelectedOptions] = useState([]);
   const [formData, setFormData] = useState({});
 
+  let schema = getSchema(fields);
+
+  schema = { ...schema, ...staticSchema };
+  const validatorSchema = !!schema && Yup.object().shape(schema);
+  let defaultValues = {};
+  function setDefaultValues(schema) {
+    try {
+      let values = { data, name, purchaseDate, price, tag };
+      Object.keys(schema).forEach((key) => {
+        try {
+          defaultValues[key] = values?.[key] ?? values?.data?.[key];
+        } catch (e) {
+          console.log(e, "error creating Key Values");
+        }
+      });
+      return defaultValues;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  const DEFAULT_DATA_VALUE = !!schema && setDefaultValues(schema);
+  const methods = useForm({
+    shouldUnregister: false,
+    defaultValues: !!validatorSchema && !!schema && DEFAULT_DATA_VALUE,
+    resolver: validatorSchema && yupResolver(validatorSchema),
+    mode: "all",
+  });
   const {
     handleSubmit,
     trigger,
+    watch,
     setValue,
     getValues,
+    reset,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      staticName: name ? name : "",
-      staticPrice: price ? price : 0,
-      staticTag: tag ? tag : "",
-      staticPurchaseDate: purchaseDate
-        ? new Date(purchaseDate).toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0],
-      // staticImage: null,
-    },
-  });
+  } = methods;
 
   const {
     state: {
@@ -65,7 +93,7 @@ const ProductBuilder = ({
     callService: updateExistingAssetService,
     resetServiceState: resetUpdateExistingAssetState,
   } = useAdminApiService(adminServices.updateExistingAsset);
-
+  console.log(errors, fields, getValues(), "errors");
   useEffect(() => {
     if (isAddNewAssetError && addNewAssetError) {
       console.log(addNewAssetError, "Error");
@@ -101,28 +129,6 @@ const ProductBuilder = ({
     "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml", // .xlsx worksheet
   ];
 
-  // let dropzoneCss = {
-  //   dropzone: {
-  //     overflow: "hidden",
-  //     minHeight: "60px",
-  //     marginTop: "20px",
-  //     borderRadius: "8px",
-  //     border: "1px solid #cdcdcd",
-  //     backgroundColor: "#fff",
-  //   },
-  //   inputLabelWithFiles: {
-  //     display: "none",
-  //   },
-  //   inputLabel: {
-  //     fontSize: "18px",
-  //     fontWeight: "500",
-  //     color: "#777",
-  //   },
-  //   preview: {
-  //     padding: "15px",
-  //   },
-  // };
-
   useEffect(() => {
     if (data && Object.keys(data).length > 0) {
       fields.forEach((item) => {
@@ -130,48 +136,51 @@ const ProductBuilder = ({
       });
     }
   }, []);
-
+  // useEffect(()=>{
+  //   // Setting Purchase date for in case of update
+  //   setValue('purchaseDate', moment(purchaseDate?? "").format("YYYY-MM-DD"))
+  // },[])
   const setDynamicData = (field) => {
     let variable = field?.variable;
     switch (field?.type) {
-      case "radio":
+      case constants.radio.toLowerCase():
         handleRadioChange(data?.[variable]?.option, field);
         break;
-      case "checkbox":
+      case constants.checkbox.toLowerCase():
         data?.[variable]?.forEach((item) => {
           if (item.checked) {
             handleCheckBoxClick(item.option, field);
           }
         });
         break;
-      case "multiSelect":
+      case toCamelCase(constants.multiselect):
         handleOptionChange(
           data?.[variable],
-          { action: "select-option" },
-          "multiSelect",
+          { action: messages.selectOption },
+          toCamelCase(constants.multiselect),
           variable,
           field
         );
         break;
       case "slider":
-      case "dropdown":
+      case constants.dropdown.toLowerCase():
         handleOptionChange(
           data?.[variable],
-          { action: "select-option" },
-          "dropdown",
+          { action: messages.selectOption },
+          constants.dropdown.toLowerCase(),
           variable,
           field
         );
         break;
-      case "date":
+      case constants.date.toLowerCase():
         if (data?.[variable]) {
           handleInputChange(data?.[variable], variable, field.type, field);
         }
         break;
-      case "number":
+      case constants.number.toLowerCase():
         handleInputChange(data?.[variable], variable, field.type, field);
         break;
-      case "text":
+      case constants.text.toLowerCase():
         handleInputChange(data?.[variable], variable, field.type, field);
         break;
       default:
@@ -204,7 +213,7 @@ const ProductBuilder = ({
   };
 
   const handleInputChange = (e, name, type, field) => {
-    if (type === "date") {
+    if (type === constants.date.toLowerCase()) {
       // setSelectedDate(new Date(e).toISOString().split("T")[0]);
       field.value = new Date(e).toISOString().split("T")[0];
       setFormData((prev) => {
@@ -224,8 +233,7 @@ const ProductBuilder = ({
     }
   };
   const handleOptionChange = (options, action, type, name, field) => {
-    console.log(options);
-    if (type === "dropdown") {
+    if (type === constants.dropdown.toLowerCase()) {
       // setDropDownOptions(options);
       field.value = options;
       setFormData((prev) => {
@@ -235,12 +243,12 @@ const ProductBuilder = ({
         };
       });
     }
-    if (type === "multiSelect") {
-      if (action.action === "select-option") {
+    if (type === toCamelCase(constants.multiselect)) {
+      if (action.action === messages.selectOption) {
         // setSelectedOptions(options);
         field.value = options;
       }
-      if (action.action === "remove-value") {
+      if (action.action === messages.removeValue) {
         // const filterOption = selectedOptions.filter(
         //   (elem) => elem?.value !== action?.removedValue?.value
         // );
@@ -280,22 +288,22 @@ const ProductBuilder = ({
       };
     });
   };
-
   const formHandler = async (data) => {
-    console.log("data from here", data);
-    console.log("formData", formData);
-    const finalData = {
-      name: data?.staticName,
-      tag: data?.staticTag,
-      price: data?.staticPrice,
-      purchaseDate: data?.staticPurchaseDate,
-      productId: productId,
-      data: {
-        ...formData,
-      },
-    };
+    console.log(data, "data");
 
-    console.log(finalData, "FinalData");
+    const finalData = {
+      name: data?.name,
+      tag: data?.tag,
+      price: data?.price,
+      purchaseDate: data?.purchaseDate,
+      productId: productId,
+      data: data,
+    };
+    delete finalData.data.name;
+    delete finalData.data.tag;
+    delete finalData.data.price;
+    delete finalData.data.staticPurchaseDate;
+    delete finalData.data.purchaseDate;
     if (buttonName === "Submit") {
       await addNewAssetService(finalData);
     } else {
@@ -313,182 +321,142 @@ const ProductBuilder = ({
   // };
 
   const handleStaticInputHandler = (event, name) => {
-    if (name === "staticPurchaseDate") {
+    if (name === "purchaseDate") {
       setValue(name, new Date(event.target.value).toISOString().split("T")[0]);
     } else {
       setValue(name, event.target.value);
     }
   };
-  const renderField = (field) => {
-    switch (field?.type) {
-      case "radio":
-        return (
-          <div className={styles.flex}>
-            {field.radioOptions.map((option, index) => {
-              return (
-                <RadioButton
-                  key={option.option}
-                  label={option.option}
-                  value={option.option}
-                  checked={option?.checked}
-                  name={field.variable}
-                  onChange={(e) => handleRadioChange(e.target.value, field)}
-                />
-              );
-            })}
-          </div>
-        );
-      case "checkbox":
-        return (
-          <div>
-            {field.checkboxOptions.map((option, index) => (
-              <CheckBox
-                key={option?.option}
-                value={option?.option}
-                title={option?.option}
-                isChecked={option?.checked}
-                onChange={(e) => handleCheckBoxClick(e.target.value, field)}
+  const renderField = useCallback(
+    (field) => {
+      switch (field?.type) {
+        case constants.radio.toLowerCase():
+          return (
+            <GroupRadioButton
+              options={field?.radioOptions}
+              name={field.variable}
+              defaultValue={getValues(field.variable)}
               />
-            ))}
-          </div>
-        );
-      case "multiSelect":
-        return (
-          <MultiselectDropdown
-            isMulti={true}
-            key={field?._id}
-            category={field?.placeholder}
-            data={field?.multiSelectOptions}
-            handleChange={(selectedValue, action) =>
-              handleOptionChange(
-                selectedValue,
-                action,
-                field?.type,
-                field?.variable,
-                field
-              )
-            }
-            selected={field?.value}
-            className={styles.inputOverride}
-          />
-        );
-      case "dropdown":
-        return (
-          <MultiselectDropdown
-            isMulti={false}
-            key={field?._id}
-            category={field?.placeholder}
-            data={field?.dropdownOptions}
-            handleChange={(selectedValue, action) =>
-              handleOptionChange(
-                selectedValue,
-                action,
-                field?.type,
-                field?.variable,
-                field
-              )
-            }
-            selected={field?.value}
-            className={styles.inputOverride}
-          />
-        );
-      case "slider":
-        return (
-          <InputField
-            key={field._id}
-            type="range"
-            fieldName={field.name}
-            placeholder={field.placeholder}
-            onChange={handleInputChange}
-            inputOverrideClassName={styles.inputOverride}
-            overrideErrorClassName={styles.overrideErrorClass}
-            containerOverrideClassName={styles.inputContainer}
-            min={field.sliderOptions.min}
-            max={field.sliderOptions.max}
-            step={field.sliderOptions.step}
-          />
-        );
-      case "date":
-        return (
-          <DateTimePicker
-            type="date"
-            key={field?._id}
-            defaultValue={field.value}
-            // setDateTime={setSelectedDateTime}
-            onChange={(event) =>
-              handleInputChange(
-                event.target.value,
-                field?.variable,
-                field?.type,
-                field
-              )
-            }
-            inputOverrideClassName={styles.inputContainer}
-            overrideClassName={styles.inputOverride}
-          />
-        );
-      case "number":
-        return (
-          <InputField
-            key={field._id}
-            type="number"
-            fieldName={field.name}
-            defaultValue={field.value}
-            placeholder={field.placeholder}
-            onChange={(event) =>
-              handleInputChange(
-                event.target.value,
-                field?.variable,
-                field?.type,
-                field
-              )
-            }
-            inputOverrideClassName={styles.inputOverride}
-            overrideErrorClassName={styles.overrideErrorClass}
-            containerOverrideClassName={styles.inputContainer}
-          />
-        );
-      case "text":
-        return (
-          <InputField
-            type="text"
-            key={field._id}
-            defaultValue={field.value}
-            fieldName={field.name}
-            placeholder={field.placeholder}
-            onChange={(event) =>
-              handleInputChange(
-                event.target.value,
-                field?.variable,
-                field?.type,
-                field
-              )
-            }
-            inputOverrideClassName={styles.inputOverride}
-            overrideErrorClassName={styles.overrideErrorClass}
-            containerOverrideClassName={styles.inputContainer}
-          />
-        );
-      default:
-        return null;
-    }
-  };
+          );
+        case constants.checkbox.toLowerCase():
+          return (
+            <GroupCheckBox
+              options={field.checkboxOptions}
+              name={field.variable}
+              defaultValue={getValues(field?.variable)}
+            />
+          );
+        case toCamelCase(constants.multiselect):
+          return (
+            <MultiselectDropdown
+              isMulti={true}
+              key={field?._id}
+              category={field?.placeholder}
+              data={field?.multiSelectOptions}
+              handleChange={(selectedValue, action) => {
+                setValue(field?.variable, selectedValue);
+                methods.clearErrors(field?.variable);
+              }}
+              error={errors?.[field?.variable]?.message}
+              selected={getValues(field?.variable)}
+              fieldName={field?.variable}
+              className={styles.inputOverride}
+            />
+          );
+        case constants.dropdown.toLowerCase():
+          return (
+            <MultiselectDropdown
+              isMulti={false}
+              key={field?._id}
+              fieldName={field?.variable}
+              category={field?.placeholder}
+              data={field?.dropdownOptions}
+              handleChange={(selectedValue, action) => {
+                setValue(field?.variable, selectedValue);
+                methods.clearErrors(field?.variable);
+              }}
+              error={errors?.[field?.variable]?.message}
+              selected={getValues(field?.variable)}
+              className={styles.inputOverride}
+            />
+          );
+        case constants.slider:
+          return (
+            <InputField
+              key={field._id}
+              type="range"
+              fieldName={field?.name}
+              placeholder={field.placeholder}
+              inputOverrideClassName={styles.inputOverride}
+              overrideErrorClassName={styles.overrideErrorClass}
+              containerOverrideClassName={styles.inputContainer}
+              min={field?.sliderOptions.min}
+              max={field?.sliderOptions.max}
+              step={field?.sliderOptions.step}
+            />
+          );
+        case constants.date.toLowerCase():
+          return (
+            <DateTimePicker
+              type="date"
+              key={field?._id}
+              defaultValue={field.value}
+              inputOverrideClassName={styles.inputContainer}
+              overrideClassName={styles.inputOverride}
+            />
+          );
+        case constants.number.toLowerCase():
+          return (
+            <InputField
+              key={field._id}
+              type="number"
+              fieldName={field?.variable}
+              placeholder={field?.placeholder}
+              error={errors?.[field?.variable]?.message}
+              defaultValue={field?.value}
+              inputOverrideClassName={styles.inputOverride}
+              overrideErrorClassName={styles.overrideErrorClass}
+              containerOverrideClassName={styles.inputContainer}
+            />
+          );
+        case constants.text.toLowerCase():
+          return (
+            <InputField
+              type="text"
+              key={field._id}
+              fieldName={field?.variable}
+              error={errors?.[field?.variable]?.message}
+              placeholder={field?.placeholder}
+              defaultValue={field.value}
+              inputOverrideClassName={styles.inputOverride}
+              overrideErrorClassName={styles.overrideErrorClass}
+              containerOverrideClassName={styles.inputContainer}
+            />
+          );
+        default:
+          return null;
+      }
+    },
+    [fields, errors, setValue]
+  );
   if (fields?.length <= 0) return <p>loading</p>;
   return (
     <div className={styles["product-builder"]}>
-      <form onSubmit={handleSubmit(formHandler)}>
+      <FormProvider
+        methods={methods}
+        buttonName={buttonName}
+        onSubmit={handleSubmit(formHandler)}
+      >
         <div className={styles.fieldsContainer}>
           <div className={styles.container}>
             <InputField
               type="text"
               key="name"
               label="Enter Name"
-              fieldName="staticName"
+              fieldName="name"
               placeholder="Enter Name"
-              defaultValue={getValues("staticName")}
-              onChange={(event) =>
-                handleStaticInputHandler(event, "staticName")
-              }
+              error={errors?.name?.message}
+              defaultValue={getValues("name")}
               inputOverrideClassName={styles.inputOverride}
               overrideErrorClassName={styles.overrideErrorClass}
               containerOverrideClassName={styles.inputContainer}
@@ -498,11 +466,11 @@ const ProductBuilder = ({
             <InputField
               type="text"
               key="tag"
-              fieldName="staticTag"
+              fieldName="tag"
               placeholder="Enter Tag"
               label="Enter Tag"
-              defaultValue={getValues("staticTag")}
-              onChange={(event) => handleStaticInputHandler(event, "staticTag")}
+              error={errors?.tag?.message}
+              defaultValue={getValues("tag")}
               inputOverrideClassName={styles.inputOverride}
               overrideErrorClassName={styles.overrideErrorClass}
               containerOverrideClassName={styles.inputContainer}
@@ -512,13 +480,11 @@ const ProductBuilder = ({
             <InputField
               type="number"
               key="number"
-              fieldName="staticPrice"
+              fieldName="price"
               placeholder="Enter Price"
-              defaultValue={getValues("staticPrice")}
+              defaultValue={getValues("price")}
               label="Enter Price"
-              onChange={(event) =>
-                handleStaticInputHandler(event, "staticPrice")
-              }
+              error={errors?.price?.message}
               inputOverrideClassName={styles.inputOverride}
               overrideErrorClassName={styles.overrideErrorClass}
               containerOverrideClassName={styles.inputContainer}
@@ -529,26 +495,14 @@ const ProductBuilder = ({
               key="date"
               type="date"
               label="Enter Purchase Date"
-              defaultValue={getValues("staticPurchaseDate")}
-              onChange={(event) =>
-                handleStaticInputHandler(event, "staticPurchaseDate")
-              }
+              fieldName="purchaseDate"
+              defaultValue={getValues("purchaseDate")}
               inputOverrideClassName={styles.inputContainer}
               overrideClassName={styles.inputOverride}
             />
           </div>
-          {/* <div className={styles.dropZone}>
-          <Dropzone
-            key="file"
-            onChangeStatus={handleChangeStatus1}
-            accept={acceptedFileTypes.join(",")}
-            styles={dropzoneCss}
-            multiple={false}
-          />
-        </div> */}
         </div>
         <div className={styles.fieldsContainer}>
-          {/* <span>Dynamic Fields</span> */}
           {fields?.length > 0 &&
             fields?.map((field) => {
               return (
@@ -559,8 +513,7 @@ const ProductBuilder = ({
               );
             })}
         </div>
-        <button type="submit">{buttonName}</button>
-      </form>
+      </FormProvider>
     </div>
   );
 };

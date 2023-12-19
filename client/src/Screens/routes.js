@@ -10,14 +10,17 @@ import NewFieldGroup from "./FieldGroup/NewFieldGroup";
 import Product from "./Product";
 import NewProduct from "./Product/NewProduct";
 import AddProductDetails from "./Product/AddProductDetails";
-import Assets from "./Assets";
+import Asset from "./Assets";
+import Organization from "./Organization";
 import ViewAsset from "./Assets/viewAsset";
+import Assets from "./Assets";
 import EditAsset from "./Assets/editAsset";
 import Archive from "./Archive";
+import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
 
 export const adminRoutes = (token, role) => [
   {
-    element: <AdminLayout />,
+    element: <DashboardLayout />,
     children: [
       {
         path: AppRoutes.HOME,
@@ -66,6 +69,14 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.VIEWASSET,
         element: <ViewAsset />,
+      },
+      {
+        path: AppRoutes.ASSETS,
+        element: <Asset/>,
+      },
+      {
+        path: AppRoutes.ORGANIZATIONS,
+        element: <Organization/>,
       },
       {
         path: AppRoutes.EDITASSET,

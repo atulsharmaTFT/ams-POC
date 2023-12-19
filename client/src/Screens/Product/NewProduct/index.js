@@ -61,7 +61,13 @@ const NewProduct = () => {
     }
     if (getFieldGroupsResponse && isGetFieldGroupsSuccess) {
       setTimeout(() => setLoading(false), 1000);
-      setData(getFieldGroupsResponse);
+      console.log(getFieldGroupsResponse, "old");
+      const updatedData = getFieldGroupsResponse.map((item) => {
+        const fieldIds = item.fields.map((field) => field._id);
+        return { ...item, fields: fieldIds };
+      });
+
+      setData(updatedData);
     }
     if (isGetFieldGroupsError && getFieldGroupsError) {
       resetGetFieldGroupsState();
@@ -140,25 +146,26 @@ const NewProduct = () => {
   };
 
   const handleAddItem = (item) => {
+    console.log(item);
     setSelectedItems((prev) => {
       return [...prev, item];
     });
   };
 
-  const isItemSelected = (item) =>
-    selectedItems.some((selectedItem) =>
+  const isItemSelected = (item) => {
+    return selectedItems.some((selectedItem) =>
       selectedItem.fields.some((field) => {
-        if (params.id) {
-          return item.fields.some(
-            (selectedField) => selectedField._id === field
-          );
-        } else {
-          return item.fields.some(
-            (selectedField) => selectedField._id === field._id
-          );
-        }
+        // if (params.id) {
+        return item.fields.some((selectedField) => selectedField === field);
+        // }
+        //  else {
+        //   return item.fields.some(
+        //     (selectedField) => selectedField._id === field._id
+        //   );
+        // }
       })
     );
+  };
 
   const handleRemoveItem = (itemToRemove) => {
     const updatedSelectedItems = selectedItems.filter(
