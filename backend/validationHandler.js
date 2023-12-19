@@ -25,9 +25,7 @@ const createSchema = (array) => {
 }
 
 
-
-
-function validationSchema(type, validations, checkboxOptions, radioOptions, dropdownOptions, multiSelectOptions) {
+function validationSchema(type, validations, dateOptions, checkboxOptions, radioOptions, dropdownOptions, multiSelectOptions) {
   switch (validations?.validationType) {
     case "string":
       if (validations.isRequired) {
@@ -39,16 +37,51 @@ function validationSchema(type, validations, checkboxOptions, radioOptions, drop
         return Joi.number().min(validations.min).max(validations.max).required();
       } else
         return Joi.number().min(validations.min).max(validations.max);
-    case "":
+    case "onlyAlphabets":
       if (validations.isRequired) {
-        return Joi.number().min(validations.min).max(validations.max).required();
+        return Joi.string().regex(/^[a-zA-Z]+$/).min(validations.min).max(validations.max).required();
       } else
-        return Joi.number().min(validations.min).max(validations.max);
+        return Joi.string().regex(/^[a-zA-Z]+$/).min(validations.min).max(validations.max);
+    case "onlyAlphaNumeric":
+      if (validations.isRequired) {
+        return Joi.string().alphanum().min(validations.min).max(validations.max).required();
+      } else
+        return Joi.string().alphanum().min(validations.min).max(validations.max);
+    case "specialCharactersAllowed":
+      if (validations.isRequired) {
+        return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).min(validations.min).max(validations.max).required();
+      } else
+        return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).max(validations.max);
+    case "pincode":
+      if (validations.isRequired) {
+        return Joi.string().min(6).max(6).required();
+      } else
+        return Joi.string().min(6).max(6);
+    case "phone":
+      if (validations.isRequired) {
+        return Joi.string().min(10).max(10).required();
+      } else
+        return Joi.string().min(10).max(10);
+    case "email":
+      if (validations.isRequired) {
+        return Joi.string().regex(/^[a-zA-Z0-9]+@[a-zA-Z]+\.[A-Za-z]+$/).trim().lowercase().required();
+      } else
+        return Joi.string().regex(/^[a-zA-Z0-9]+@[a-zA-Z]+\.[A-Za-z]+$/).trim().lowercase();
+    case "allowDecimalPoints":
+      if (validations.isRequired) {
+        return Joi.number().precision(2).positive().required();
+      } else
+        return Joi.number().precision(2).positive();
+    case "onlyIntegerNumbers":
+      if (validations.isRequired) {
+        return Joi.number().integer().positive().min(validations.min).max(validations.max).required();
+      } else
+        return Joi.number().integer().positive().min(validations.min).max(validations.max);
     case "date":
       if (validations.isRequired) {
-        return Joi.date().iso().min(validations.min).max(validate.max).required();
+        return Joi.date().iso().required();
       } else
-        return Joi.date().iso().min(validations.min).max(validations.max);
+        return Joi.date().iso();
     case "radio":
       if (validations.isRequired) {
         return createSchema(radioOptions).required();
@@ -79,8 +112,8 @@ function validationSchema(type, validations, checkboxOptions, radioOptions, drop
 
 let transformedObj = {}
 const transformJson = (jsonObj) => {
-  const { variable, type, validations, checkboxOptions, radioOptions, dropdownOptions, multiSelectOptions } = jsonObj;
-  transformedObj[variable] = validationSchema(type, validations, checkboxOptions, radioOptions, dropdownOptions, multiSelectOptions)
+  const { variable, type, validations, dateOptions, checkboxOptions, radioOptions, dropdownOptions, multiSelectOptions } = jsonObj;
+  transformedObj[variable] = validationSchema(type, validations, dateOptions, checkboxOptions, radioOptions, dropdownOptions, multiSelectOptions)
   return transformedObj;
 }
 
@@ -99,7 +132,6 @@ exports.getJoiSchema = (data) => {
 
 exports.testValidation = (schema, obj) => {
   const { error, value } = schema.validate(obj);
-  console.log(error);
   if (error) return error
 }
 
