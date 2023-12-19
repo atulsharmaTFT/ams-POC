@@ -5,13 +5,12 @@ import classes from "./Page.module.scss";
 
 const Screens = () => {
   const role = "admin";
-  const token = "abcasdasdas"
+  // const token = localStorage.getItem("token");
+  var token = "";
   return (
     <div className={classes.page}>
       <React.Suspense fallback={<p>Loading...</p>}>
-        {useRoutes(
-         adminRoutes(token, role)
-        )}
+        {useRoutes(adminRoutes(token, role))}
       </React.Suspense>
     </div>
   );

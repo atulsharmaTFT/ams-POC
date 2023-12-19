@@ -28,6 +28,13 @@ export default {
       data,
     };
   },
+  login: (data) => {
+    return {
+      url: `${ApiUrls.ADMIN_AUTH.LOGIN}`,
+      method: HttpMethods.POST,
+      data,
+    };
+  },
   getFieldGroups: () => {
     return {
       url: `${ApiUrls.ADMIN_APIS.FIELD_GROUPS}`,

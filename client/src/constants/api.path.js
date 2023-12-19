@@ -1,6 +1,6 @@
 export const ApiUrls = {
   ADMIN_AUTH: {
-    LOGIN: "/v1/auth/login",
+    LOGIN: "/api/v1/admin-login",
     REGISTER: "/v1/auth/register",
     SOCIAL_LOGIN: "/v1/auth/oAuth",
   },
