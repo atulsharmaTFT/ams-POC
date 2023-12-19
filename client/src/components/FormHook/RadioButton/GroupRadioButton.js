@@ -1,50 +1,42 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import styles from "./RadioButton.module.scss";
 
-function GroupRadioButton({ name, options, handleChange,defaultValue }) {
+function GroupRadioButton({ name, options, defaultValue, disabled }) {
   const { control } = useFormContext();
-  console.log(options);
-//   function toggleRadio(option,onChange){
-//     const isChecked=options.filter(item=>item.checked===true)
-//     if(isChecked.length>0){
-//         const updatedChecked={...isChecked[0],checked:false}
-//     }
-//      onChange({
-//         option: option.option,
-//         checked: !option.checked ? true : false,
-//       });
-    
-//   }
   return (
     <div>
-      {/* <label>{label}</label> */}
-
       {options.map((option, index) => (
-       
         <div key={index}>
-             {console.log(option,"optttt")}
           <Controller
             name={name}
             control={control}
             defaultValue={defaultValue}
-            //  defaultValue={checked ? option : ''}
             render={({ field }) => (
-              <>
-              {console.log(field)}
-                <input
-                  type="radio"
-                  id={option.option}
-                  onChange={(e) => {
-                    handleChange({
+              <div key={index} className={styles.radioButton}>
+                <label>
+                  <input
+                    type="radio"
+                    value={option.option}
+                    checked={
+                      field.value
+                        ? field.value.option === option.option
+                        : defaultValue?.option === option.option
+                    }
+                    onChange={() =>
+                      field.onChange({
                         option: option.option,
-                        checked: !option.checked ? true : false,
+                        checked: true,
                       })
-                    // console.log(e, option, "optionass");
-                    // toggleRadio(option,field.onChange)
-                  }}
-                />
-                <label>{option.option}</label>
-              </>
+                    }
+                    disabled={disabled}
+                    style={{ marginRight: "5px", width: "fit-content" }}
+                  />
+                  <span className={styles.radioLabelStyle}>
+                    {option.option}
+                  </span>
+                </label>
+              </div>
             )}
           />
         </div>

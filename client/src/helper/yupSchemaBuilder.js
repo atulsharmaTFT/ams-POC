@@ -18,6 +18,38 @@ catch(error){
 
 export function validationSchema(type,validations) {
   switch (validations?.validationType) {
+    // Text Validation (Strings)
+    case constants.onlyAlphabets:
+      if (validations?.isRequired) {
+      return Yup.string().required();
+      }
+      else return Yup.string();
+    case constants.onlyAlphanumeric:
+      if (validations?.isRequired) {
+      return Yup.string().required();
+    }
+    else return Yup.string();
+    case constants.pincode:
+      if (validations?.isRequired) {
+      return Yup.string().required();
+    }
+    else return Yup.string();
+    case constants.phone:
+      if (validations?.isRequired) {
+      return Yup.string().required();
+    }
+    else return Yup.string();
+    case constants.email:
+      if (validations?.isRequired) {
+      return Yup.string().required();
+    }
+    else return Yup.string();
+    case constants.specialCharacterAllowed:
+      if (validations?.isRequired) {
+      return Yup.string().required();
+    }
+    else return Yup.string();
+
     case constants.string.toLowerCase():
       if (validations?.isRequired) {
         if(type === constants.string.toLowerCase() || type === constants.number.toLowerCase()){
@@ -32,6 +64,18 @@ export function validationSchema(type,validations) {
           .min(validations?.minLength)
           .max(validations?.maxLength );
 
+    // Validation Numbers
+    case constants.onlyIntegerNumber:
+      if (validations?.isRequired) {
+      return Yup.number().required();
+    }
+    else return Yup.number();
+    case constants.allowDecimal:
+      if (validations?.isRequired) {
+      return Yup.number().required();
+    }
+    else Yup.number();
+    break;
     case constants.number.toLowerCase():
       if (validations.isRequired) {
         if(type === constants.string.toLowerCase() || type === constants.number.toLowerCase()){
@@ -45,11 +89,15 @@ export function validationSchema(type,validations) {
         return Yup.number()
           .min(validations.minLength)
           .max(validations.maxLength);
+          break;
+    //Dropdown and Radio validation
     case constants.dropdown.toLowerCase() || constants.radio.toLowerCase():
       if (validations?.isRequired)
         return Yup.object().required()
-      else return Yup.string();
-    case constants.multiselect.toLowerCase():
+      else return Yup.object();
+      break;
+    // MultiSelect and ChcekBox validations
+    case constants.multiselect.toLowerCase() || constants.checkbox.toLowerCase():
       if (validations?.isRequired) {
         return Yup.array()
           .required(messages.pleaseSelect)
@@ -57,7 +105,7 @@ export function validationSchema(type,validations) {
       } else {
         return Yup.array();
       }
-
+      break;
     default:
       return;
   }

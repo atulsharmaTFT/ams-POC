@@ -5,26 +5,8 @@ import classes from "./form.module.scss";
 import CheckBox from "../../../components/FormHook/CheckBox/CheckBox";
 import Button from "../../../components/Button/Button";
 import constants from "../../../helper/constantKeyword/constants";
-export const validationDetails = [
-  {
-    elementType: constants.string.toLowerCase(),
-  },
-  {
-    elementType: constants.number.toLowerCase(),
-  },
-  {
-    elementType: constants.boolean.toLowerCase(),
-  },
-  {
-    elementType: constants.email.toLowerCase(),
-  },
-  {
-    elementType: constants.phone.toLowerCase(),
-  },
-  {
-    elementType: constants.pincode.toLowerCase(),
-  },
-];
+import { getValidationList } from "../../../helper/validationHelper";
+
 
 export const fieldDetails = [
   {
@@ -215,7 +197,7 @@ const FormBuilder = ({ onFormSubmit }) => {
     padding: 5,
     width: 300,
   };
-
+console.log(selectedField,"selectedField");
   return (
     <div>
       <h2>Create Fields</h2>
@@ -252,7 +234,7 @@ const FormBuilder = ({ onFormSubmit }) => {
             <option value="">Select Field</option>
             {fieldDetails.map((field) => (
               <option key={field.elementType} value={field.elementType}>
-                {field.elementType}
+                {field.elementType.toUpperCase()}
               </option>
             ))}
           </select>
@@ -277,7 +259,7 @@ const FormBuilder = ({ onFormSubmit }) => {
             disabled={disabledState(selectedField)}
           >
             <option value="">Select Field</option>
-            {validationDetails.map((field) => (
+            {getValidationList(selectedField)?.map((field) => (
               <option key={field.elementType} value={field.elementType}>
                 {field.elementType}
               </option>

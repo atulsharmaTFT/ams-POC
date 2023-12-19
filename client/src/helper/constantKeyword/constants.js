@@ -6,12 +6,10 @@ const constants = {
     minLength: 'MinLength',
     maxLength: 'MaxLength',
     number: 'Number',
-    email: 'Email',
-    phone: 'Phone',
     dropdown: 'Dropdown',
     checkbox: 'Checkbox',
     radio: 'Radio',
-    multiselect: 'MultiSelect',
+    multiselect: 'multiSelect',
     date: 'Date',
     tagNumber: 'Tag number',
     name: 'Name',
@@ -22,7 +20,6 @@ const constants = {
     string: 'String',
     boolean: 'Boolean',
     isRequired: 'isRequired',
-    pincode: 'Pincode',
     createField: 'Create Field',
     fieldType: 'Field Type',
     selectField: 'Select Field',
@@ -41,7 +38,18 @@ const constants = {
     checkboxOptions: 'checkboxOptions',
     multiSelectOptions: 'multiSelectOptions',
     slider: 'slider',
-    
+    //Validations text
+    onlyAlphabets: "Only Alphabets",
+    onlyAlphanumeric: "Only Alphanumeric",
+    specialCharacterAllowed: "Special characters allowed",
+    email: 'Email',
+    phone: 'Phone',
+    pincode: 'Pincode',
+    //Validation number
+    onlyIntegerNumber: "Only integer numbers",
+    allowDecimal:"Allow decimal points",
+
+
   };
   
   export default constants;

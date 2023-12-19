@@ -20,6 +20,7 @@ import GroupRadioButton from "../../../components/FormHook/RadioButton/GroupRadi
 import constants from "../../../helper/constantKeyword/constants";
 import { toCamelCase } from "../../../helper/commonHelpers";
 import messages from "../../../helper/constantKeyword/messages";
+import moment from "moment";
 const ProductBuilder = ({
   fields,
   productId,
@@ -35,14 +36,11 @@ const ProductBuilder = ({
   let schema = getSchema(fields);
 
   schema = { ...schema, ...staticSchema };
-  console.log(schema);
   const validatorSchema = !!schema && Yup.object().shape(schema);
-  console.log(fields, "validat");
   let defaultValues = {};
   function setDefaultValues(schema) {
     try {
       let values = { data, name, purchaseDate, price, tag };
-      console.log(values, "values");
       Object.keys(schema).forEach((key) => {
         try {
           defaultValues[key] = values?.[key] ?? values?.data?.[key];
@@ -56,14 +54,12 @@ const ProductBuilder = ({
     }
   }
   const DEFAULT_DATA_VALUE = !!schema && setDefaultValues(schema);
-  console.log(setDefaultValues(schema), "DEFAULT_DATA_VALUE");
   const methods = useForm({
     shouldUnregister: false,
     defaultValues: !!validatorSchema && !!schema && DEFAULT_DATA_VALUE,
     resolver: validatorSchema && yupResolver(validatorSchema),
     mode: "all",
   });
-  console.log(DEFAULT_DATA_VALUE, "default");
   const {
     handleSubmit,
     trigger,
@@ -140,6 +136,10 @@ const ProductBuilder = ({
       });
     }
   }, []);
+  // useEffect(()=>{
+  //   // Setting Purchase date for in case of update
+  //   setValue('purchaseDate', moment(purchaseDate?? "").format("YYYY-MM-DD"))
+  // },[])
   const setDynamicData = (field) => {
     let variable = field?.variable;
     switch (field?.type) {
@@ -336,47 +336,15 @@ const ProductBuilder = ({
               options={field?.radioOptions}
               name={field.variable}
               defaultValue={getValues(field.variable)}
-              handleChange={(selectedValue, action) => {
-                reset((formValues) => ({
-                  ...formValues,
-                  [field.variable]: undefined,
-                }));
-                console.log(selectedValue);
-                setValue(field?.variable, selectedValue);
-              }}
-            />
-            // <div className={styles.flex}>
-            //   {field?.radioOptions.map((option, index) => {
-            //     return (
-            //       <RadioButton
-            //         key={option.option}
-            //         label={option.option}
-            //         value={option.option}
-            //         checked={option?.checked}
-            //         name={field.variable}
-            //         onChange={(e) => handleRadioChange(e.target.value, field)}
-            //       />
-            //     );
-            //   })}
-            // </div>
+              />
           );
         case constants.checkbox.toLowerCase():
           return (
             <GroupCheckBox
               options={field.checkboxOptions}
               name={field.variable}
+              defaultValue={getValues(field?.variable)}
             />
-            // <div>
-            //   {field.checkboxOptions.map((option, index) => (
-            //     <CheckBox
-            //       key={option?.option}
-            //       value={option?.option}
-            //       title={option?.option}
-            //       isChecked={option?.checked}
-            //       onChange={(e) => handleCheckBoxClick(e.target.value, field)}
-            //     />
-            //   ))}
-            // </div>
           );
         case toCamelCase(constants.multiselect):
           return (
@@ -433,15 +401,6 @@ const ProductBuilder = ({
               type="date"
               key={field?._id}
               defaultValue={field.value}
-              // setDateTime={setSelectedDateTime}
-              onChange={(event) =>
-                handleInputChange(
-                  event.target.value,
-                  field?.variable,
-                  field?.type,
-                  field
-                )
-              }
               inputOverrideClassName={styles.inputContainer}
               overrideClassName={styles.inputOverride}
             />
@@ -538,9 +497,6 @@ const ProductBuilder = ({
               label="Enter Purchase Date"
               fieldName="purchaseDate"
               defaultValue={getValues("purchaseDate")}
-              onChange={(event) =>
-                handleStaticInputHandler(event, "purchaseDate")
-              }
               inputOverrideClassName={styles.inputContainer}
               overrideClassName={styles.inputOverride}
             />

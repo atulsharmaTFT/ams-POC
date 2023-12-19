@@ -21,7 +21,8 @@ function DateTimePicker({
   //   setDateTime(new Date(event.target.value).toISOString().split('T')[0]);
   // };
   const min = new Date().toISOString().slice(0, 16);
-
+  // const defaultDate = new Date(defaultValue).toISOString().split('T')[0];
+  // console.log(defaultDate,"defaultValue")
   return (
     <div className={`${classes.container} ${overrideClassName}`}>
       {label && (
@@ -30,21 +31,17 @@ function DateTimePicker({
       <Controller
         control={control}
         name={fieldName}
-        rules={{ required: true }}
         render={({ field, fieldState: { error } }) => (
-          // console.log(field,"Multi"),
+          console.log(field,"Multi"),
           <>
             <input
               type="date"
               id="datetime"
               name="datetime"
               min={min}
-              // value={moment(field?.value).format("YYYY-MM-DD")}
-              // defaultValue={moment(field?.value).format("YYYY-MM-DD")}
-              value={moment(selected).format("YYYY-MM-DD")}
-              defaultValue={moment(defaultValue).format("YYYY-MM-DD")}
+              value={field?.value ? moment(field?.value).format("YYYY-MM-DD"):""}
               className={inputClassOverride}
-              onChange={onChange}
+              onChange={(e) => field.onChange(e.target.value)}
               {...field}
             />
             <ErrorMessage
