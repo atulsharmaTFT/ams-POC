@@ -7,6 +7,7 @@ const FieldGroups = require("./schemas/fieldGroups");
 const Products = require("./schemas/products");
 const Assets = require("./schemas/assets");
 const cors = require("cors");
+const { getJoiSchema, testValidation } = require("./validationHandler")
 const app = express();
 app.use(bodyParser.json());
 
@@ -28,6 +29,9 @@ const validateId = Joi.string()
   .messages({
     "any.invalid": "Invalid Id",
   });
+
+
+
 
 const options1 = Joi.object({
   option: Joi.string().min(1).required(),
@@ -58,8 +62,8 @@ const validateFields = Joi.object({
   validations: Joi.object({
     validationType: Joi.string(),
     isRequired: Joi.boolean(),
-    min: Joi.number(),
-    max: Joi.number()
+    min: Joi.string(),
+    max: Joi.string()
   }),
   description: Joi.string().default(""),
   placeholder: Joi.string().default(""),
@@ -493,6 +497,176 @@ app.post("/assets", async (req, res) => {
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
+    const {
+      name,
+      image,
+      tag,
+      price,
+      purchaseDate,
+      assignedTo,
+      productId,
+      data,
+    } = value;
+
+    const aggregate = Products.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $unwind: "$fieldGroups",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fieldGroupsArr",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fields",
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "productFields",
+        },
+      },
+      {
+        $unwind: "$productFields",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$productFields",
+        },
+      },
+    ]);
+
+    const fields = await aggregate.exec();
+
+    if (!fields.length) {
+      return res.status(400).json({ error: "Invalid productId" });
+    } else if (fields.length !== Object.keys(data).length) {
+      return res
+        .status(400)
+        .json({ error: "Please send the correct number of attributes" });
+    }
+
+    const validateData = Joi.object({
+      type: Joi.string().required(),
+      value: Joi.any()
+        .when("type", {
+          is: "radio",
+          then: options1.required(),
+        })
+        .when("type", {
+          is: "checkbox",
+          then: Joi.array().items(options1).required(),
+        })
+        .when("type", {
+          is: "number",
+          then: Joi.number().required(),
+        })
+        .when("type", {
+          is: "toggle",
+          then: Joi.boolean().required(),
+        })
+        .when("type", {
+          is: "multiSelect",
+          then: Joi.array().items(options2).required(),
+        })
+        .when("type", {
+          is: "text",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "dropdown",
+          then: options2.required(),
+        })
+        .when("type", {
+          is: "slider",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "date",
+          then: Joi.date().iso().required(),
+        }),
+    });
+
+    // *********************** Joi Validation ******************************* 
+    let getSchema = getJoiSchema(fields);
+    const CheckData = testValidation(getSchema, data)
+    if (CheckData) return res.status(400).json({ err: CheckData.details[0].message });
+    // *********************** Joi Validation *******************************
+
+    for (const field of fields) {
+      if (!data[field.variable]) {
+        return res
+          .status(400)
+          .json({ error: `Missing field ${field.variable}` });
+      } else {
+
+
+        const newData = { type: field.type, value: data[field.variable] };
+
+        const result = validateData.validate(newData);
+
+        if (result.error) {
+          return res.status(400).json({
+            error: `Please provide correct value for attribute ${field.variable}`,
+          });
+        }
+      }
+    }
+
+    const newAsset = new Assets({
+      name,
+      image,
+      tag,
+      price,
+      purchaseDate,
+      assignedTo,
+      productId,
+      data,
+    });
+
+    await newAsset.save();
+    res.status(201).json(newAsset);
+  } catch (error) {
+    if (error.message.startsWith("E11000")) {
+      return res.status(409).json({
+        error: `Duplicate Tag`,
+      });
+    }
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.put("/assets/:id", async (req, res) => {
+  try {
+    const { error, value } = validateAssets.validate(req.body);
+    const { error: invalidIdError, value: assetId } = validateId.validate(
+      req.params.id
+    );
+    const badRequestError = invalidIdError || error;
+    if (badRequestError) {
+      return res
+        .status(400)
+        .json({ error: badRequestError.details[0].message });
+    }
 
     const {
       name,
@@ -620,19 +794,25 @@ app.post("/assets", async (req, res) => {
       }
     }
 
-    const newAsset = new Assets({
-      name,
-      image,
-      tag,
-      price,
-      purchaseDate,
-      assignedTo,
-      productId,
-      data,
-    });
+    const doc = await Assets.updateOne(
+      { _id: assetId },
+      {
+        name,
+        image,
+        tag,
+        price,
+        purchaseDate,
+        assignedTo,
+        productId,
+        data,
+      }
+    );
 
-    await newAsset.save();
-    res.status(201).json(newAsset);
+    if (doc.matchedCount === 0) {
+      return res.status(400).json({ error: `Wrong Asset Id ${assetId}` });
+    }
+
+    res.status(204).json();
   } catch (error) {
     if (error.message.startsWith("E11000")) {
       return res.status(409).json({
