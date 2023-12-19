@@ -39,8 +39,8 @@ const createSuperAdminOnServerStart = async () => {
     }
 
     const newAdmin = new Admin({
-      name: "John Doe",
-      email: "johndoe@example.com",
+      name: "AMS Admin",
+      email: "amsadmin@gmail.com",
       type: "SUPERADMIN",
       password: process.env.SUPERADMIN_PASSWORD,
     });
