@@ -18,30 +18,52 @@ function transformJson(jsonObj) {
 export function validationSchema(type, validations) {
   switch (validations?.validationType) {
     // Text Validation (Strings)
-    case constants.onlyAlphabets:
+    case constants.onlyAlphabets.toLowerCase():
       if (validations?.isRequired) {
-        return Yup.string().required();
-      } else return Yup.string();
-    case constants.onlyAlphanumeric:
+        return Yup.string()
+          .matches(/^[a-zA-Z]+$/, "Only alphabets allowed")
+          .required("OnlyAlphabet is required !");
+      } else
+        return Yup.string().matches(/^[a-zA-Z]+$/, "Only alphabets allowed");
+    case constants.onlyAlphanumeric.toLowerCase():
       if (validations?.isRequired) {
-        return Yup.string().required();
-      } else return Yup.string();
-    case constants.pincode:
+        return Yup.string()
+          .matches(/^[a-zA-Z0-9]*$/, "Only alphanumeric characters allowed")
+          .required("OnlyAlphaNumeric is required !");
+      } else
+        return Yup.string().matches(
+          /^[a-zA-Z0-9]*$/,
+          "Only alphanumeric characters allowed"
+        );
+    case constants.pincode.toLowerCase():
       if (validations?.isRequired) {
-        return Yup.string().required();
-      } else return Yup.string();
-    case constants.phone:
+        return Yup.string()
+          .matches(/^\d{6}$/, "Invalid PIN code")
+          .required("PinCode is required !");
+      } else return Yup.string().min(6).max(6);
+    case constants.phone.toLowerCase():
       if (validations?.isRequired) {
-        return Yup.string().required();
-      } else return Yup.string();
-    case constants.email:
+        return Yup.string().min(10).max(10).required("Phone no. is required !");
+      } else return Yup.string().min(10).max(10);
+    case constants.email.toLowerCase():
       if (validations?.isRequired) {
-        return Yup.string().required();
-      } else return Yup.string();
-    case constants.specialCharacterAllowed:
+        return Yup.string()
+          .email("Invalid email address")
+          .trim()
+          .lowercase()
+          .required("Email is required !");
+      } else
+        return Yup.string.email("Invalid email address").trim().lowercase();
+    case constants.specialCharacterAllowed.toLowerCase():
       if (validations?.isRequired) {
-        return Yup.string().required();
-      } else return Yup.string();
+        return Yup.string()
+          .matches(/^[a-zA-Z0-9@_$&-]+$/, "Special characters are allowed")
+          .required("Only SpecialCharacter is required !");
+      } else
+        return Yup.string().matches(
+          /^[a-zA-Z0-9@_$&-]+$/,
+          "Special characters are allowed"
+        );
 
     case constants.string.toLowerCase():
       if (validations?.isRequired) {
@@ -62,12 +84,32 @@ export function validationSchema(type, validations) {
     // Validation Numbers
     case constants.onlyIntegerNumber:
       if (validations?.isRequired) {
-        return Yup.number().required();
-      } else return Yup.number();
+        return Yup.number()
+          .integer()
+          .positive("Only Positive Integer Allowed")
+          .required("Postive Integer is required")
+          .min(validations?.minLength)
+          .max(validations?.maxLength);
+      } else
+        return Yup.number()
+          .integer()
+          .positive("Only Positive Integer Allowed")
+          .min(validations?.minLength)
+          .max(validations?.maxLength);
     case constants.allowDecimal:
       if (validations?.isRequired) {
-        return Yup.number().required();
-      } else Yup.number();
+        return Yup.number()
+
+          .positive("Positive Decimal allowed")
+          .required("This field is required !")
+          .min(validations?.minLength)
+          .max(validations?.maxLength);
+      } else
+        Yup.number()
+
+          .positive("Positive Decimal allowed")
+          .min(validations?.minLength)
+          .max(validations?.maxLength);
       break;
     case constants.number.toLowerCase():
       if (validations.isRequired) {
