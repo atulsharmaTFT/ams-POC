@@ -14,10 +14,11 @@ import Assets from "./Assets";
 import ViewAsset from "./Assets/viewAsset";
 import EditAsset from "./Assets/editAsset";
 import Archive from "./Archive";
+import LoginForm from "./Login";
 
 export const adminRoutes = (token, role) => [
   {
-    element: <AdminLayout />,
+    element: !!token ? <AdminLayout /> : <Navigate to={AppRoutes.LOGIN} />,
     children: [
       {
         path: AppRoutes.HOME,
@@ -61,7 +62,7 @@ export const adminRoutes = (token, role) => [
       },
       {
         path: AppRoutes.ARCHIVEASSETS,
-        element: <Archive/>,
+        element: <Archive />,
       },
       {
         path: AppRoutes.VIEWASSET,
@@ -73,6 +74,14 @@ export const adminRoutes = (token, role) => [
       },
     ],
   },
+  {
+    element: !!!token ?  <Outlet /> : <Navigate to={AppRoutes.HOME} /> ,
+    children: [{ path: AppRoutes.LOGIN, element: <LoginForm /> }],
+  },
+  // {
+  //   path: AppRoutes.LOGIN,
+  //   element: <LoginForm/>
+  // }
   // {
   //   element:  <AdminLayout /> ,
   //   children: [

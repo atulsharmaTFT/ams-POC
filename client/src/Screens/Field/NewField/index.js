@@ -27,7 +27,7 @@ const NewField = () => {
     if (isCreateFieldsSuccess && createFieldsResponse) {
       resetCreateFieldsState();
     }
-  });
+  },[]);
 
   const handleFormSubmit = async (fields) => {
     let payload = {};
