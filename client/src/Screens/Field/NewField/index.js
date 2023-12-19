@@ -4,6 +4,7 @@ import useAdminApiService from "../../../helper/useAdminApiService";
 import FormBuilder from "../FormBuilder";
 import adminServices from "../../../helper/adminServices";
 import { toCamelCase } from "../../../helper/commonHelpers";
+import { v4 as uuidv4 } from "uuid";
 
 const NewField = () => {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ const NewField = () => {
       case "Radio":
         payload = {
           type: fields?.type.toLowerCase(),
-          variable: toCamelCase(fields?.name),
+          variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
           description: fields?.description,
           name: fields?.name,
           radioOptions: fields?.radioOptions,
@@ -44,7 +45,7 @@ const NewField = () => {
       case "Dropdown":
         payload = {
           type: fields?.type.toLowerCase(),
-          variable: toCamelCase(fields?.name),
+          variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
           description: fields?.description,
           name: fields?.name,
           dropdownOptions: fields?.dropdownOptions,
@@ -54,7 +55,7 @@ const NewField = () => {
       case "CheckBox":
         payload = {
           type: fields?.type.toLowerCase(),
-          variable: toCamelCase(fields?.name),
+          variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
           description: fields?.description,
           name: fields?.name,
           checkboxOptions: fields?.checkboxOptions,
@@ -64,7 +65,7 @@ const NewField = () => {
       case "multiSelect":
         payload = {
           type: fields?.type,
-          variable: toCamelCase(fields?.name),
+          variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
           description: fields?.description,
           name: fields?.name,
           multiSelectOptions: fields?.multiSelectOptions,
@@ -74,7 +75,7 @@ const NewField = () => {
       case "Text":
         payload = {
           type: fields?.type.toLowerCase(),
-          variable: toCamelCase(fields?.name),
+          variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
           name: fields?.name,
           description: fields?.description,
           placeholder: fields?.placeholder,
@@ -84,7 +85,7 @@ const NewField = () => {
       case "Number":
         payload = {
           type: fields?.type.toLowerCase(),
-          variable: toCamelCase(fields?.name),
+          variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
           name: fields?.name,
           description: fields?.description,
           placeholder: fields?.placeholder,
@@ -94,7 +95,7 @@ const NewField = () => {
       case "Date":
         payload = {
           type: fields?.type.toLowerCase(),
-          variable: toCamelCase(fields?.name),
+          variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
           name: fields?.name,
           description: fields?.description,
           dateOptions: {

@@ -7,6 +7,7 @@ const FieldGroups = require("./schemas/fieldGroups");
 const Products = require("./schemas/products");
 const Assets = require("./schemas/assets");
 const cors = require("cors");
+const { getJoiSchema, testValidation } = require("./validationHandler")
 const app = express();
 app.use(bodyParser.json());
 
@@ -29,6 +30,9 @@ const validateId = Joi.string()
     "any.invalid": "Invalid Id",
   });
 
+
+
+
 const options1 = Joi.object({
   option: Joi.string().min(1).required(),
   checked: Joi.boolean().required(),
@@ -40,8 +44,8 @@ const options2 = Joi.object({
 });
 
 const validateFields = Joi.object({
-  name: Joi.string().required(),
-  variable: Joi.string().required(),
+  name: Joi.string().trim().required(),
+  variable: Joi.string().trim().required(),
   type: Joi.string()
     .valid(
       "text",
@@ -58,8 +62,8 @@ const validateFields = Joi.object({
   validations: Joi.object({
     validationType: Joi.string(),
     isRequired: Joi.boolean(),
-    min: Joi.number(),
-    max: Joi.number()
+    min: Joi.string(),
+    max: Joi.string()
   }),
   description: Joi.string().default(""),
   placeholder: Joi.string().default(""),
@@ -117,7 +121,10 @@ const validateFields = Joi.object({
     }).required(),
   }),
 });
-const corsOptions = { exposedHeaders: "Authorization" };
+const corsOptions = {
+  exposedHeaders: "Authorization",
+  methods: "GET,POST,PATCH,PUT,DELETE",
+};
 app.use(cors(corsOptions));
 
 app.post("/fields", async (req, res) => {
@@ -132,6 +139,11 @@ app.post("/fields", async (req, res) => {
       res.status(201).json(newField);
     }
   } catch (e) {
+    if (e.message.startsWith("E11000")) {
+      return res.status(409).json({
+        error: `Duplicate Variable`,
+      });
+    }
     console.log(e);
     res.status(500).send("Internal Server Error");
   }
@@ -279,6 +291,62 @@ app.post("/products", async (req, res) => {
   }
 });
 
+const validateEditAProduct = Joi.object({
+  name: Joi.string().required(),
+  fieldGroups: Joi.array()
+    .items(
+      Joi.string().custom((value, helpers) => {
+        if (!mongoose.Types.ObjectId.isValid(value)) {
+          return helpers.error("any.invalid");
+        }
+        return value;
+      })
+    )
+    .min(1)
+    .required(),
+});
+
+app.put("/products/:id", async (req, res) => {
+  try {
+    const { error, value } = validateEditAProduct.validate(req.body);
+    const { error: invalidIdError, value: productId } = validateId.validate(
+      req.params.id
+    );
+    const badRequestError = invalidIdError || error;
+    if (badRequestError) {
+      return res
+        .status(400)
+        .json({ error: badRequestError.details[0].message });
+    }
+
+    const { name, fieldGroups } = value;
+
+    const isValidFieldGroups =
+      (await FieldGroups.countDocuments({ _id: { $in: fieldGroups } })) ===
+      fieldGroups.length;
+    if (!isValidFieldGroups) {
+      return res.status(400).json({ error: "Invalid field groups provided" });
+    }
+
+    const doc = await Products.updateOne(
+      { _id: productId },
+      {
+        name,
+        fieldGroups,
+      }
+    );
+
+    if (doc.matchedCount === 0) {
+      return res.status(400).json({ error: `Wrong Product Id ${productId}` });
+    }
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.get("/products", async (req, res) => {
   try {
     const products = await Products.find();
@@ -289,80 +357,98 @@ app.get("/products", async (req, res) => {
   }
 });
 
+const validateGetAProduct = Joi.object({
+  id: validateId.required(),
+  withFieldGroups: Joi.boolean().required(),
+});
+
 app.get("/products/:id", async (req, res) => {
-  const { error, value } = validateId.validate(req.params.id);
-  if (error) {
-    return res.status(400).json({ error: error.details[0].message });
+  try {
+    const { error, value } = validateGetAProduct.validate({
+      id: req.params.id,
+      withFieldGroups: req.query.withFieldGroups,
+    });
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const { id: productId, withFieldGroups } = value;
+
+    const product = await Products.findById(productId, {
+      fieldGroups: 0,
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    const commonAggregate = [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fieldGroupsArr",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$fieldGroupsArr",
+        },
+      },
+    ];
+
+    const aggregate = Products.aggregate([
+      ...commonAggregate,
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "productFields",
+        },
+      },
+      {
+        $unwind: "$productFields",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$productFields",
+        },
+      },
+    ]);
+    const fields = await aggregate.exec();
+
+    const { name, variable, createdAt, updatedAt } = product;
+
+    const response = {
+      _id: productId,
+      name,
+      variable,
+      createdAt,
+      updatedAt,
+      fields,
+    };
+
+    if (withFieldGroups) {
+      const aggregate1 = Products.aggregate([...commonAggregate]);
+      const fieldGroups = await aggregate1.exec();
+      response.fieldGroups = fieldGroups;
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
   }
-
-  const productId = value;
-
-  const product = await Products.findById(productId, {
-    fieldGroups: 0,
-  });
-
-  if (!product) {
-    return res.status(404).json({ error: "Not found" });
-  }
-
-  const aggregate = Products.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(productId),
-      },
-    },
-    {
-      $unwind: "$fieldGroups",
-    },
-    {
-      $lookup: {
-        from: "fieldGroups",
-        localField: "fieldGroups",
-        foreignField: "_id",
-        as: "fieldGroupsArr",
-      },
-    },
-    {
-      $unwind: "$fieldGroupsArr",
-    },
-    {
-      $replaceRoot: {
-        newRoot: "$fieldGroupsArr",
-      },
-    },
-    {
-      $unwind: "$fields",
-    },
-    {
-      $lookup: {
-        from: "fields",
-        localField: "fields",
-        foreignField: "_id",
-        as: "productFields",
-      },
-    },
-    {
-      $unwind: "$productFields",
-    },
-    {
-      $replaceRoot: {
-        newRoot: "$productFields",
-      },
-    },
-  ]);
-
-  const fields = await aggregate.exec();
-
-  const { name, variable, createdAt, updatedAt } = product;
-
-  res.status(200).json({
-    _id: productId,
-    name,
-    variable,
-    createdAt,
-    updatedAt,
-    fields,
-  });
 });
 
 const validateAssets = Joi.object({
@@ -407,6 +493,176 @@ app.post("/assets", async (req, res) => {
     const { error, value } = validateAssets.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
+    }
+    const {
+      name,
+      image,
+      tag,
+      price,
+      purchaseDate,
+      assignedTo,
+      productId,
+      data,
+    } = value;
+
+    const aggregate = Products.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $unwind: "$fieldGroups",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fieldGroupsArr",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$fieldGroupsArr",
+        },
+      },
+      {
+        $unwind: "$fields",
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "productFields",
+        },
+      },
+      {
+        $unwind: "$productFields",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$productFields",
+        },
+      },
+    ]);
+
+    const fields = await aggregate.exec();
+
+    if (!fields.length) {
+      return res.status(400).json({ error: "Invalid productId" });
+    } else if (fields.length !== Object.keys(data).length) {
+      return res
+        .status(400)
+        .json({ error: "Please send the correct number of attributes" });
+    }
+
+    const validateData = Joi.object({
+      type: Joi.string().required(),
+      value: Joi.any()
+        .when("type", {
+          is: "radio",
+          then: options1.required(),
+        })
+        .when("type", {
+          is: "checkbox",
+          then: Joi.array().items(options1).required(),
+        })
+        .when("type", {
+          is: "number",
+          then: Joi.number().required(),
+        })
+        .when("type", {
+          is: "toggle",
+          then: Joi.boolean().required(),
+        })
+        .when("type", {
+          is: "multiSelect",
+          then: Joi.array().items(options2).required(),
+        })
+        .when("type", {
+          is: "text",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "dropdown",
+          then: options2.required(),
+        })
+        .when("type", {
+          is: "slider",
+          then: Joi.string().required(),
+        })
+        .when("type", {
+          is: "date",
+          then: Joi.date().iso().required(),
+        }),
+    });
+
+    // *********************** Joi Validation ******************************* 
+    let getSchema = getJoiSchema(fields);
+    const CheckData = testValidation(getSchema, data)
+    if (CheckData) return res.status(400).json({ err: CheckData.details[0].message });
+    // *********************** Joi Validation *******************************
+
+    for (const field of fields) {
+      if (!data[field.variable]) {
+        return res
+          .status(400)
+          .json({ error: `Missing field ${field.variable}` });
+      } else {
+
+
+        const newData = { type: field.type, value: data[field.variable] };
+
+        const result = validateData.validate(newData);
+
+        if (result.error) {
+          return res.status(400).json({
+            error: `Please provide correct value for attribute ${field.variable}`,
+          });
+        }
+      }
+    }
+
+    const newAsset = new Assets({
+      name,
+      image,
+      tag,
+      price,
+      purchaseDate,
+      assignedTo,
+      productId,
+      data,
+    });
+
+    await newAsset.save();
+    res.status(201).json(newAsset);
+  } catch (error) {
+    if (error.message.startsWith("E11000")) {
+      return res.status(409).json({
+        error: `Duplicate Tag`,
+      });
+    }
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.put("/assets/:id", async (req, res) => {
+  try {
+    const { error, value } = validateAssets.validate(req.body);
+    const { error: invalidIdError, value: assetId } = validateId.validate(
+      req.params.id
+    );
+    const badRequestError = invalidIdError || error;
+    if (badRequestError) {
+      return res
+        .status(400)
+        .json({ error: badRequestError.details[0].message });
     }
 
     const {
@@ -535,19 +791,25 @@ app.post("/assets", async (req, res) => {
       }
     }
 
-    const newAsset = new Assets({
-      name,
-      image,
-      tag,
-      price,
-      purchaseDate,
-      assignedTo,
-      productId,
-      data,
-    });
+    const doc = await Assets.updateOne(
+      { _id: assetId },
+      {
+        name,
+        image,
+        tag,
+        price,
+        purchaseDate,
+        assignedTo,
+        productId,
+        data,
+      }
+    );
 
-    await newAsset.save();
-    res.status(201).json(newAsset);
+    if (doc.matchedCount === 0) {
+      return res.status(400).json({ error: `Wrong Asset Id ${assetId}` });
+    }
+
+    res.status(204).json();
   } catch (error) {
     if (error.message.startsWith("E11000")) {
       return res.status(409).json({
@@ -564,16 +826,25 @@ const paginationSchema = Joi.object({
   limit: Joi.number().integer().min(1).max(10),
 });
 
+const validateGetAllAssets = paginationSchema.keys({
+  archived: Joi.boolean().required(),
+});
+
 app.get("/assets", async (req, res) => {
   try {
-    const { error, value } = paginationSchema.validate(req.query);
+    const { error, value } = validateGetAllAssets.validate(req.query);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
-    const { page = 1, limit = 10 } = value;
+    const { page = 1, limit = 10, archived } = value;
     const skip = (page - 1) * limit;
 
     const aggregate = Assets.aggregate([
+      {
+        $match: {
+          isArchived: archived,
+        },
+      },
       {
         $skip: skip,
       },
@@ -644,7 +915,7 @@ app.get("/assets", async (req, res) => {
       },
     ]);
     const assets = await aggregate.exec();
-    const count = await Assets.countDocuments();
+    const count = await Assets.countDocuments({ isArchived: archived });
 
     res.status(200).json({
       assets,
@@ -728,6 +999,177 @@ app.get("/assets/:id", async (req, res) => {
     }
 
     res.status(200).json(assets[0]);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.delete("/assets/:id", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const asset = await Assets.findOne({ _id: assetId });
+
+    if (asset?.isInInventory) {
+      return res.status(400).json({ error: "Asset is in Inventory" });
+    }
+
+    await Assets.deleteOne({ _id: assetId });
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.patch("/assets/:id/move-to-inventory", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const doc = await Assets.updateOne(
+      { _id: assetId },
+      {
+        isInInventory: true,
+      }
+    );
+
+    if (doc.matchedCount === 0) {
+      return res.status(400).json({ error: `Wrong Asset Id ${assetId}` });
+    }
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.patch("/assets/:id/move-to-archive", async (req, res) => {
+  try {
+    const { error, value } = validateId.validate(req.params.id);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const assetId = value;
+
+    const asset = await Assets.findOne({ _id: assetId });
+
+    if (!asset?.isInInventory) {
+      return res.status(400).json({ error: "Asset is not in Inventory" });
+    }
+
+    await Assets.updateOne(
+      { _id: assetId },
+      {
+        isArchived: true,
+      }
+    );
+
+    res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/assets/products/:id", async (req, res) => {
+  try {
+    const { error: paginationError, value } = paginationSchema.validate(
+      req.query
+    );
+    const { error, value: productId } = validateId.validate(req.params.id);
+    const badRequestError = error || paginationError;
+    if (badRequestError) {
+      return res
+        .status(400)
+        .json({ error: badRequestError.details[0].message });
+    }
+
+    const { page = 1, limit = 10 } = value;
+    const skip = (page - 1) * limit;
+
+    const aggregate = Assets.aggregate([
+      {
+        $match: {
+          productId: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "fieldGroups",
+          localField: "products.fieldGroups",
+          foreignField: "_id",
+          as: "fieldGroupsArr",
+        },
+      },
+      {
+        $addFields: {
+          fields: {
+            $reduce: {
+              input: "$fieldGroupsArr",
+              initialValue: [],
+              in: {
+                $concatArrays: ["$$value", "$$this.fields"],
+              },
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "fields",
+          localField: "fields",
+          foreignField: "_id",
+          as: "fields",
+        },
+      },
+      {
+        $project: {
+          fieldGroupsArr: 0,
+          products: 0,
+        },
+      },
+    ]);
+    const assets = await aggregate.exec();
+    const count = await Assets.countDocuments({ productId });
+
+    res.status(200).json({
+      assets,
+      total: count,
+      limit,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");

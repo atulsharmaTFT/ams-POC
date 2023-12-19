@@ -80,6 +80,14 @@ const AdminSidebar = () => {
               className={({ isActive }) =>
                 isActive ? `${classes.active}` : ""
               }
+              to={AppRoutes.ARCHIVEASSETS}
+            >
+              {open && "Archive Assets"}
+            </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                isActive ? `${classes.active}` : ""
+              }
               to={AppRoutes.ORGANIZATIONS}
             >
               {open && "Organizations"}

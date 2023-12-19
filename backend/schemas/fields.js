@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 
 
 const validationSchema = new mongoose.Schema({
-  validationType: { type: String },
-  isRequired: { type: Boolean },
-  min: { type: Number },
-  max: { type: Number }
+  validationType: { type: String, default: "" },
+  isRequired: { type: Boolean, default: false },
+  min: { type: String, default: 0 },
+  max: { type: String, default: 0 }
 },
   { _id: false }
 )
@@ -49,6 +49,7 @@ const fieldSchema = new mongoose.Schema(
     variable: {
       type: String,
       required: true,
+      unique: true,
     },
     type: {
       type: String,
@@ -67,7 +68,6 @@ const fieldSchema = new mongoose.Schema(
     },
     validations: {
       type: validationSchema,
-      default: { validationType: null, isRequired: false, min: 0, max: 0 }
     },
     description: {
       type: String,
