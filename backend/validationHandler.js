@@ -54,14 +54,18 @@ function validationSchema(type, validations, dateOptions, checkboxOptions, radio
         return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).max(validations.max);
     case "pincode":
       if (validations.isRequired) {
-        return Joi.string().min(6).max(6).required();
+        return Joi.string().pattern(/^[1-9][0-9]{6}$/).message('Invalid PIN code format').required();
       } else
-        return Joi.string().min(6).max(6);
+        return Joi.string().pattern(/^[1-9][0-9]{6}$/).message('Invalid PIN code format');
     case "phone":
       if (validations.isRequired) {
-        return Joi.string().min(10).max(10).required();
+        return Joi.string()
+          .pattern(/^[0-9]{10}$/)
+          .message('Invalid mobile number format').required();
       } else
-        return Joi.string().min(10).max(10);
+        return Joi.string()
+          .pattern(/^[0-9]{10}$/)
+          .message('Invalid mobile number format');
     case "email":
       if (validations.isRequired) {
         return Joi.string().regex(/^[a-zA-Z0-9]+@[a-zA-Z]+\.[A-Za-z]+$/).trim().lowercase().required();
