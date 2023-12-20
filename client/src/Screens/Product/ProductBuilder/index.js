@@ -38,11 +38,40 @@ const ProductBuilder = ({
   schema = { ...schema, ...staticSchema };
   const validatorSchema = !!schema && Yup.object().shape(schema);
   let defaultValues = {};
+
+  // function findFieldType(variableName) {
+  //   const field = fields.find((item) => item.variable === variableName);
+  //   return field ? field.type : null;
+  // }
+
   function setDefaultValues(schema) {
+    console.log(schema,"schemaschemaschema")
     try {
       let values = { data, name, purchaseDate, price, tag };
       Object.keys(schema).forEach((key) => {
         try {
+          // const type = findFieldType(key)
+          // if(type === null){
+          //   if(key === 'purchaseDate'){
+          //     console.log(key,"key")
+          //       if(!!values?.[key]){
+          //         return defaultValues[key] = moment(values[key]).format("YYYY-MM-DD").toString()
+          //       }
+          //       else {
+          //         return defaultValues[key] = moment().format("YYYY-MM-DD").toString()
+          //       }
+          //     }
+          //     else  return defaultValues[key] = values?.[key] ?? values?.data?.[key];
+          // }
+          // else if(type === 'date'){
+          //   if(!!values?.data?.[key]){
+          //     return defaultValues[key] = moment(values?.data?.[key]).format("YYYY-MM-DD").toString()
+          //   }
+          //   else {
+          //     return defaultValues[key] = moment().format("YYYY-MM-DD").toString()
+          //   }
+          // }
+          // else return defaultValues[key] = values?.[key] ?? values?.data?.[key];
           defaultValues[key] = values?.[key] ?? values?.data?.[key];
         } catch (e) {
           console.log(e, "error creating Key Values");
@@ -53,7 +82,8 @@ const ProductBuilder = ({
       console.log(e);
     }
   }
-  const DEFAULT_DATA_VALUE = !!schema && setDefaultValues(schema);
+  const DEFAULT_DATA_VALUE =!!schema &&  setDefaultValues(schema);
+  console.log(DEFAULT_DATA_VALUE,"DEFAULT_DATA_VALUE")
   const methods = useForm({
     shouldUnregister: false,
     defaultValues: !!validatorSchema && !!schema && DEFAULT_DATA_VALUE,
@@ -305,6 +335,7 @@ const ProductBuilder = ({
     delete finalData.data.staticPurchaseDate;
     delete finalData.data.purchaseDate;
     if (buttonName === "Submit") {
+      console.log(finalData,"finalData")
       await addNewAssetService(finalData);
     } else {
       await updateExistingAssetService(params.id, finalData);
@@ -398,11 +429,13 @@ const ProductBuilder = ({
         case constants.date.toLowerCase():
           return (
             <DateTimePicker
-              type="date"
+              // type="date"
               key={field?._id}
               defaultValue={field.value}
+              fieldName={field?.variable}
               inputOverrideClassName={styles.inputContainer}
               overrideClassName={styles.inputOverride}
+              overrideErrorClassName={styles.overrideErrorClass}
             />
           );
         case constants.number.toLowerCase():
@@ -492,8 +525,7 @@ const ProductBuilder = ({
           </div>
           <div className={styles.container}>
             <DateTimePicker
-              key="date"
-              type="date"
+              key="purchaseDate"
               label="Enter Purchase Date"
               fieldName="purchaseDate"
               defaultValue={getValues("purchaseDate")}

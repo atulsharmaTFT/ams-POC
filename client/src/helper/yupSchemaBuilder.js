@@ -41,6 +41,7 @@ export function validationSchema(type, validations) {
           .matches(/^\d{6}$/, "Invalid PIN code")
           .required("PinCode is required !");
       } else return Yup.string().min(6).max(6);
+
     case constants.phone.toLowerCase():
       if (validations?.isRequired) {
         return Yup.string().min(10).max(10).required("Phone no. is required !");
@@ -173,7 +174,11 @@ export function validationSchema(type, validations) {
       } else {
         return Yup.array();
       }
-
+      case constants.date.toLowerCase():
+        if (validations?.isRequired) {
+        return Yup.date().required('Date is required')
+        }
+        else return Yup.date().required('Date is required').nullable()
     default:
       return;
   }
@@ -210,8 +215,7 @@ export const staticSchema = {
     .max(15)
     .label(constants.tagNumber),
   purchaseDate: Yup.date()
-    // .required("Date is required")
-    .min(new Date(1900, 0, 1))
+    .required("Date is required")
     .label(constants.purchaseDate),
   image: Yup.string().notRequired().label(constants.image),
 };
