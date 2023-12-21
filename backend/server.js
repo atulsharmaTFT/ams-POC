@@ -608,7 +608,6 @@ app.post("/assets", async (req, res) => {
     // *********************** Joi Validation ******************************* 
     let getSchema = getJoiSchema(fields);
     const CheckData = testValidation(getSchema, data)
-    if (CheckData) return res.status(400).json({ err: CheckData.details[0].message });
     // *********************** Joi Validation *******************************
 
     for (const field of fields) {
