@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classes from "./NewFieldGroup.module.scss";
 import { toCamelCase } from "../../../helper/commonHelpers";
+import SelectedItemsList from "./SelectedItemsList";
+import { FormProvider } from "../../../components/FormHook";
+
 
 const NewFieldGroup = () => {
+  const dragItem = useRef();
+  const dragOverItem = useRef();
   const [searchTerm, setSearchTerm] = useState("");
   const [userName, setUserName] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -25,16 +30,20 @@ const NewFieldGroup = () => {
   }, []);
 
   const createFieldGroup = async () => {
-    // console.log(selectedItems, userName);
     try {
       let userIds = [];
+      let indexedUserIdsArray = [];
       selectedItems.forEach((item) => {
         userIds.push(item._id);
+      });
+      selectedItems.forEach((item, index) => {
+        indexedUserIdsArray.push({ index: index, Id: item._id });
       });
       const obj = {
         name: userName,
         variable: toCamelCase(userName),
         fields: userIds,
+        indexedUserIds: indexedUserIdsArray,
       };
 
       const response = await fetch("http://localhost:8001/field-groups", {
@@ -78,9 +87,29 @@ const NewFieldGroup = () => {
     );
     setSelectedItems(updatedSelectedItems);
   };
-
+  const handleDragStart = (e, id) => {
+    dragItem.current = id;
+   };
+   const handleDragEnter = (e, id) => {
+    dragOverItem.current = id;
+   };
+   const onDragEnd = () => {
+    const copySelectItems = [...selectedItems];
+    const draggedItem = copySelectItems.find(item => item._id === dragItem.current);
+    const draggedIndex = copySelectItems.findIndex(item => item._id === dragItem.current);
+    if (draggedItem && dragOverItem.current) {
+      const dropIndex = copySelectItems.findIndex(item => item._id === dragOverItem.current);
+      [copySelectItems[draggedIndex], copySelectItems[dropIndex]] = [copySelectItems[dropIndex], copySelectItems[draggedIndex]];
+    }
+  
+    dragItem.current = null;
+    dragOverItem.current = null;
+    setSelectedItems(copySelectItems);
+  };
   return data ? (
+    <div className={classes.mainContainer}>
     <div className={classes.container}>
+      <div className={classes.fieldGroupContainer}>
       <div className={classes.userInputContainer}>
         <h2>FieldGroupName</h2>
         <input
@@ -126,6 +155,7 @@ const NewFieldGroup = () => {
             ))}
           </tbody>
         </table>
+        
         {/* <ul>
           {searchResults.map((result) => (
             <li key={result._id}>
@@ -135,31 +165,22 @@ const NewFieldGroup = () => {
           ))}
         </ul> */}
       </div>
+      </div>
 
       {/* Second Container */}
-      <div className={classes.selectedItemsContainer}>
-        <h2>Selected Items Container</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedItems.map((item) => (
-              <tr key={item._id}>
-                <td>{item.name}</td>
-                <td>{item.type}</td>
-                <td>
-                  <button onClick={() => handleRemoveItem(item)}>Remove</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <button onClick={createFieldGroup}>Save</button>
+       <div className={classes.selectedItemsContainer}>
+        <SelectedItemsList
+        selectedItems={selectedItems}
+        handleDragStart={handleDragStart}
+        handleDragEnter={handleDragEnter}
+        onDragEnd={onDragEnd}
+        handleRemoveItem={handleRemoveItem}
+         />
+         </div>
+         </div>
+    <div className={classes.saveButton}>
+    <button onClick={createFieldGroup}>Save</button>
+    </div>
     </div>
   ) : (
     <p>loading</p>
