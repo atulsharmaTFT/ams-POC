@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const validationSchema = new mongoose.Schema(
   {
-    validationType: { type: String, default: "" },
+    validationType: { type: String, required: true },
     isRequired: { type: Boolean, default: false },
     min: { type: Number, default: 0 },
     max: { type: Number, default: 0 },
