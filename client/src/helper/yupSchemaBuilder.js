@@ -2,6 +2,7 @@ import * as Yup from "yup";
 import constants from "./constantKeyword/constants";
 import messages from "./constantKeyword/messages";
 import errors from "./constantKeyword/errors";
+import { toCamelCase } from "./commonHelpers";
 
 function transformJson(jsonObj) {
   try {
@@ -18,14 +19,14 @@ function transformJson(jsonObj) {
 export function validationSchema(type, validations) {
   switch (validations?.validationType) {
     // Text Validation (Strings)
-    case constants.onlyAlphabets.toLowerCase():
+    case toCamelCase(constants.onlyAlphabets):
       if (validations?.isRequired) {
         return Yup.string()
           .matches(/^[a-zA-Z]+$/, "Only alphabets allowed")
           .required("OnlyAlphabet is required !");
       } else
         return Yup.string().matches(/^[a-zA-Z]+$/, "Only alphabets allowed");
-    case constants.onlyAlphanumeric.toLowerCase():
+    case toCamelCase(constants.onlyAlphanumeric):
       if (validations?.isRequired) {
         return Yup.string()
           .matches(/^[a-zA-Z0-9]*$/, "Only alphanumeric characters allowed")
@@ -55,7 +56,7 @@ export function validationSchema(type, validations) {
           .required("Email is required !");
       } else
         return Yup.string.email("Invalid email address").trim().lowercase();
-    case constants.specialCharacterAllowed.toLowerCase():
+    case toCamelCase(constants.specialCharacterAllowed):
       if (validations?.isRequired) {
         return Yup.string()
           .matches(/^[a-zA-Z0-9@_$&-]+$/, "Special characters are allowed")
@@ -74,43 +75,43 @@ export function validationSchema(type, validations) {
         ) {
           return Yup.string()
             .required()
-            .min(validations?.minLength)
-            .max(validations?.maxLength);
+            .min(validations?.min)
+            .max(validations?.max);
         } else return Yup.string().required();
       } else
         return Yup.string()
-          .min(validations?.minLength)
-          .max(validations?.maxLength);
+          .min(validations?.min)
+          .max(validations?.max);
 
     // Validation Numbers
-    case constants.onlyIntegerNumber:
+    case toCamelCase(constants.onlyIntegerNumber):
       if (validations?.isRequired) {
         return Yup.number()
           .integer()
           .positive("Only Positive Integer Allowed")
           .required("Postive Integer is required")
-          .min(validations?.minLength)
-          .max(validations?.maxLength);
+          .min(validations?.min)
+          .max(validations?.max);
       } else
         return Yup.number()
           .integer()
           .positive("Only Positive Integer Allowed")
-          .min(validations?.minLength)
-          .max(validations?.maxLength);
-    case constants.allowDecimal:
+          .min(validations?.min)
+          .max(validations?.max);
+    case toCamelCase(constants.allowDecimal):
       if (validations?.isRequired) {
         return Yup.number()
 
           .positive("Positive Decimal allowed")
           .required("This field is required !")
-          .min(validations?.minLength)
-          .max(validations?.maxLength);
+          .min(validations?.min)
+          .max(validations?.max);
       } else
         Yup.number()
 
           .positive("Positive Decimal allowed")
-          .min(validations?.minLength)
-          .max(validations?.maxLength);
+          .min(validations?.min)
+          .max(validations?.max);
       break;
     case constants.number.toLowerCase():
       if (validations.isRequired) {
@@ -120,13 +121,13 @@ export function validationSchema(type, validations) {
         ) {
           return Yup.string()
             .required()
-            .min(validations?.minLength)
-            .max(validations?.maxLength);
+            .min(validations?.min)
+            .max(validations?.max);
         } else return Yup.string().required();
       } else
         return Yup.number()
-          .min(validations.minLength)
-          .max(validations.maxLength);
+          .min(validations.min)
+          .max(validations.max);
       break;
     //Dropdown and Radio validation
     case constants.radio.toLowerCase():
@@ -178,7 +179,7 @@ export function validationSchema(type, validations) {
         if (validations?.isRequired) {
         return Yup.date().required('Date is required')
         }
-        else return Yup.date().required('Date is required').nullable()
+        else return Yup.date().nullable()
     default:
       return;
   }
