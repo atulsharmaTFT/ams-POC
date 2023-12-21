@@ -1,111 +1,131 @@
 
 const Joi = require("joi");
+const { typeConstants } = require('./constants')
+
+// const getKeysWithDoubleQuotes = (array, key) => {
+//   return array.map(item => item[key])
+// }
 
 
-const getKeysWithDoubleQuotes = (array, key) => {
-  return array.map(item => item[key])
-}
+// const createSchema = (array) => {
+//   const forOptions = getKeysWithDoubleQuotes(array, 'option')
+//   const forValue = getKeysWithDoubleQuotes(array, 'value')
+//   const forLabel = getKeysWithDoubleQuotes(array, 'label')
+//   if (forOptions[0]) {
+//     return Joi.object({
+//       option: Joi.string().valid(...forOptions),
+//       checked: Joi.boolean().valid(true),
+//     })
+//   } else {
+//     return Joi.object({
+//       value: Joi.string().valid(...forValue).required(),
+//       label: Joi.string().valid(...forLabel).required(),
+//     })
+//   }
+// }
 
 
-const createSchema = (array) => {
-  const forOptions = getKeysWithDoubleQuotes(array, 'option')
-  const forValue = getKeysWithDoubleQuotes(array, 'value')
-  const forLabel = getKeysWithDoubleQuotes(array, 'label')
-  if (forOptions[0]) {
-    return Joi.object({
-      option: Joi.string().valid(...forOptions),
-      checked: Joi.boolean().valid(true),
-    })
-  } else {
-    return Joi.object({
-      value: Joi.string().valid(...forValue).required(),
-      label: Joi.string().valid(...forLabel).required(),
-    })
-  }
-}
-
-
-function validationSchema(type, validations, dateOptions, checkboxOptions, radioOptions, dropdownOptions, multiSelectOptions) {
+function validationSchema(validations) {
   switch (validations?.validationType) {
-    case "string":
+    case typeConstants.text:
       if (validations.isRequired) {
         return Joi.string().min(validations.min).max(validations.max).required();
       } else
         return Joi.string().min(validations.min).max(validations.max);
-    case "number":
+    case typeConstants.number:
       if (validations.isRequired) {
         return Joi.number().min(validations.min).max(validations.max).required();
       } else
         return Joi.number().min(validations.min).max(validations.max);
-    case "onlyAlphabets":
+    case typeConstants.onlyAlphabets:
       if (validations.isRequired) {
         return Joi.string().regex(/^[a-zA-Z]+$/).min(validations.min).max(validations.max).required();
       } else
         return Joi.string().regex(/^[a-zA-Z]+$/).min(validations.min).max(validations.max);
-    case "onlyAlphaNumeric":
+    case typeConstants.onlyAlphanumeric:
       if (validations.isRequired) {
         return Joi.string().alphanum().min(validations.min).max(validations.max).required();
       } else
         return Joi.string().alphanum().min(validations.min).max(validations.max);
-    case "specialCharactersAllowed":
+    case typeConstants.specialCharacterAllowed:
       if (validations.isRequired) {
         return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).min(validations.min).max(validations.max).required();
       } else
         return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).max(validations.max);
-    case "pincode":
+    case typeConstants.pincode:
       if (validations.isRequired) {
         return Joi.string().pattern(/^[1-9][0-9]{6}$/).message('Invalid PIN code format').required();
       } else
-        return Joi.string().pattern(/^[1-9][0-9]{6}$/).message('Invalid PIN code format');
-    case "phone":
+        return Joi.string().min(6).max(6);
+    case typeConstants.phone:
       if (validations.isRequired) {
         return Joi.string()
           .pattern(/^[0-9]{10}$/)
           .message('Invalid mobile number format').required();
       } else
-        return Joi.string()
-          .pattern(/^[0-9]{10}$/)
-          .message('Invalid mobile number format');
-    case "email":
+        return Joi.string().min(10).max(10);
+    case typeConstants.email:
       if (validations.isRequired) {
         return Joi.string().regex(/^[a-zA-Z0-9]+@[a-zA-Z]+\.[A-Za-z]+$/).trim().lowercase().required();
       } else
         return Joi.string().regex(/^[a-zA-Z0-9]+@[a-zA-Z]+\.[A-Za-z]+$/).trim().lowercase();
-    case "allowDecimalPoints":
+    case typeConstants.allowDecimal:
       if (validations.isRequired) {
         return Joi.number().precision(2).positive().required();
       } else
         return Joi.number().precision(2).positive();
-    case "onlyIntegerNumbers":
+    case typeConstants.onlyIntegerNumber:
       if (validations.isRequired) {
         return Joi.number().integer().positive().min(validations.min).max(validations.max).required();
       } else
         return Joi.number().integer().positive().min(validations.min).max(validations.max);
-    case "date":
+    case typeConstants.date:
       if (validations.isRequired) {
         return Joi.date().iso().required();
       } else
         return Joi.date().iso();
-    case "radio":
+    case typeConstants.radio:
       if (validations.isRequired) {
-        return createSchema(radioOptions).required();
+        return Joi.object({
+          option: Joi.string(),
+          checked: Joi.boolean().valid(true),
+        }).required();
       } else
-        return createSchema(radioOptions);
-    case "checkbox":
+        return Joi.object({
+          option: Joi.string(),
+          checked: Joi.boolean().valid(true),
+        });
+    case typeConstants.checkbox:
       if (validations.isRequired) {
-        return Joi.array().items(createSchema(checkboxOptions)).required();
+        return Joi.array().items(Joi.object(
+          { option: Joi.string(), checked: Joi.boolean() })).required();
       } else
-        return Joi.array().items(createSchema(checkboxOptions));
-    case "multiSelect":
+        return Joi.array().items(Joi.object({
+          option: Joi.string(),
+          checked: Joi.boolean()
+        }))
+    case typeConstants.multiselect:
       if (validations.isRequired) {
-        return Joi.array().items(createSchema(multiSelectOptions)).required();
+        return Joi.array().items(Joi.object({
+          value: Joi.string(),
+          label: Joi.string()
+        })).required();
       } else
-        return Joi.array().items(createSchema(multiSelectOptions));
-    case "dropdown":
+        return Joi.array().items(Joi.object({
+          value: Joi.string(),
+          label: Joi.string(),
+        }));
+    case typeConstants.dropdown:
       if (validations.isRequired) {
-        return createSchema(dropdownOptions).required();
+        return Joi.object({
+          value: Joi.string(),
+          label: Joi.string(),
+        }).required();
       } else
-        return createSchema(dropdownOptions);
+        return Joi.object({
+          value: Joi.string(),
+          label: Joi.string(),
+        });
 
     default:
       return;
@@ -116,27 +136,38 @@ function validationSchema(type, validations, dateOptions, checkboxOptions, radio
 
 let transformedObj = {}
 const transformJson = (jsonObj) => {
-  const { variable, type, validations, dateOptions, checkboxOptions, radioOptions, dropdownOptions, multiSelectOptions } = jsonObj;
-  transformedObj[variable] = validationSchema(type, validations, dateOptions, checkboxOptions, radioOptions, dropdownOptions, multiSelectOptions)
-  return transformedObj;
+  try {
+    const { variable, validations } = jsonObj
+    transformedObj[variable] = validationSchema(validations)
+    return transformedObj;
+  } catch (error) {
+    console.log(error)
+  }
 }
-
 
 
 
 
 
 exports.getJoiSchema = (data) => {
-  const newSchema = data.map((field) => transformJson(field));
-  const joiSchema = Joi.object(...newSchema)
-  return joiSchema;
+  try {
+    const newSchema = data.map((field) => transformJson(field));
+    const joiSchema = Joi.object(...newSchema)
+    return joiSchema;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 
 
-exports.testValidation = (schema, obj) => {
-  const { error, value } = schema.validate(obj);
-  if (error) return error
+exports.testValidation = async (schema, obj) => {
+  try {
+    await schema.validate(obj);
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 
