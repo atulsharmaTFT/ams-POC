@@ -249,6 +249,15 @@ app.get("/field-groups", async (req, res) => {
 const validateProducts = Joi.object({
   name: Joi.string().required(),
   variable: Joi.string().required(),
+  indexedFieldIds: Joi.array().items({
+    index: Joi.number().positive().required(),
+    fieldId: Joi.string().custom((value, helpers) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        return helpers.error("any.invalid");
+      }
+      return value;
+    }).required()
+  }).required(),
   fieldGroups: Joi.array()
     .items(
       Joi.string().custom((value, helpers) => {
@@ -270,7 +279,7 @@ app.post("/products", async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const { name, fieldGroups, variable } = value;
+    const { name, indexedFieldIds, fieldGroups, variable } = value;
 
     const isValidFields =
       (await FieldGroups.countDocuments({ _id: { $in: fieldGroups } })) ===
@@ -281,6 +290,7 @@ app.post("/products", async (req, res) => {
 
     const newProduct = new Products({
       name,
+      indexedFieldIds,
       fieldGroups,
       variable,
     });

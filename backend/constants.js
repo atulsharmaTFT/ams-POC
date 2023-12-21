@@ -6,9 +6,8 @@ const typeConstants = {
  dropdown: 'dropdown',
  checkbox: 'checkbox',
  radio: 'radio',
- multiselect: 'multiselect',
+ multiselect: 'multiSelect',
  date: 'date',
-
  //Validations text
  onlyAlphabets: "onlyAlphabets",
  onlyAlphanumeric: "onlyAlphaNumeric",
