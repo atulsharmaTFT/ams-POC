@@ -120,7 +120,12 @@ const NewField = () => {
             maxDate: fields?.maxDate,
             format: "YYYY-MM-DD",
           },
-          validations: validationObject,
+          validations: {
+            validationType: fields?.validationType
+              ? fields.validationType
+              : fields.type.toLowerCase() || null,
+            isRequired: fields.isRequired || false,
+          },
         };
         await createFieldsServices(payload);
         break;
