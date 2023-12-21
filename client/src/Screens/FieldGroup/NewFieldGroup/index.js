@@ -43,7 +43,7 @@ const NewFieldGroup = () => {
         name: userName,
         variable: toCamelCase(userName),
         fields: userIds,
-        indexedUserIds: indexedUserIdsArray,
+        indexedFieldsIds: indexedUserIdsArray,
       };
 
       const response = await fetch("http://localhost:8001/field-groups", {
