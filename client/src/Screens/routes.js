@@ -10,17 +10,15 @@ import NewFieldGroup from "./FieldGroup/NewFieldGroup";
 import Product from "./Product";
 import NewProduct from "./Product/NewProduct";
 import AddProductDetails from "./Product/AddProductDetails";
-import Asset from "./Assets";
-import Organization from "./Organization";
-import ViewAsset from "./Assets/viewAsset";
 import Assets from "./Assets";
+import ViewAsset from "./Assets/viewAsset";
 import EditAsset from "./Assets/editAsset";
 import Archive from "./Archive";
-import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
+import LoginForm from "./Login";
 
 export const adminRoutes = (token, role) => [
   {
-    element: <DashboardLayout />,
+    element: !!token ? <AdminLayout /> : <Navigate to={AppRoutes.LOGIN} />,
     children: [
       {
         path: AppRoutes.HOME,
@@ -64,19 +62,11 @@ export const adminRoutes = (token, role) => [
       },
       {
         path: AppRoutes.ARCHIVEASSETS,
-        element: <Archive/>,
+        element: <Archive />,
       },
       {
         path: AppRoutes.VIEWASSET,
         element: <ViewAsset />,
-      },
-      {
-        path: AppRoutes.ASSETS,
-        element: <Asset/>,
-      },
-      {
-        path: AppRoutes.ORGANIZATIONS,
-        element: <Organization/>,
       },
       {
         path: AppRoutes.EDITASSET,
@@ -84,6 +74,14 @@ export const adminRoutes = (token, role) => [
       },
     ],
   },
+  {
+    element: !!!token ?  <Outlet /> : <Navigate to={AppRoutes.HOME} /> ,
+    children: [{ path: AppRoutes.LOGIN, element: <LoginForm /> }],
+  },
+  // {
+  //   path: AppRoutes.LOGIN,
+  //   element: <LoginForm/>
+  // }
   // {
   //   element:  <AdminLayout /> ,
   //   children: [

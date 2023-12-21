@@ -5,7 +5,7 @@ import classes from "./Page.module.scss";
 
 const Screens = () => {
   const role = "admin";
-  const token = "abcasdasdas"
+  const token = localStorage.getItem('token');
   return (
     <div className={classes.page}>
       <React.Suspense fallback={<p>Loading...</p>}>

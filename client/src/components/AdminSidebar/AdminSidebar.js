@@ -17,7 +17,47 @@ const AdminSidebar = () => {
   const toggleEmbedmenu = () => {
     setEmbedmenuOpen(!embedmenuOpen);
   };
-  const role = "admin";
+
+  const navs = [
+    {
+      path: AppRoutes.ARCHIVEASSETS,
+      name: "Domain",
+      show: ["SuperAdmin"],
+    },
+    {
+      path: AppRoutes.ORGANIZATIONS,
+      name: "Organizations",
+      show: ["SuperAdmin"],
+    },
+    {
+      path: AppRoutes.FIELDS,
+      name: "Fields",
+      show: ["SuperAdmin", "OrganizationAdmin"],
+    },
+    {
+      path: AppRoutes.FIELDGROUP,
+      name: "Field Groups",
+      show: ["SuperAdmin", "OrganizationAdmin"],
+    },
+    {
+      path: AppRoutes.PRODUCT,
+      name: "Product Category",
+      show: ["SuperAdmin", "OrganizationAdmin"],
+    },
+    {
+      path: AppRoutes.ASSETS,
+      name: "Assets",
+      show: ["OrganizationAdmin"],
+    },
+    {
+      path: AppRoutes.ARCHIVEASSETS,
+      name: "Archive Assets",
+      show: ["OrganizationAdmin"],
+    },
+  ];
+  const role = localStorage.getItem("organizationId")
+    ? "OrganizationAdmin"
+    : "SuperAdmin";
   const scrollToBottom = () => {
     if (scrollbarRef.current) {
       scrollbarRef.current.scrollToBottom();
@@ -40,58 +80,29 @@ const AdminSidebar = () => {
               <img src={logo} alt="logo" /> <h4>AMS</h4>
             </Link>
           )} */}
-          <h1 style={{fontSize:"20px" , color:'white'}}> Asset Management System</h1>
+          <h1 style={{ fontSize: "20px", color: "white" }}>
+            {" "}
+            Asset Management System
+          </h1>
         </div>
         <Scrollbars ref={scrollbarRef} className={classes.links} height={"80%"}>
-            
-            <NavLink
-              className={({ isActive }) =>
-                isActive ? `${classes.active}` : ""
-              }
-              to={AppRoutes.FIELDS}
-            >
-              {open && "Fields"}
-            </NavLink>
-            <NavLink
-              className={({ isActive }) =>
-                isActive ? `${classes.active}` : ""
-              }
-              to={AppRoutes.FIELDGROUP}
-            >
-              {open && "FieldGroups"}
-            </NavLink>
-            <NavLink
-              className={({ isActive }) =>
-                isActive ? `${classes.active}` : ""
-              }
-              to={AppRoutes.PRODUCT}
-            >
-              {open && "Product Category"}
-            </NavLink>
-            <NavLink
-              className={({ isActive }) =>
-                isActive ? `${classes.active}` : ""
-              }
-              to={AppRoutes.ASSETS}
-            >
-              {open && "Assets"}
-            </NavLink>
-            <NavLink
-              className={({ isActive }) =>
-                isActive ? `${classes.active}` : ""
-              }
-              to={AppRoutes.ARCHIVEASSETS}
-            >
-              {open && "Archive Assets"}
-            </NavLink>
-            <NavLink
-              className={({ isActive }) =>
-                isActive ? `${classes.active}` : ""
-              }
-              to={AppRoutes.ORGANIZATIONS}
-            >
-              {open && "Organizations"}
-            </NavLink>
+          {navs.map((node) => {
+            console.log(role, node.show, node.show.includes(role));
+            if (node.show.includes(role)) {
+              console.log(node);
+              return (
+                <NavLink
+                  key={node.name}
+                  className={({ isActive }) =>
+                    isActive ? `${classes.active}` : ""
+                  }
+                  to={node.path}
+                >
+                  {open && node.name}
+                </NavLink>
+              );
+            }
+          })}
         </Scrollbars>
       </div>
     </motion.div>
