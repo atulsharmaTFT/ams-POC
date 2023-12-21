@@ -109,7 +109,7 @@ const NewProduct = () => {
       const obj = {
         name: userName,
         fieldGroups: userIds,
-        indexedUserIds: indexedUserIdsArray,
+        indexedFieldsIds: indexedUserIdsArray,
       };
 
       if (params.id) {
