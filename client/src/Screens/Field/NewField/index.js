@@ -37,7 +37,7 @@ const NewField = () => {
       min: fields.minLength || 0,
       max: fields.maxLength || 0,
       validationType: fields?.validationType
-        ? fields.validationType
+        ? toCamelCase(fields.validationType)
         : fields.type.toLowerCase() || null,
     };
     // { validationType: null, isRequired: false, min: 0, max: 0 }
