@@ -22,7 +22,7 @@ export function validationSchema(type, validations) {
     case toCamelCase(constants.onlyAlphabets):
       if (validations?.isRequired) {
         return Yup.string()
-          .required("OnlyAlphabet is required !")
+          .required("This field is required !")
           .matches(/^[a-zA-Z]+$/, "Only alphabets allowed")
 
           .min(
@@ -47,7 +47,7 @@ export function validationSchema(type, validations) {
     case toCamelCase(constants.onlyAlphanumeric):
       if (validations?.isRequired) {
         return Yup.string()
-          .required("OnlyAlphaNumeric is required !")
+          .required("This field is required !")
           .matches(/^[a-zA-Z0-9]*$/, "Only alphanumeric characters allowed")
 
           .min(
@@ -95,7 +95,7 @@ export function validationSchema(type, validations) {
     case toCamelCase(constants.specialCharacterAllowed):
       if (validations?.isRequired) {
         return Yup.string()
-          .required("Only SpecialCharacter is required !")
+          .required("This field is required !")
           .matches(/^[a-zA-Z0-9@_$&-]+$/, "Special characters are allowed")
 
           .min(
@@ -135,7 +135,8 @@ export function validationSchema(type, validations) {
     case toCamelCase(constants.onlyIntegerNumber):
       if (validations?.isRequired) {
         return Yup.number()
-          .required("This field is required !")
+          .required("Number is required !")
+          .transform((value) => (Number.isNaN(value) ? null : value))
           .integer("Only Integer is allowed")
           .positive("Only Positive Integer Allowed")
 
@@ -162,7 +163,8 @@ export function validationSchema(type, validations) {
     case toCamelCase(constants.allowDecimal):
       if (validations?.isRequired) {
         return Yup.number()
-          .required("This field is required !")
+          .required("Number is required !")
+          .transform((value) => (Number.isNaN(value) ? null : value))
           .positive("Positive Decimal no. allowed")
 
           .min(
@@ -231,6 +233,7 @@ export function validationSchema(type, validations) {
       if (validations?.isRequired) {
         return Yup.array()
           .required("Select at least one option.")
+          .min(1, "At least one option be select")
           .of(
             Yup.object().shape({
               label: Yup.string().required("Select at least one option."),
@@ -289,6 +292,7 @@ export const staticSchema = {
     .label(constants.name),
   price: Yup.number()
     .required(messages.priceRequired)
+    .transform((value) => (Number.isNaN(value) ? null : value))
     .test(
       messages.isPositive,
       messages.priceGreaterThanZero,
