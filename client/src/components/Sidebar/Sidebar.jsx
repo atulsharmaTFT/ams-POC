@@ -1,5 +1,5 @@
-import React, { useState , useRef} from "react";
-import { Link, NavLink ,useNavigate} from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import classes from "./Sidebar.module.scss";
 import { RxDashboard } from "react-icons/rx";
 import { TfiLayoutListThumb } from "react-icons/tfi";
@@ -23,15 +23,70 @@ import Scrollbars from "react-custom-scrollbars";
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const scrollbarRef = useRef();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const toggleHandler = () => {
     setOpen(!open);
   };
-  const handleLogout =()=>{
+  const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.reload();
     // navigate(Routes.LOGIN)
-  }
+  };
+
+  const role = localStorage.getItem("organizationId")
+    ? "OrganizationAdmin"
+    : "SuperAdmin";
+
+  const navs = [
+    {
+      path: AppRoutes.HOME,
+      name: "Dashboard",
+      show: ["SuperAdmin", "OrganizationAdmin"],
+      icon: <RxDashboard size={"25px"} className={classes.icon} />,
+    },
+    {
+      path: AppRoutes.DOMAIN,
+      name: "Domain",
+      show: ["SuperAdmin"],
+      icon: <SlOrganization size={"25px"} className={classes.icon} />,
+    },
+    {
+      path: AppRoutes.ORGANIZATIONS,
+      name: "Organizations",
+      show: ["SuperAdmin"],
+      icon: <SlOrganization size={"25px"} className={classes.icon} />,
+    },
+    {
+      path: AppRoutes.FIELDS,
+      name: "Fields",
+      show: ["SuperAdmin", "OrganizationAdmin"],
+      icon: <TfiLayoutListThumb size={"25px"} className={classes.icon} />,
+    },
+    {
+      path: AppRoutes.FIELDGROUP,
+      name: "Field Groups",
+      show: ["SuperAdmin", "OrganizationAdmin"],
+      icon: <FaFolderTree size={"25px"} className={classes.icon} />,
+    },
+    {
+      path: AppRoutes.PRODUCT,
+      name: "Product Category",
+      show: ["SuperAdmin", "OrganizationAdmin"],
+      icon: <GiCheckboxTree size={"25px"} className={classes.icon} />,
+    },
+    {
+      path: AppRoutes.ASSETS,
+      name: "Assets",
+      show: ["OrganizationAdmin"],
+      icon: <MdOutlineInventory2 size={"25px"} className={classes.icon} />,
+    },
+    {
+      path: AppRoutes.ARCHIVEASSETS,
+      name: "Archive Assets",
+      show: ["OrganizationAdmin"],
+      icon: <TbLockAccess size={"25px"} className={classes.icon} />,
+    },
+  ];
   return (
     <motion.div
       animate={{ width: open ? "18%" : "50px" }}
@@ -52,8 +107,30 @@ const Sidebar = () => {
           )}
         </div>
         <div className={classes.content}>
-        <Scrollbars ref={scrollbarRef} className={classes.links} height={"80%"}>
-            <NavLink
+          <Scrollbars
+            ref={scrollbarRef}
+            className={classes.links}
+            height={"80%"}
+          >
+            {navs.map((node) => {
+              if (node.show.includes(role)) {
+                return (
+                  <NavLink
+                    key={node.name}
+                    className={({ isActive }) =>
+                      isActive ? `${classes.active}` : ""
+                    }
+                    to={node.path}
+                  >
+                    {" "}
+                    {node?.icon}
+                    {open && node.name}
+                  </NavLink>
+                );
+              }
+            })}
+
+            {/* <NavLink
               className={({ isActive }) =>
                 isActive ? `${classes.active}` : ""
               }
@@ -145,7 +222,7 @@ const Sidebar = () => {
             >
               {<FaUsersGear size={"25px"} className={classes.icon} />}
               {open && "Manage Users"}
-            </NavLink>
+            </NavLink> */}
           </Scrollbars>
           <div className={classes.links}>
             <div className={classes.signout} onClick={handleLogout}>

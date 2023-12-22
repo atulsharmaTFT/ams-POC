@@ -52,6 +52,12 @@ export default {
       method: HttpMethods.GET,
     };
   },
+  getAllDomains: () => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.DOMAINS}`,
+      method: HttpMethods.GET,
+    };
+  },
   addAsset: (data) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_ASSET}`,
@@ -84,6 +90,7 @@ export default {
       method: HttpMethods.PATCH,
     };
   },
+
   // tambolaOrganizationReport: ({ token, key, id, page, limit }) => {
   //   return {
   //     url: `${ApiUrls.ADMIN_APIS.TAMBOLA_ORGANIZATION_REPORT}/${id}?search=${key}&page=${page}&limit=${limit}`,

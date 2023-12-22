@@ -9,6 +9,7 @@ axiosInst.interceptors.request.use(
   (requestConfig) => {
     if (!isApiAccessibleWithoutToken(requestConfig.url)) {
       requestConfig.headers.Authorization = `Bearer ${getAdminToken()}`;
+      console.log('token added', getAdminToken())
     }
     if (!requestConfig.headers['Content-Type']) {
       requestConfig.headers['Content-Type'] = 'application/json';

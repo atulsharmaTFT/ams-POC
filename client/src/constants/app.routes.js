@@ -23,4 +23,5 @@ export const AppRoutes = {
   REGISTER: "/register",
   ALL: "*",
   TEMPLATE: "/template",
+  DOMAIN: '/domain'
 };

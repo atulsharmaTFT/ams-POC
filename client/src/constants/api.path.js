@@ -10,6 +10,7 @@ export const ApiUrls = {
     FIELD_GROUPS: "/field-groups",
     PRODUCT_BY_ID: "/products",
     ADD_ASSET : "/assets",
+    DOMAINS: "/api/v1/super-admin/get-all-domain-categories",
     MOVE_TO_Inventory: '/move-to-inventory',
     ARCHIVE_ASSET: '/move-to-archive',
   },

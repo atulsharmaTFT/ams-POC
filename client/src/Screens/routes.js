@@ -15,10 +15,12 @@ import ViewAsset from "./Assets/viewAsset";
 import EditAsset from "./Assets/editAsset";
 import Archive from "./Archive";
 import LoginForm from "./Login";
+import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
+import Domain from "./Domain";
 
 export const adminRoutes = (token, role) => [
   {
-    element: !!token ? <AdminLayout /> : <Navigate to={AppRoutes.LOGIN} />,
+    element: !!token ? <DashboardLayout /> : <Navigate to={AppRoutes.LOGIN} />,
     children: [
       {
         path: AppRoutes.HOME,
@@ -71,6 +73,10 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.EDITASSET,
         element: <EditAsset />,
+      },
+      {
+        path: AppRoutes.DOMAIN,
+        element: <Domain />,
       },
     ],
   },

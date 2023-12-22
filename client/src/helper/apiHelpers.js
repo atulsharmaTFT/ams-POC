@@ -20,7 +20,7 @@ export const getQueryParams = (params) => {
 };
 
 export const getAdminToken = () => {
-  return JSON.parse(localStorage.getItem('loggedInAdmin'))?.token;
+  return localStorage.getItem('token');
 };
 
 export const getUserRole = () => {
