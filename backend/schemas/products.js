@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const schema = new mongoose.Schema(
   {
     index: { type: Number, required: true },
-    fieldId: { type: mongoose.Schema.Types.ObjectId, required: true }
+    fieldGroupId: { type: mongoose.Schema.Types.ObjectId, required: true }
   },
   { _id: false }
 );
@@ -18,7 +18,7 @@ const productsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    indexedFieldIds: {
+    indexedFieldGroupsIds: {
       type: [schema],
       require: true
     },
