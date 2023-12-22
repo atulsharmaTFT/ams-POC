@@ -37,7 +37,7 @@ const NewFieldGroup = () => {
         userIds.push(item._id);
       });
       selectedItems.forEach((item, index) => {
-        indexedUserIdsArray.push({ index: index, Id: item._id });
+        indexedUserIdsArray.push({ index: index, fieldId: item._id });
       });
       const obj = {
         name: userName,
