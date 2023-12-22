@@ -1,0 +1,23 @@
+.users{
+    display:flex;
+    flex-direction: column;
+
+}
+.addActions{
+    
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: end;
+    
+}
+.addUser{
+    margin-bottom: 10px;
+    float: right;
+}
+.userTable{
+    padding: 5px;
+    h1{
+        text-align: center;
+    }
+}
