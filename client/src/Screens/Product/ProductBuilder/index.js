@@ -320,7 +320,7 @@ const ProductBuilder = ({
   };
   const formHandler = async (data) => {
     console.log(data, "data");
-
+// data = {...data,...getValues()}
     const finalData = {
       name: data?.name,
       tag: data?.tag,
@@ -334,6 +334,11 @@ const ProductBuilder = ({
     delete finalData.data.price;
     delete finalData.data.staticPurchaseDate;
     delete finalData.data.purchaseDate;
+    // Object.keys(data).forEach((key)=>{
+    //   if(data.key === null || data.key === undefined || data.key === ""){
+    //     delete data.key;
+    //   }
+    // })
     if (buttonName === "Submit") {
       console.log(finalData,"finalData")
       await addNewAssetService(finalData);
