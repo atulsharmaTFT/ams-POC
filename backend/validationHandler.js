@@ -54,12 +54,14 @@ function validationSchema(validations) {
         return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).max(validations.max);
     case typeConstants.pincode:
       if (validations.isRequired) {
-        return Joi.string().min(6).max(6).required();
+        return Joi.string().pattern(/^[1-9][0-9]{6}$/).message('Invalid PIN code format').required();
       } else
         return Joi.string().min(6).max(6);
     case typeConstants.phone:
       if (validations.isRequired) {
-        return Joi.string().min(10).max(10).required();
+        return Joi.string()
+          .pattern(/^[0-9]{10}$/)
+          .message('Invalid mobile number format').required();
       } else
         return Joi.string().min(10).max(10);
     case typeConstants.email:

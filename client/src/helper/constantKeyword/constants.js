@@ -40,7 +40,7 @@ const constants = {
     slider: 'slider',
     //Validations text
     onlyAlphabets: "Only Alphabets",
-    onlyAlphanumeric: "Only Alphanumeric",
+    onlyAlphanumeric: "Only Alpha Numeric",
     specialCharacterAllowed: "Special characters allowed",
     email: 'Email',
     phone: 'Phone',

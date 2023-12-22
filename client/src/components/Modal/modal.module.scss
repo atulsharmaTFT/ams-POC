@@ -1,0 +1,134 @@
+@import "../../../scss/theme";
+.modal {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  @include flexContainer;
+  cursor: default;
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: url("https://ak-ca.com/img/page-header/fixed-assets-audit-bg.png");
+    filter: blur(6px);
+    // backdrop-filter: blur(1px);
+  }
+  .disabledOutsideClick {
+    z-index: -1;
+    pointer-events: none;
+  }
+  .modalContent {
+    width: 40%;
+    height: auto;
+    background: $white;
+    // background-image: url("https://img.freepik.com/premium-vector/white-embossed-honeycomb-pattern-ui-background-vector-illustration_200484-200.jpg");
+    border-radius: 0.7rem;
+    max-height: 92%;
+    // overflow: auto;
+    z-index: 20000;
+    scroll-behavior: smooth;
+    // border-radius: 3rem;
+    position: relative;
+    @include flexContainer(column, flex-start);
+    .modalBody {
+      width: 100%;
+      max-height: calc(100% - 7.5rem);
+      overflow: auto;
+      height: 100%;
+    }
+    .modalHeader {
+      background: $modal-header 0% 0% no-repeat padding-box;
+      // border-bottom: 0.1rem solid $hawkes-blue;
+      width: 100%;
+      padding: 2.7rem 3rem 2.6rem;
+      font-size: 1.8rem;
+      line-height: 2.2rem;
+      @include flexContainer(row, space-between);
+      flex-wrap: wrap;
+      i {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: $coal-black;
+        font-weight: bold;
+        position: absolute;
+        left: 2rem;
+      }
+      .goBack {
+        font-size: 1.2rem;
+        display: none;
+        text-decoration: underline;
+        color: $coal-black;
+        cursor: pointer;
+        &:hover {
+          color: $blue;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .modal {
+    align-items: flex-end;
+
+    .modalContent {
+      max-height: 100%;
+      width: 100%;
+      box-shadow: 0rem 0.3rem 0.6rem $black-shade-1;
+      border-radius: 0;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      // .modalBody {
+      //   //max-height: calc(100vh - 6.5rem);
+      // }
+      .modalHeader {
+        padding: 2.3rem 3rem 2.2rem;
+        font-size: 1.7rem;
+        line-height: 2rem;
+        // height: 6.5rem;
+        &[isFullScreenPopupOnMobile="true"] {
+          i {
+            display: none;
+          }
+          .goBack {
+            display: flex;
+          }
+        }
+      }
+    }
+  }
+}
+.close {
+  margin-bottom: 5px;
+  position: absolute;
+  top: 25px;
+  right: 20px;
+  cursor: pointer;
+}
+
+
+@media (max-width: 490px){
+   .modal {
+    .modalContent {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 374px) {
+  .modal {
+    .modalContent {
+      width: 100%;
+    }
+  }
+
+  .overlay {
+    filter: none;
+  }
+}

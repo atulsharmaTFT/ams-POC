@@ -3,8 +3,17 @@
 .container {
   input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
+    
   }
-
+  .datePicker {
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+    /* Other styles */
+  }
+  .errorBorder {
+    border: 1px solid red;
+  }
   .label {
     font-size: 1.6rem;
     line-height: 2.5rem;
