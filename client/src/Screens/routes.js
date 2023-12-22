@@ -17,6 +17,7 @@ import Assets from "./Assets";
 import EditAsset from "./Assets/editAsset";
 import Archive from "./Archive";
 import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
+import Users from "./Users/Users";
 
 export const adminRoutes = (token, role) => [
   {
@@ -64,7 +65,7 @@ export const adminRoutes = (token, role) => [
       },
       {
         path: AppRoutes.ARCHIVEASSETS,
-        element: <Archive/>,
+        element: <Archive />,
       },
       {
         path: AppRoutes.VIEWASSET,
@@ -72,15 +73,19 @@ export const adminRoutes = (token, role) => [
       },
       {
         path: AppRoutes.ASSETS,
-        element: <Asset/>,
+        element: <Asset />,
       },
       {
         path: AppRoutes.ORGANIZATIONS,
-        element: <Organization/>,
+        element: <Organization />,
       },
       {
         path: AppRoutes.EDITASSET,
         element: <EditAsset />,
+      },
+      {
+        path: AppRoutes.MANAGEUSERS,
+        element: <Users />,
       },
     ],
   },
