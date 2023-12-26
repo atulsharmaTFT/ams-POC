@@ -70,6 +70,7 @@ const InputField = ({
       )}
       <div className={getClassNames()}>
       <Controller
+      shouldUnregister={false}
      name={fieldName}
      control={control}
      defaultValue={control?.defaultValues?.fieldName}

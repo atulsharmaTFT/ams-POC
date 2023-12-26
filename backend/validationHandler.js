@@ -28,57 +28,79 @@ const { typeConstants } = require('./constants')
 function validationSchema(validations) {
   switch (validations?.validationType) {
     case typeConstants.text:
-      if (validations.isRequired) {
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.string().min(validations.min).max(validations.max).required();
-      } else
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.string().min(validations.min).max(validations.max);
+      else if (validations.isRequired && !(validations.min && validations.max))
+        return Joi.string().required();
+      else return Joi.string();
     case typeConstants.number:
-      if (validations.isRequired) {
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.number().min(validations.min).max(validations.max).required();
-      } else
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.number().min(validations.min).max(validations.max);
+      else if (validations.isRequired && !(validations.min && validations.max))
+        return Joi.number().required()
+      else
+        return Joi.number()
     case typeConstants.onlyAlphabets:
-      if (validations.isRequired) {
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.string().regex(/^[a-zA-Z]+$/).min(validations.min).max(validations.max).required();
-      } else
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.string().regex(/^[a-zA-Z]+$/).min(validations.min).max(validations.max);
+      else if (validations.isRequired && !(validations.min && validations.max))
+        return Joi.string().regex(/^[a-zA-Z]+$/).required()
+      else return Joi.string().regex(/^[a-zA-Z]+$/)
     case typeConstants.onlyAlphanumeric:
-      if (validations.isRequired) {
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.string().alphanum().min(validations.min).max(validations.max).required();
-      } else
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.string().alphanum().min(validations.min).max(validations.max);
+      else if (validations.isRequired && !(validations.min && validations.max))
+        return Joi.string().alphanum().required();
+      else return Joi.string().alphanum();
     case typeConstants.specialCharacterAllowed:
-      if (validations.isRequired) {
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).min(validations.min).max(validations.max).required();
-      } else
-        return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).max(validations.max);
+      else if (!validations.isRequired && (validations.min && validations.max))
+        return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).min(validations.min).max(validations.max);
+      else if (validations.isRequired && !(validations.min && validations.max))
+        return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/).required();
+      else return Joi.string().pattern(/^[a-zA-Z0-9@_$&-]+$/)
     case typeConstants.pincode:
       if (validations.isRequired) {
         return Joi.string().pattern(/^[1-9][0-9]{6}$/).message('Invalid PIN code format').required();
       } else
-        return Joi.string().min(6).max(6);
+        return Joi.string().pattern(/^[1-9][0-9]{6}$/).message('Invalid PIN code format');
     case typeConstants.phone:
       if (validations.isRequired) {
         return Joi.string()
           .pattern(/^[0-9]{10}$/)
           .message('Invalid mobile number format').required();
       } else
-        return Joi.string().min(10).max(10);
+        return Joi.string().pattern(/^[0-9]{10}$/).message('Invalid mobile number format');
     case typeConstants.email:
       if (validations.isRequired) {
         return Joi.string().regex(/^[a-zA-Z0-9]+@[a-zA-Z]+\.[A-Za-z]+$/).trim().lowercase().required();
       } else
         return Joi.string().regex(/^[a-zA-Z0-9]+@[a-zA-Z]+\.[A-Za-z]+$/).trim().lowercase();
     case typeConstants.allowDecimal:
-      if (validations.isRequired) {
+      if (validations.isRequired && (validations.min && validations.max))
+        return Joi.number().precision(2).positive().min(validations.min).max(validations.max).required();
+      else if (!validations.isRequired && (validations.min && validations.max))
+        return Joi.number().precision(2).positive().min(validations.min).max(validations.max);
+      else if (validations.isRequired && !(validations.min && validations.max))
         return Joi.number().precision(2).positive().required();
-      } else
-        return Joi.number().precision(2).positive();
+      else return Joi.number().precision(2).positive();
     case typeConstants.onlyIntegerNumber:
-      if (validations.isRequired) {
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.number().integer().positive().min(validations.min).max(validations.max).required();
-      } else
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.number().integer().positive().min(validations.min).max(validations.max);
+      else if (validations.isRequired && !(validations.min && validations.max))
+        return Joi.number().integer().positive().required();
+      else return Joi.number().integer().positive()
     case typeConstants.date:
       if (validations.isRequired) {
         return Joi.date().iso().required();
@@ -86,46 +108,23 @@ function validationSchema(validations) {
         return Joi.date().iso();
     case typeConstants.radio:
       if (validations.isRequired) {
-        return Joi.object({
-          option: Joi.string(),
-          checked: Joi.boolean().valid(true),
-        }).required();
+        return Joi.object({ option: Joi.string(), checked: Joi.boolean().valid(true) }).required();
       } else
-        return Joi.object({
-          option: Joi.string(),
-          checked: Joi.boolean().valid(true),
-        });
+        return Joi.object({ option: Joi.string(), checked: Joi.boolean().valid(true) });
     case typeConstants.checkbox:
       if (validations.isRequired) {
-        return Joi.array().items(Joi.object(
-          { option: Joi.string(), checked: Joi.boolean() })).required();
-      } else
-        return Joi.array().items(Joi.object({
-          option: Joi.string(),
-          checked: Joi.boolean()
-        }))
+        return Joi.array().items(Joi.object({ option: Joi.string(), checked: Joi.boolean() })).required();
+      } else return Joi.array().items(Joi.object({ option: Joi.string(), checked: Joi.boolean() }))
     case typeConstants.multiselect:
       if (validations.isRequired) {
-        return Joi.array().items(Joi.object({
-          value: Joi.string(),
-          label: Joi.string()
-        })).required();
+        return Joi.array().items(Joi.object({ value: Joi.string(), label: Joi.string() })).required();
       } else
-        return Joi.array().items(Joi.object({
-          value: Joi.string(),
-          label: Joi.string(),
-        }));
+        return Joi.array().items(Joi.object({ value: Joi.string(), label: Joi.string() }));
     case typeConstants.dropdown:
       if (validations.isRequired) {
-        return Joi.object({
-          value: Joi.string(),
-          label: Joi.string(),
-        }).required();
+        return Joi.object({ value: Joi.string(), label: Joi.string() }).required();
       } else
-        return Joi.object({
-          value: Joi.string(),
-          label: Joi.string(),
-        });
+        return Joi.object({ value: Joi.string(), label: Joi.string() });
 
     default:
       return;

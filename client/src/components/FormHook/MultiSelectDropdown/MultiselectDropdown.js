@@ -101,8 +101,8 @@ const MultiselectDropdown = (props) => {
         control={control}
         name={props?.fieldName}
         rules={{ required: true }}
+        shouldUnregister={false}
         render={({ field, fieldState: { error } }) => (
-         
           <>
             <Select
               key={props.category}
