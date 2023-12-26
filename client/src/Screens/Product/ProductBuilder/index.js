@@ -45,7 +45,6 @@ const ProductBuilder = ({
   // }
 
   function setDefaultValues(schema) {
-    console.log(schema,"schemaschemaschema")
     try {
       let values = { data, name, purchaseDate, price, tag };
       Object.keys(schema).forEach((key) => {
@@ -83,7 +82,6 @@ const ProductBuilder = ({
     }
   }
   const DEFAULT_DATA_VALUE =!!schema &&  setDefaultValues(schema);
-  console.log(DEFAULT_DATA_VALUE,"DEFAULT_DATA_VALUE")
   const methods = useForm({
     shouldUnregister: false,
     defaultValues: !!validatorSchema && !!schema && DEFAULT_DATA_VALUE,
@@ -123,7 +121,7 @@ const ProductBuilder = ({
     callService: updateExistingAssetService,
     resetServiceState: resetUpdateExistingAssetState,
   } = useAdminApiService(adminServices.updateExistingAsset);
-  console.log(errors, fields, getValues(), "errors");
+  console.log(errors, DEFAULT_DATA_VALUE, "errors");
   useEffect(() => {
     if (isAddNewAssetError && addNewAssetError) {
       console.log(addNewAssetError, "Error");

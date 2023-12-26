@@ -199,7 +199,6 @@ const ViewAsset = () => {
     await getAssetByIdServices(params?.id);
   };
   const params = useParams();
-  console.log(data?.data,"data.data")
   return (
     // <p>view edit asset working!!</p>
     <div className={styles.container}>
@@ -231,10 +230,8 @@ const ViewAsset = () => {
               </div>
               <div className={styles.additionalData}>
                 {Object.keys(data?.data).map((item) => {
-                  console.log(data, "data");
                   return data?.fields.map((x) => {
                     if (x?.variable === item) {
-                      console.log(x.type, item, "ITEM");
                       if (x?.type === constants?.text.toLowerCase() || x?.type === constants.number.toLowerCase())
                         return (
                           <div key={x._id} className={styles.additionalItem}>
@@ -265,7 +262,6 @@ const ViewAsset = () => {
                         );
                       }
                       if (x.type === constants.checkbox.toLowerCase()) {
-                        console.log(data?.data?.[item],"checkbox");
                         return (
                           <div key={x._id} className={styles.additionalItem}>
                             <span className={styles.key}>{x.name}:</span>{" "}
@@ -293,7 +289,6 @@ const ViewAsset = () => {
                         
                       }
                       if (x.type === constants.radio.toLowerCase()) {
-                        console.log(x,"radio");
                         return (
                           <div key={x._id} className={styles.additionalItem}>
                             <span className={styles.key}>{x.name}:</span>{" "}
@@ -305,7 +300,6 @@ const ViewAsset = () => {
                         );
                       }
                       if (x.type === constants.date.toLowerCase()) {
-                        console.log(x,"date");
                         return (
                           <div key={x._id} className={styles.additionalItem}>
                             <span className={styles.key}>{x.name}:</span>{" "}

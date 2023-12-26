@@ -35,6 +35,7 @@ const NewFieldGroup = () => {
     try {
       let userIds = [];
       let indexedUserIdsArray = [];
+
       selectedItems.forEach((item) => {
         userIds.push(item._id);
       });
@@ -58,7 +59,7 @@ const NewFieldGroup = () => {
       });
 
       const apiData = await response.json();
-      // toast.success("Created successfully");
+      toast.success("Field Group Created successfully !");
       if (apiData) {
         setSelectedItems([]);
         setUserName("");
@@ -68,7 +69,7 @@ const NewFieldGroup = () => {
       
     } catch (err) {
       console.log(err);
-      // toast.error("Something went wrong")
+      toast.error(err?.message ? err?.message : err?.name ? err?.name : err)
     }
   };
 

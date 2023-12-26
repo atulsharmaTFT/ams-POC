@@ -30,7 +30,7 @@ const NewField = () => {
     }
     if (isCreateFieldsSuccess && createFieldsResponse) {
       resetCreateFieldsState();
-      toast.success("Successfully created")
+      toast.success("Field Created successfully !")
     }
   });
 
