@@ -199,7 +199,7 @@ const ViewAsset = () => {
     await getAssetByIdServices(params?.id);
   };
   const params = useParams();
-  console.log(data.data,"data.data")
+  console.log(data?.data,"data.data")
   return (
     // <p>view edit asset working!!</p>
     <div className={styles.container}>
@@ -215,67 +215,76 @@ const ViewAsset = () => {
             <div className={styles.infoContainer}>
               <div className={styles.infoHeader}>
                 <div className={styles.name}>
-                  <p>{data.name}</p>
+                  <p>{data?.name}</p>
                   <button>Move to Inventroy</button>
                   </div>
                 <div className={styles.price}>₹ {data.price}</div>
-                <div>Asset Tag : {data.tag}</div>
+                <div>Asset Tag : {data?.tag}</div>
                 <div>
                   Asset Purchase Date : &nbsp;
-                  {new Date(data.purchaseDate).toISOString().split("T")[0]}
+                  {new Date(data?.purchaseDate).toISOString().split("T")[0]}
                 </div>
                 <div>
                   Asset Creation Date : &nbsp;
-                  {new Date(data.createdAt).toISOString().split("T")[0]}
+                  {new Date(data?.createdAt).toISOString().split("T")[0]}
                 </div>
               </div>
               <div className={styles.additionalData}>
                 {Object.keys(data?.data).map((item) => {
+                  console.log(data, "data");
                   return data?.fields.map((x) => {
                     if (x?.variable === item) {
-                      console.log(x.type, x);
-                      if (x?.type === constants.text.toLowerCase() || x?.type === constants.number.toLowerCase())
+                      console.log(x.type, item, "ITEM");
+                      if (x?.type === constants?.text.toLowerCase() || x?.type === constants.number.toLowerCase())
                         return (
                           <div key={x._id} className={styles.additionalItem}>
-                            <span className={styles.key}>{x.name}:</span>{" "}
+                            <span className={styles.key}>{x?.name}:</span>{" "}
                             <span className={styles.value}>
-                              {data.data[item]}
+                              {!!data?.data?.[item] ? data?.data?.[item] : "N/A"}
                             </span>
                           </div>
                         );
                       if (x.type === toCamelCase(constants.multiselect)) {
                         return (
                           <div key={x._id} className={styles.additionalItem}>
-                            <span className={styles.key}>{x.name}:</span>{" "}
-                            {data.data[item].map((item) => (
-                              <span className={styles.chip}>{item.label}</span>
-                            ))}
+                            <span className={styles.key}>{x?.name}:</span>{" "}
+                            {data.data?.[item]?.length > 0 ?  data?.data[item].map((item) => (
+                              <span className={styles.chip}>{!!item?.label ? item?.label : ""}</span> 
+                            )) :  <span className={styles.chip}>{"Not Availalble"}</span>}
                           </div>
                         );
                       }
                       if (x.type === constants.dropdown.toLowerCase()) {
                         return (
                           <div key={x._id} className={styles.additionalItem}>
-                            <span className={styles.key}>{x.name}:</span>{" "}
+                            <span className={styles.key}>{x?.name}:</span>{" "}
                             <span className={styles.value}>
-                              {data.data[item].label}
+                              {!!data?.data?.[item]?.label?data?.data?.[item]?.label: "Not Available"}
                             </span>
                           </div>
                         );
                       }
                       if (x.type === constants.checkbox.toLowerCase()) {
-                        console.log(x,"checkbox");
+                        console.log(data?.data?.[item],"checkbox");
                         return (
                           <div key={x._id} className={styles.additionalItem}>
                             <span className={styles.key}>{x.name}:</span>{" "}
-                            {data.data[item].map((item) => {
+                            {data?.data?.[item].map((item) => {
                               if (item.checked)
                                 return (
                                   <span className={styles.chip}>
-                                    {item.option}
+                                    {item?.option}
                                   </span>
                                 );
                             })}
+                            {data?.data?.[item].some((val)=>{
+                              if(val?.checked){
+                                return false
+                              }
+                              else return true
+                            }) && <span className={styles.chip}>
+                            {"N/A"}
+                          </span> }
                             {/* <span className={styles.value}>
                               {JSON.stringify(data.data[item])}
                             </span> */}
@@ -290,7 +299,7 @@ const ViewAsset = () => {
                             <span className={styles.key}>{x.name}:</span>{" "}
                             {/* {data.data[item].map(item=><span className={styles.chip}>{item.option}</span>)} */}
                             <span className={styles.value}>
-                              {data.data[item].option}
+                              {!!data?.data?.[item]?.option ? data.data[item].option : "N/A"}
                             </span>
                           </div>
                         );
@@ -302,7 +311,7 @@ const ViewAsset = () => {
                             <span className={styles.key}>{x.name}:</span>{" "}
                             {/* {data.data[item].map(item=><span className={styles.chip}>{item.option}</span>)} */}
                             <span className={styles.value}>
-                            {new Date(data.data[item]).toISOString().split("T")[0]}
+                            {!!data?.data?.[item] ? new Date(data.data[item]).toISOString().split("T")[0]:new Date().toISOString().split("T")[0]}
                             
                             </span>
                           </div>

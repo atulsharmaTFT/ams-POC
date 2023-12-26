@@ -527,6 +527,7 @@ const validateAssets = Joi.object({
       Joi.string(),
       Joi.alternatives().try(
         Joi.date().iso(),
+        Joi.any().valid(null),
         Joi.string().min(1),
         Joi.array().items(options1).min(1),
         Joi.array().items(options2).min(1),
@@ -603,7 +604,6 @@ app.post("/assets", async (req, res) => {
     ]);
 
     const fields = await aggregate.exec();
-
     if (!fields.length) {
       return res.status(400).json({ error: "Invalid productId" });
     } else if (fields.length !== Object.keys(data).length) {
@@ -617,59 +617,60 @@ app.post("/assets", async (req, res) => {
       value: Joi.any()
         .when("type", {
           is: "radio",
-          then: options1.required(),
+          then: options1.required().allow(null),
         })
         .when("type", {
           is: "checkbox",
-          then: Joi.array().items(options1).required(),
+          then: Joi.array().items(options1).required().allow(null),
         })
         .when("type", {
           is: "number",
-          then: Joi.number().required(),
+          then: Joi.number().required().allow(null),
         })
         .when("type", {
           is: "toggle",
-          then: Joi.boolean().required(),
+          then: Joi.boolean().required().allow(null),
         })
         .when("type", {
           is: "multiSelect",
-          then: Joi.array().items(options2).required(),
+          then: Joi.array().items(options2).required().allow(null),
         })
         .when("type", {
           is: "text",
-          then: Joi.string().required(),
+          then: Joi.string().required().allow(null),
         })
         .when("type", {
           is: "dropdown",
-          then: options2.required(),
+          then: options2.required().allow(null),
         })
         .when("type", {
           is: "slider",
-          then: Joi.string().required(),
+          then: Joi.string().required().allow(null),
         })
         .when("type", {
           is: "date",
-          then: Joi.date().iso().required(),
+          then: Joi.date().iso().required().allow(null),
         }),
+        
     });
-
     // *********************** Joi Validation ******************************* 
     let getSchema = getJoiSchema(fields);
-    const CheckData = testValidation(getSchema, data)
+    const CheckData = await testValidation(getSchema, data)
     // *********************** Joi Validation *******************************
 
     for (const field of fields) {
-      if (!data[field.variable]) {
+      if (!data[field.variable] && field.validations.isRequired) {
         return res
           .status(400)
           .json({ error: `Missing field ${field.variable}` });
       } else {
-
+        // Handle Login in Case
+        // Undefined or null Put a black String , Object , boolean , or Array 
+        // as a value before procedding with adding data in DB
 
         const newData = { type: field.type, value: data[field.variable] };
 
         const result = validateData.validate(newData);
-
         if (result.error) {
           return res.status(400).json({
             error: `Please provide correct value for attribute ${field.variable}`,
