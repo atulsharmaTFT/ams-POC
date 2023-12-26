@@ -16,6 +16,7 @@ function GroupCheckBox({ name, options, onChange, defaultValue }) {
             name={`${name}[${index}].checked`}
             control={control}
             defaultValue={option?.checked}
+            shouldUnregister={false}
             render={({ field }) => (
               <>
                 <input
