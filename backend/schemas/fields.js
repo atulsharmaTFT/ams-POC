@@ -4,8 +4,8 @@ const validationSchema = new mongoose.Schema(
   {
     validationType: { type: String, required: true },
     isRequired: { type: Boolean, default: false },
-    min: { type: Number, default: 0 },
-    max: { type: Number, default: 0 },
+    min: { type: Number, default: null },
+    max: { type: Number, default: null },
   },
   { _id: false }
 );
