@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import classes from "./NewFieldGroup.module.scss";
 import { toCamelCase } from "../../../helper/commonHelpers";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const NewFieldGroup = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,14 +49,17 @@ const NewFieldGroup = () => {
       });
 
       const apiData = await response.json();
+      // toast.success("Created successfully");
       if (apiData) {
         setSelectedItems([]);
         setUserName("");
         setSearchTerm("");
         setSearchResults([]);
       }
+      
     } catch (err) {
       console.log(err);
+      // toast.error("Something went wrong")
     }
   };
 
