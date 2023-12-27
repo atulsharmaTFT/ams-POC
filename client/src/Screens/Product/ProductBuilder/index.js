@@ -30,6 +30,7 @@ const ProductBuilder = ({
   tag,
   buttonName,
   data,
+  formTitile
 }) => {
   const [formData, setFormData] = useState({});
 
@@ -475,16 +476,17 @@ const ProductBuilder = ({
     },
     [fields, errors, setValue]
   );
+  console.log(fields,"Fields")
   if (fields?.length <= 0) return <p>loading</p>;
   return (
     <div className={styles["product-builder"]}>
+      <h1 className={styles.titleContainer}> Add Details</h1>
       <FormProvider
         methods={methods}
         buttonName={buttonName}
         onSubmit={handleSubmit(formHandler)}
       >
-        <div className={styles.fieldsContainer}>
-          <div className={styles.container}>
+        <div style={{padding:"10px"}}>
             <InputField
               type="text"
               key="name"
@@ -497,8 +499,6 @@ const ProductBuilder = ({
               overrideErrorClassName={styles.overrideErrorClass}
               containerOverrideClassName={styles.inputContainer}
             />
-          </div>
-          <div className={styles.container}>
             <InputField
               type="text"
               key="tag"
@@ -511,8 +511,6 @@ const ProductBuilder = ({
               overrideErrorClassName={styles.overrideErrorClass}
               containerOverrideClassName={styles.inputContainer}
             />
-          </div>
-          <div className={styles.container}>
             <InputField
               type="number"
               key="number"
@@ -525,8 +523,6 @@ const ProductBuilder = ({
               overrideErrorClassName={styles.overrideErrorClass}
               containerOverrideClassName={styles.inputContainer}
             />
-          </div>
-          <div className={styles.container}>
             <DateTimePicker
               key="purchaseDate"
               label="Enter Purchase Date"
@@ -535,19 +531,17 @@ const ProductBuilder = ({
               inputOverrideClassName={styles.inputContainer}
               overrideClassName={styles.inputOverride}
             />
-          </div>
-        </div>
-        <div className={styles.fieldsContainer}>
+            </div>
+          <h1 className={styles.titleContainer}>{formTitile.toUpperCase() +" Details"}</h1>
           {fields?.length > 0 &&
             fields?.map((field) => {
               return (
-                <div className={styles.container} key={field._id}>
-                  <label>{field?.name}:</label>
+                <div style={{padding:"10px"}} key={field._id}>
+                  <label className={styles.labelClass}>{field?.name}:</label>
                   {renderField(field)}
                 </div>
               );
             })}
-        </div>
       </FormProvider>
     </div>
   );
