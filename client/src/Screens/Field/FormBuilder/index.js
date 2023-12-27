@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Capitalize, toCamelCase } from "../../../helper/commonHelpers";
 // import SlideSwitch from "../../../components/Switch";
 import classes from "./form.module.scss";
@@ -6,16 +6,25 @@ import CheckBox from "../../../components/FormHook/CheckBox/CheckBox";
 import Button from "../../../components/Button/Button";
 import constants from "../../../helper/constantKeyword/constants";
 import { getValidationList } from "../../../helper/validationHelper";
-
+import useAdminApiService from "../../../helper/useAdminApiService";
+import adminServices from "../../../helper/adminServices";
 
 export const fieldDetails = [
   {
     elementType: constants.text,
-    elementAttributes: [constants.placeholder.toLowerCase(), toCamelCase(constants.minLength), toCamelCase(constants.maxLength)],
+    elementAttributes: [
+      constants.placeholder.toLowerCase(),
+      toCamelCase(constants.minLength),
+      toCamelCase(constants.maxLength),
+    ],
   },
   {
     elementType: constants.number,
-    elementAttributes: [constants.placeholder.toLowerCase(), toCamelCase(constants.minLength), toCamelCase(constants.maxLength)],
+    elementAttributes: [
+      constants.placeholder.toLowerCase(),
+      toCamelCase(constants.minLength),
+      toCamelCase(constants.maxLength),
+    ],
   },
   {
     elementType: constants.date,
@@ -56,6 +65,7 @@ const optionsObject = {
     minDate: "",
     maxDate: "",
   },
+  domainCategoryId: "",
   toggleDefault: false,
   multiSelectOptions: [],
   sliderOptions: {
@@ -69,6 +79,43 @@ const FormBuilder = ({ onFormSubmit }) => {
   const [selectedField, setSelectedField] = useState("");
   const [newOption, setNewOption] = useState(optionsObject);
   const [option, setOption] = useState("");
+  const [data, setData] = useState([]);
+
+  const {
+    state: {
+      loading: getAllDomainsLoading,
+      isSuccess: isGetAllDomainsSuccess,
+      data: getAllDomainsResponse,
+      isError: isGetAllDomainsError,
+      error: getAllDomainsError,
+    },
+    callService: getAllDomainsService,
+    resetServiceState: resetGetAllDomainsState,
+  } = useAdminApiService(adminServices.getAllDomains);
+
+  useEffect(() => {
+    if (isGetAllDomainsError && getAllDomainsError) {
+      console.log(getAllDomainsError, "Error");
+    }
+    if (isGetAllDomainsSuccess && getAllDomainsResponse) {
+      setData(getAllDomainsResponse?.data);
+    }
+  }, [
+    isGetAllDomainsSuccess,
+    getAllDomainsResponse,
+    getAllDomainsError,
+    isGetAllDomainsError,
+  ]);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!localStorage.getItem("organizationId")) {
+        await getAllDomainsService();
+      }
+    };
+
+    checkAdmin();
+  }, []);
 
   const getOptionType = () => {
     if (selectedField) {
@@ -174,8 +221,8 @@ const FormBuilder = ({ onFormSubmit }) => {
       fieldType === constants.radio ||
       fieldType === constants.dropdown ||
       fieldType === constants.checkbox ||
-      fieldType === constants.multiselect
-      ||fieldType===constants.date
+      fieldType === constants.multiselect ||
+      fieldType === constants.date
     )
       return true;
     return false;
@@ -184,6 +231,7 @@ const FormBuilder = ({ onFormSubmit }) => {
   const handleAddField = () => {
     if (selectedField) {
       const payload = newOption;
+      console.log(payload);
       onFormSubmit(payload);
       setNewOption(optionsObject);
     }
@@ -197,7 +245,7 @@ const FormBuilder = ({ onFormSubmit }) => {
     padding: 5,
     width: 300,
   };
-console.log(selectedField,"selectedField");
+  console.log(selectedField, "selectedField");
   return (
     <div>
       <h2>Create Fields</h2>
@@ -224,12 +272,33 @@ console.log(selectedField,"selectedField");
             }
           />
         </div>
+        {data.length > 0 && (
+          <div style={customTextStyle}>
+            <label>Domain Category</label>
+            <select
+              value={newOption?.domainCategoryId}
+              onChange={(e) =>
+                setNewOption({ ...newOption, domainCategoryId: e.target.value })
+              }
+              style={inputStyle}
+              key={newOption?.domainCategoryId}
+            >
+              <option value="">Select Category</option>
+              {data.map((item) => (
+                <option key={item._id} value={item._id}>
+                  {item.name.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div style={customTextStyle}>
           <label>Field Type:</label>
           <select
             value={selectedField}
             onChange={(e) => handleFieldSelect(e.target.value)}
             style={inputStyle}
+            key="field"
           >
             <option value="">Select Field</option>
             {fieldDetails.map((field) => (
@@ -276,7 +345,7 @@ console.log(selectedField,"selectedField");
             ?.elementAttributes.map((attribute) => (
               <div key={attribute} style={customTextStyle}>
                 <label>{Capitalize(attribute)}:</label>
-                {attribute === constants.options? (
+                {attribute === constants.options ? (
                   <div>
                     {newOption[keyType]?.map((option, index) => (
                       <div key={index} className={classes.options}>

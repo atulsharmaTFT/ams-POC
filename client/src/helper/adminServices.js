@@ -28,7 +28,20 @@ export default {
       data,
     };
   },
-  getFieldGroups: () => {
+  createFieldsGroup: (data) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.CREATE_FIELDS_GROUP}`,
+      method: HttpMethods.POST,
+      data,
+    };
+  },
+  getField: (params? : {}) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.FIELDS}`,
+      method: HttpMethods.GET,
+    };
+  },
+  getFieldGroups: (params) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.FIELD_GROUPS}`,
       method: HttpMethods.GET,
@@ -56,6 +69,20 @@ export default {
     return {
       url: `${ApiUrls.ADMIN_APIS.DOMAINS}`,
       method: HttpMethods.GET,
+    };
+  },
+  addOrganization: (data) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ORGANIZATION}`,
+      method: HttpMethods.POST,
+      data,
+    };
+  },
+  addDomain: (data) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_DOMAIN}`,
+      method: HttpMethods.POST,
+      data,
     };
   },
   addAsset: (data) => {

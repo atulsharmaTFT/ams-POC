@@ -17,6 +17,8 @@ import Archive from "./Archive";
 import LoginForm from "./Login";
 import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
 import Domain from "./Domain";
+import Organization from "./Organization";
+import NewOrganization from "./Organization/NewOrganization";
 
 export const adminRoutes = (token, role) => [
   {
@@ -78,10 +80,18 @@ export const adminRoutes = (token, role) => [
         path: AppRoutes.DOMAIN,
         element: <Domain />,
       },
+      {
+        path: AppRoutes.ORGANIZATIONS,
+        element: <Organization />,
+      },
+      {
+        path: AppRoutes.NEWORGANIZATION,
+        element: <NewOrganization />,
+      },
     ],
   },
   {
-    element: !!!token ?  <Outlet /> : <Navigate to={AppRoutes.HOME} /> ,
+    element: !!!token ? <Outlet /> : <Navigate to={AppRoutes.HOME} />,
     children: [{ path: AppRoutes.LOGIN, element: <LoginForm /> }],
   },
   // {

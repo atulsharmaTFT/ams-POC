@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
+import adminServices from "../../helper/adminServices";
+import useAdminApiService from "../../helper/useAdminApiService";
 
 const columns = [
   { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
@@ -13,19 +15,41 @@ const Field = () => {
 
   const [data, setData] = useState([]);
 
+  const {
+    state: {
+      loading: getFieldsLoading,
+      isSuccess: isGetFieldsSuccess,
+      data: getFieldsResponse,
+      isError: isGetFieldsError,
+      error:getFieldsError,
+    },
+    callService: getFieldsService,
+    resetServiceState: resetGetFieldsState,
+  } = useAdminApiService(adminServices.getField);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:8001/fields");
-        const apiData = await response.json();
-        setData(apiData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+    if (isGetFieldsError && getFieldsError) {
+      console.log(getFieldsError, "Error");
+    }
+    if (isGetFieldsSuccess && getFieldsResponse) {
+      setData(getFieldsResponse?.data);
+    }
+  }, [
+    isGetFieldsSuccess,
+    getFieldsResponse,
+    isGetFieldsError,
+    getFieldsError,
+  ]);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!localStorage.getItem("organizationId")) {
+        await getFieldsService();
       }
     };
 
-    fetchData();
-  }, []); // Run the effect only once on mount
+    checkAdmin();
+  }, []);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });

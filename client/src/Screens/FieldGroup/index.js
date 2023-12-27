@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
+import useAdminApiService from "../../helper/useAdminApiService";
+import adminServices from "../../helper/adminServices";
 
 const columns = [
   { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
@@ -12,19 +14,55 @@ const FieldGroup = () => {
 
   const [data, setData] = useState([]);
 
+  const {
+    state: {
+      loading: getFieldGroupsLoading,
+      isSuccess: isGetFieldGroupsSuccess,
+      data: getFieldGroupsResponse,
+      isError: isGetFieldGroupsError,
+      error: getFieldGroupsError,
+    },
+    callService: getFieldGroupsService,
+    resetServiceState: resetGetFieldGroupsState,
+  } = useAdminApiService(adminServices.getFieldGroups);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:8001/field-groups");
-        const apiData = await response.json();
-        setData(apiData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+    if (isGetFieldGroupsError && getFieldGroupsError) {
+      console.log(getFieldGroupsError, "Error");
+    }
+    if (isGetFieldGroupsSuccess && getFieldGroupsResponse) {
+      setData(getFieldGroupsResponse?.data);
+    }
+  }, [
+    isGetFieldGroupsSuccess,
+    getFieldGroupsResponse,
+    isGetFieldGroupsError,
+    getFieldGroupsError,
+  ]);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!localStorage.getItem("organizationId")) {
+        await getFieldGroupsService();
       }
     };
 
-    fetchData();
-  }, []); // Run the effect only once on mount
+    checkAdmin();
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch("http://localhost:8001/field-groups");
+  //       const apiData = await response.json();
+  //       setData(apiData);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []); // Run the effect only once on mount
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });

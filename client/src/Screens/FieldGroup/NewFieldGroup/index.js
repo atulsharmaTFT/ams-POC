@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import classes from "./NewFieldGroup.module.scss";
 import { toCamelCase } from "../../../helper/commonHelpers";
+import useAdminApiService from "../../../helper/useAdminApiService";
+import adminServices from "../../../helper/adminServices";
 
 const NewFieldGroup = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -9,19 +11,82 @@ const NewFieldGroup = () => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const [data, setData] = useState([]);
+  const [domain, setDomain] = useState([]);
+  const [selectedDomain, setSelectedDomain] = useState([]);
+
+  const {
+    state: {
+      loading: getAllDomainsLoading,
+      isSuccess: isGetAllDomainsSuccess,
+      data: getAllDomainsResponse,
+      isError: isGetAllDomainsError,
+      error: getAllDomainsError,
+    },
+    callService: getAllDomainsService,
+    resetServiceState: resetGetAllDomainsState,
+  } = useAdminApiService(adminServices.getAllDomains);
+
+  const {
+    state: {
+      loading: getFieldsLoading,
+      isSuccess: isGetFieldsSuccess,
+      data: getFieldsResponse,
+      isError: isGetFieldsError,
+      error: getFieldsError,
+    },
+    callService: getFieldsService,
+    resetServiceState: resetGetFieldsState,
+  } = useAdminApiService(adminServices.getField);
+
+  const {
+    state: {
+      loading: addFieldsGroupLoading,
+      isSuccess: isAddFieldsGroupSuccess,
+      data: addFieldsGroupResponse,
+      isError: isAddFieldsGroupError,
+      error: addFieldsGroupError,
+    },
+    callService: addFieldsGroupService,
+    resetServiceState: resetaddFieldsGroupState,
+  } = useAdminApiService(adminServices.createFieldsGroup);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:8001/fields");
-        const apiData = await response.json();
-        setData(apiData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+    if (isGetAllDomainsError && getAllDomainsError) {
+      console.log(getAllDomainsError, "Error");
+    }
+    if (isGetAllDomainsSuccess && getAllDomainsResponse) {
+      setDomain(getAllDomainsResponse?.data);
+    }
+    if (isGetFieldsError && getFieldsError) {
+      console.log(getFieldsError, "Error");
+    }
+    if (isGetFieldsSuccess && getFieldsResponse) {
+      setData(getFieldsResponse?.data);
+    }
+  }, [
+    isGetAllDomainsSuccess,
+    getAllDomainsResponse,
+    getAllDomainsError,
+    isGetAllDomainsError,
+    isGetFieldsSuccess,
+    getFieldsResponse,
+    isGetFieldsError,
+    getFieldsError,
+    isAddFieldsGroupSuccess,
+    addFieldsGroupResponse,
+    isAddFieldsGroupError,
+    addFieldsGroupError,
+  ]);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!localStorage.getItem("organizationId")) {
+        await getAllDomainsService();
+        await getFieldsService();
       }
     };
 
-    fetchData();
+    checkAdmin();
   }, []);
 
   const createFieldGroup = async () => {
@@ -35,18 +100,12 @@ const NewFieldGroup = () => {
         name: userName,
         variable: toCamelCase(userName),
         fields: userIds,
+        domainCategoryId: selectedDomain?._id,
       };
 
-      const response = await fetch("http://localhost:8001/field-groups", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Add any other headers you need
-        },
-        body: JSON.stringify(obj),
-      });
+      console.log(selectedDomain, obj);
 
-      const apiData = await response.json();
+      const apiData = await addFieldsGroupService(obj);
       if (apiData) {
         setSelectedItems([]);
         setUserName("");
@@ -90,6 +149,26 @@ const NewFieldGroup = () => {
           onChange={(e) => setUserName(e.target.value)}
         />
       </div>
+      {domain.length > 0 && (
+        <div>
+          <label>Domain Category</label>
+          <select
+            value={selectedDomain?.name}
+            onChange={
+              (e) => setSelectedDomain(JSON.parse(e.target.value))
+              // console.log(JSON.parse(e.target.value))
+            }
+            key={selectedDomain?.domainCategoryId}
+          >
+            <option value="">Select Category</option>
+            {domain.map((item) => (
+              <option key={item._id} value={JSON.stringify(item)}>
+                {item.name.toUpperCase()}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       {/* First Container */}
       <div className={classes.searchContainer}>
         <h2>Search Container</h2>
@@ -100,7 +179,6 @@ const NewFieldGroup = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <button onClick={handleSearch}>Search</button>
-
         <h3>Search Results</h3>
         <table>
           <thead>

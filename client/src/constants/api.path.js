@@ -6,13 +6,17 @@ export const ApiUrls = {
   },
   ADMIN_APIS: {
     USERS: "/users",
-    CREATE_FIELDS: "/fields",
-    FIELD_GROUPS: "/field-groups",
+    CREATE_FIELDS: "/api/v1/common-for-admin/create-field",
+    CREATE_FIELDS_GROUP: "/api/v1/common-for-admin/create-field-group",
+    FIELDS: "/api/v1/common-for-admin/get-all-fields",
+    FIELD_GROUPS: "/api/v1/common-for-admin/get-all-field-groups",
     PRODUCT_BY_ID: "/products",
     ADD_ASSET : "/assets",
     DOMAINS: "/api/v1/super-admin/get-all-domain-categories",
+    ADD_DOMAIN: "/api/v1/super-admin/create-domain-category",
     MOVE_TO_Inventory: '/move-to-inventory',
     ARCHIVE_ASSET: '/move-to-archive',
+    ADD_ORGANIZATION : '/api/v1/super-admin/create-organization'
   },
 };
 

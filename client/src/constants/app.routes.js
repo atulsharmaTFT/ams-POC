@@ -15,6 +15,7 @@ export const AppRoutes = {
   EDITASSET: "/editAsset/:id",
   REPORTS: "/reports",
   ORGANIZATIONS: "/organizations",
+  NEWORGANIZATION: "/newOrganization",
   MANAGEUSERS: "/manage-users",
   TEMPLATE:"templates",
   PAGE_NOT_FOUND: "*",
@@ -23,5 +24,5 @@ export const AppRoutes = {
   REGISTER: "/register",
   ALL: "*",
   TEMPLATE: "/template",
-  DOMAIN: '/domain'
+  DOMAIN: '/domain',
 };

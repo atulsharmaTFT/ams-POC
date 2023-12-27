@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { cross } from "../../../assets";
+// import { cross } from "../../../assets";
 import styles from "./modal.module.scss";
 import Scrollbars from "react-custom-scrollbars";
 
@@ -33,7 +33,7 @@ const Modal = ({
   return (
     <>
       {show ? (
-        <div className={`${styles.modal} ${containerClassName}`}> 
+        <div className={`${styles.modal} ${containerClassName}`}>
           <div
             className={`${styles.overlay} ${overlayClassName} ${
               isOutsideClickAllowed ? "" : styles.disabledOutsideClick
@@ -51,15 +51,22 @@ const Modal = ({
               {title && <p>{title}</p>}
               {showCloseIcon && (
                 <>
-                  <img
-                    src={cross}
+                  {/* <img
+                    src=}
                     alt="close"
                     className={`icon-close ${styles.close}`}
                     onClick={onClose}
-                  />
+                  /> */}
                   {/* <div className={styles.goBack} onClick={onClose}>
                     `&quot;`goBack`&quot;`
                   </div> */}
+                  <p
+                    alt="close"
+                    className={`icon-close ${styles.close}`}
+                    onClick={onClose}
+                  >
+                    X
+                  </p>
                 </>
               )}
             </div>

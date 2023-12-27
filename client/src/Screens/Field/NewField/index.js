@@ -51,6 +51,7 @@ const NewField = () => {
           name: fields?.name,
           radioOptions: fields?.radioOptions,
           validations: validationObject,
+          domainCategoryId: fields?.domainCategoryId
         };
         await createFieldsServices(payload);
         break;
@@ -62,6 +63,7 @@ const NewField = () => {
           name: fields?.name,
           dropdownOptions: fields?.dropdownOptions,
           validations: validationObject,
+          domainCategoryId: fields?.domainCategoryId
         };
         await createFieldsServices(payload);
         break;
@@ -73,6 +75,7 @@ const NewField = () => {
           name: fields?.name,
           checkboxOptions: fields?.checkboxOptions,
           validations: validationObject,
+          domainCategoryId: fields?.domainCategoryId
         };
         await createFieldsServices(payload);
         break;
@@ -84,6 +87,7 @@ const NewField = () => {
           name: fields?.name,
           multiSelectOptions: fields?.multiSelectOptions,
           validations: validationObject,
+          domainCategoryId: fields?.domainCategoryId
         };
         await createFieldsServices(payload);
         break;
@@ -95,6 +99,7 @@ const NewField = () => {
           description: fields?.description,
           placeholder: fields?.placeholder,
           validations: validationObject,
+          domainCategoryId: fields?.domainCategoryId
         };
         await createFieldsServices(payload);
         break;
@@ -106,6 +111,7 @@ const NewField = () => {
           description: fields?.description,
           placeholder: fields?.placeholder,
           validations: validationObject,
+          domainCategoryId: fields?.domainCategoryId
         };
         await createFieldsServices(payload);
         break;
@@ -115,6 +121,7 @@ const NewField = () => {
           variable: `${toCamelCase(fields?.name)}_${uuidv4()}`,
           name: fields?.name,
           description: fields?.description,
+          domainCategoryId: fields?.domainCategoryId,
           dateOptions: {
             minDate: fields?.minDate,
             maxDate: fields?.maxDate,
