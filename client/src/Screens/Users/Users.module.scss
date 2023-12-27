@@ -1,23 +1,31 @@
-.users{
-    display:flex;
-    flex-direction: column;
-
+.users {
+  display: flex;
+  flex-direction: column;
 }
-.addActions{
-    
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    align-items: end;
-    
+.addActions {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: end;
 }
-.addUser{
-    margin-bottom: 10px;
-    float: right;
+.addUser {
+  margin-bottom: 10px;
+  float: right;
 }
-.userTable{
-    padding: 5px;
-    h1{
-        text-align: center;
-    }
+.userTable {
+  padding: 5px;
+  h1 {
+    text-align: center;
+  }
+}
+.hideModalHeader {
+  padding: 0px !important;
+  line-height: 0px !important;
+  margin: 10px;
+  background: white !important;
+}
+.modalBody{
+    min-height: 60% !important;
+    width: 45% !important;
+    padding: 29px 30px !important;
 }
