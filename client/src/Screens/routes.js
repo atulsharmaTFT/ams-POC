@@ -19,6 +19,7 @@ import DashboardLayout from "../layout/DashboardLayout/DashboardLayout";
 import Domain from "./Domain";
 import Organization from "./Organization";
 import NewOrganization from "./Organization/NewOrganization";
+import Users from "./Users/Users";
 
 export const adminRoutes = (token, role) => [
   {
@@ -73,6 +74,14 @@ export const adminRoutes = (token, role) => [
         element: <ViewAsset />,
       },
       {
+        path: AppRoutes.ASSETS,
+        element: <Asset />,
+      },
+      {
+        path: AppRoutes.ORGANIZATIONS,
+        element: <Organization />,
+      },
+      {
         path: AppRoutes.EDITASSET,
         element: <EditAsset />,
       },
@@ -87,6 +96,10 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.NEWORGANIZATION,
         element: <NewOrganization />,
+      },
+      {
+        path: AppRoutes.MANAGEUSERS,
+        element: <Users />,
       },
     ],
   },
