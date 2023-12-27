@@ -52,7 +52,7 @@ let dropzoneCss = {
     border: "1px solid #cdcdcd",
     backgroundColor: "#fff",
     maxWidth: "50%",
-    minWidth: "50%",
+    minWidth: "80%",
     padding: "5px",
   },
   inputLabelWithFiles: {

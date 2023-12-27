@@ -76,9 +76,25 @@ function Users() {
           onClose={handleShowModal}
         >
           <CSVUpload onUpload={handleUpload} />
-          <p>instructions</p>
-          <button onClick={handleSampleFile}>download</button>
-          <button>Submit</button>
+          <div className={classes.instructions}>
+            <p>
+              <strong>Instructions</strong>
+            </p>
+            <p>Please upload a CSV file in the following format:</p>
+            <p>
+              <strong>Format:</strong> Name, Employee ID, Designation, Email,
+              Department, Manager Name, Manager Email, Joining Date
+            </p>
+            <p>
+              <strong>Example:</strong> ABCD, 13232, Software Engineer,
+              abc@tftus.com, Development, XYZ, xyz@tftus.com, 01/01/2024
+            </p>
+          </div>
+          <div className={classes.csvActions}>
+            <button onClick={handleSampleFile}>Download Sample File</button>
+
+            <button>Submit</button>
+          </div>
         </Modal>
         <button className={classes.addUser} onClick={handleShowModal}>
           {"Import CSV"}
