@@ -1,4 +1,34 @@
 @import '../../../scss/theme';
+.createBtn {
+  width: 100% !important;
+  font-size: 18px !important;
+  height: 0px !important;
+  border-radius: 10px;
+  padding: 1.5rem 0 !important;
+  font-weight: 550;
+  color: white;
+  margin-top: 10px;
+  background-color: $blac-shade-3 !important;
+  cursor: pointer;
+}
+.titleContainer {
+  background: linear-gradient(to bottom right, $coral-pearl, $coal-black); /* Example colors */
+  width: 100%;
+  color: $white;
+  padding: 10px 10px 10px 10px;
+  border-radius: 5px;
+}
+.addBtn {
+  width: 100px !important;
+  font-size: 14px !important;
+  margin-top: 20px !important;
+  height: 25px !important;
+  border-radius: 5px !important;
+  background: $blac-shade-3 !important;
+  padding: 2px 0 !important;
+  font-weight: 550;
+  color: white;
+}
 .container{
   height: 80vh;
   background-color: $hawkes-blue;
@@ -6,32 +36,8 @@
 .formContainer{
   width: 50%;
 }
-.createBtn {
-    width: 100% !important;
-    font-size: 18px !important;
-    margin-top: 10px;
-    height: 35px !important;
-    border-radius: 10px;
-    background: $blue;
-    padding: 5px 0 !important;
-    font-weight: 550;
-    color: white;
-    margin-top: 10px;
-    cursor: pointer;
-  }
-.addBtn {
-    width: 100px !important;
-    font-size: 14px !important;
-    margin-top: 10px;
-    height: 25px !important;
-    border-radius: 3px;
-    background: $blue;
-    padding: 2px 0 !important;
-    font-weight: 550;
-    color: white;
-    margin-top: 10px;
-    cursor: pointer;
-  }
+
+
   .options{
     display: flex;
     width:100%;

@@ -30,7 +30,7 @@ const NewField = () => {
     }
     if (isCreateFieldsSuccess && createFieldsResponse) {
       resetCreateFieldsState();
-      toast.success("Successfully created")
+      toast.success("Field Created successfully !")
     }
   });
 
@@ -42,7 +42,7 @@ const NewField = () => {
       max: fields.maxLength || 0,
       validationType: fields?.validationType
         ? toCamelCase(fields.validationType)
-        : fields.type.toLowerCase() || null,
+        : toCamelCase(fields.type) || null,
     };
     // { validationType: null, isRequired: false, min: 0, max: 0 }
     let payload = {};

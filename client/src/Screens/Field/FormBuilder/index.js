@@ -248,8 +248,8 @@ const FormBuilder = ({ onFormSubmit }) => {
   console.log(selectedField, "selectedField");
   return (
     <div>
-      <h2>Create Fields</h2>
       <div style={{ display: "flex", flexDirection: "column", width: "50%" }}>
+      <h2 className={classes.titleContainer}>Create Fields</h2>
         <div style={customTextStyle}>
           <label>Name:</label>
           <input
@@ -339,7 +339,7 @@ const FormBuilder = ({ onFormSubmit }) => {
 
       {selectedField && (
         <div style={{ display: "flex", flexDirection: "column", width: "50%" }}>
-          <h3>Add attributes for {selectedField}</h3>
+          <h3 className={classes.titleContainer}>Add attributes for {selectedField}</h3>
           {fieldDetails
             .find((field) => field.elementType === selectedField)
             ?.elementAttributes.map((attribute) => (
@@ -376,7 +376,7 @@ const FormBuilder = ({ onFormSubmit }) => {
                     <Button
                       type="submit"
                       overrideClassName={classes.addBtn}
-                      buttonText={"Add option"}
+                      buttonText={"+ Add Option"}
                       onClick={handleAddOption}
                       loading={false}
                     />

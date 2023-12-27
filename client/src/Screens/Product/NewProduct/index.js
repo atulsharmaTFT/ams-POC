@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef} from "react";
 import classes from "./NewProduct.module.scss";
 import { toCamelCase } from "../../../helper/commonHelpers";
 import { useNavigate, useParams } from "react-router-dom";
 import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
+import SelectedproductItem from "./SelectedproductItem";
 
 const NewProduct = () => {
+  const dragItem = useRef();
+  const dragOverItem = useRef();
   const [searchTerm, setSearchTerm] = useState("");
   const [userName, setUserName] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -96,12 +99,17 @@ const NewProduct = () => {
   const createProduct = async () => {
     try {
       let userIds = [];
+      let indexedUserIdsArray = [];
       selectedItems.forEach((item) => {
         userIds.push(item._id);
+      });
+      selectedItems.forEach((item, index) => {
+        indexedUserIdsArray.push({ index: index, fieldGroupId: item._id });
       });
       const obj = {
         name: userName,
         fieldGroups: userIds,
+        indexedFieldGroupsIds: indexedUserIdsArray,
       };
 
       if (params.id) {
@@ -151,21 +159,42 @@ const NewProduct = () => {
       return [...prev, item];
     });
   };
-
-  const isItemSelected = (item) => {
-    return selectedItems.some((selectedItem) =>
-      selectedItem.fields.some((field) => {
-        // if (params.id) {
-        return item.fields.some((selectedField) => selectedField === field);
-        // }
-        //  else {
-        //   return item.fields.some(
-        //     (selectedField) => selectedField._id === field._id
-        //   );
-        // }
-      })
-    );
+  const handleDragStart = (e, id) => {
+    dragItem.current = id;
+   };
+   const handleDragEnter = (e, id) => {
+    dragOverItem.current = id;
+   };
+   const onDragEnd = () => {
+    const copySelectItems = [...selectedItems];
+    const draggedItem = copySelectItems.find(item => item._id === dragItem.current);
+    const draggedIndex = copySelectItems.findIndex(item => item._id === dragItem.current);
+    if (draggedItem && dragOverItem.current) {
+      const dropIndex = copySelectItems.findIndex(item => item._id === dragOverItem.current);
+      [copySelectItems[draggedIndex], copySelectItems[dropIndex]] = [copySelectItems[dropIndex], copySelectItems[draggedIndex]];
+    }
+  
+    dragItem.current = null;
+    dragOverItem.current = null;
+    setSelectedItems(copySelectItems);
   };
+
+  // const isItemSelected = (item) => {
+  //   return selectedItems.some((selectedItem) =>
+  //     selectedItem.fields.some((field) => {
+  //       // if (params.id) {
+  //       return item.fields.some((selectedField) => selectedField === field);
+  //       // }
+  //       //  else {
+  //       //   return item.fields.some(
+  //       //     (selectedField) => selectedField._id === field._id
+  //       //   );
+  //       // }
+  //     })
+  //   );
+  // };
+  const isItemSelected = (item) =>
+  selectedItems.some((selectedItem) => selectedItem._id === item._id);
 
   const handleRemoveItem = (itemToRemove) => {
     const updatedSelectedItems = selectedItems.filter(
@@ -175,82 +204,77 @@ const NewProduct = () => {
   };
 
   return data ? (
-    <div className={classes.container}>
-      <div className={classes.userInputContainer}>
-        <h2>ProductName</h2>
-        <input
-          type="text"
-          placeholder="Enter product name"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-        />
-      </div>
-      {/* First Container */}
-      <div className={classes.searchContainer}>
-        <h2>Search Container</h2>
-        <input
-          type="text"
-          placeholder="Search by Name"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <button onClick={handleSearch}>Search</button>
+    <div className={classes.mainContainer}>
+      <div className={classes.container}>
+        <div className={classes.fieldGroupContainer}>
+          <div className={classes.userInputContainer}>
+            <h2>ProductName</h2>
+            <input
+              type="text"
+              placeholder="Enter product name"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </div>
+          {/* First Container */}
+          <div className={classes.searchContainer}>
+            <h2>Search Container</h2>
+            <input
+              type="text"
+              placeholder="Search by Name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button onClick={handleSearch}>Search</button>
 
-        <h3>Search Results</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {searchResults.map((result) => (
-              <tr key={result._id}>
-                <td>{result.name}</td>
-                <button
-                  className={isItemSelected(result) ? classes.disabled : ""}
-                  onClick={() => handleAddItem(result)}
-                  disabled={isItemSelected(result)}
-                >
-                  Add
-                </button>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            <h3>Search Results</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchResults.map((result) => (
+                  <tr key={result._id}>
+                    <td>{result.name}</td>
+                    <button
+                      className={isItemSelected(result) ? classes.disabled : ""}
+                      onClick={() => handleAddItem(result)}
+                      disabled={isItemSelected(result)}
+                    >
+                      Add
+                    </button>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      {/* Second Container */}
-      <div className={classes.selectedItemsContainer}>
-        <h2>Selected Items Container</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedItems.map((item) => (
-              <tr key={item._id}>
-                <td>{item.name}</td>
-                <td>
-                  <button onClick={() => handleRemoveItem(item)}>Remove</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* Second Container */}
+        <div className={classes.selectedItemsContainer}>
+          <SelectedproductItem
+            selectedItems={selectedItems}
+            handleDragStart={handleDragStart}
+            handleDragEnter={handleDragEnter}
+            onDragEnd={onDragEnd}
+            handleRemoveItem={handleRemoveItem}
+          />
+        </div>
       </div>
-      <button
-        className={
-          selectedItems && selectedItems.length < 1 ? classes.disabled : ""
-        }
-        disabled={selectedItems && selectedItems.length < 1}
-        onClick={createProduct}
-      >
-        Save
-      </button>
+      <div className={classes.saveButton}>
+        <button
+          className={
+            selectedItems && selectedItems.length < 1 ? classes.disabled : ""
+          }
+          disabled={selectedItems && selectedItems.length < 1}
+          onClick={createProduct}
+        >
+          Save
+        </button>
+      </div>
     </div>
   ) : (
     <p>loading</p>

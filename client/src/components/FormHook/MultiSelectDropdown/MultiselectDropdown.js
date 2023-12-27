@@ -112,7 +112,7 @@ const MultiselectDropdown = (props) => {
               onChange={(selectedValue, action) =>
                 props?.handleChange(selectedValue, action)
               }
-              placeholder={props.category}
+              placeholder={props?.category.length > 0 ? props?.category : "Select an option"}
               className={classes.multiSelect}
               getOptionLabel={(option) => option?.label}
               getOptionValue={(option) => option?.label}

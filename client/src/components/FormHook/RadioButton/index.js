@@ -14,15 +14,16 @@ const RadioButton = ({ label,value, checked, onChange,fieldName,overrideErrorCla
      control={control}
      render={({ field, fieldState: { error } }) => (
       <>
-      <div className={classes.radioInput}>
+      <div className={classes.radio}>
       <input
         type="radio"
         id={value}
         value={value}
         checked={checked}
         onChange={onChange}
+        className={classes.radioButton}
       />
-      <label htmlFor={value}>{label}</label>
+      <label htmlFor={value} className={classes.radioLabelStyle}>{label}</label>
       </div>
       <ErrorMessage
         error={error}

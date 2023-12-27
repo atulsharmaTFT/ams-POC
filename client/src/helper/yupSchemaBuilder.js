@@ -113,7 +113,7 @@ export function validationSchema(type, validations) {
       break;
 
     case constants.radio.toLowerCase():
-      baseSchema = Yup.object();
+      baseSchema = Yup.object().nullable();
 
       if (validations?.isRequired) {
         baseSchema = baseSchema.required("Please Select Atleast One Option");
@@ -127,7 +127,7 @@ export function validationSchema(type, validations) {
         baseSchema = baseSchema.required("Please Select Atleast One Option");
       }
       return baseSchema;
-    case constants.multiselect.toLowerCase():
+    case constants.multiselect:
       baseSchema = Yup.array();
 
       if (validations?.isRequired) {
