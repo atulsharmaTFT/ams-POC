@@ -38,8 +38,8 @@ const NewField = () => {
     console.log(fields, "fields here");
     const validationObject = {
       isRequired: fields.isRequired || false,
-      min: fields.minLength || 0,
-      max: fields.maxLength || 0,
+      min: fields.minLength || null,
+      max: fields.maxLength || null,
       validationType: fields?.validationType
         ? toCamelCase(fields.validationType)
         : toCamelCase(fields.type) || null,

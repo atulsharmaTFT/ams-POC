@@ -187,7 +187,7 @@ export function validationSchema(type, validations) {
         .transform((value) => (value === "" ? null : value));
     }
     // Add 'min' validation
-    if (validations.min !== undefined) {
+    if (validations.min !== null) {
       baseSchema = baseSchema.min(
         validations.min,
         `Must be greater than ${validations.min}`
@@ -195,7 +195,7 @@ export function validationSchema(type, validations) {
     }
 
     // Add 'max' validation
-    if (validations.max !== undefined) {
+    if (validations.max !== null) {
       baseSchema = baseSchema.max(
         validations.max,
         `Must be less than ${validations.max}`
