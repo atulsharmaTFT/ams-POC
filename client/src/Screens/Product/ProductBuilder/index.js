@@ -319,21 +319,26 @@ const ProductBuilder = ({
     });
   };
   const formHandler = async (data) => {
-    console.log(data, "data");
-
-    const finalData = {
-      name: data?.name,
-      tag: data?.tag,
-      price: data?.price,
-      purchaseDate: data?.purchaseDate,
+    let newData = getValues();
+    let finalData = {
+      name: newData?.name,
+      tag: newData?.tag,
+      price: newData?.price,
+      purchaseDate: newData?.purchaseDate,
       productId: productId,
-      data: data,
+      data: newData,
     };
     delete finalData.data.name;
     delete finalData.data.tag;
     delete finalData.data.price;
     delete finalData.data.staticPurchaseDate;
     delete finalData.data.purchaseDate;
+    delete finalData.data.image
+    Object.keys(finalData.data).forEach((key) => {
+      if (finalData.data[key] === undefined) {
+        finalData.data[key] = null;
+      }
+    });
     if (buttonName === "Submit") {
       console.log(finalData,"finalData")
       await addNewAssetService(finalData);

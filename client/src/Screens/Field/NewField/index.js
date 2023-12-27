@@ -6,6 +6,8 @@ import adminServices from "../../../helper/adminServices";
 import { toCamelCase } from "../../../helper/commonHelpers";
 import { v4 as uuidv4 } from "uuid";
 import constants from "../../../helper/constantKeyword/constants";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const NewField = () => {
   const navigate = useNavigate();
@@ -24,9 +26,11 @@ const NewField = () => {
   useEffect(() => {
     if (isCreateFieldsError && createFieldsError) {
       resetCreateFieldsState();
+      toast.error("Something went wrong");
     }
     if (isCreateFieldsSuccess && createFieldsResponse) {
       resetCreateFieldsState();
+      toast.success("Successfully created")
     }
   });
 
@@ -37,7 +41,7 @@ const NewField = () => {
       min: fields.minLength || 0,
       max: fields.maxLength || 0,
       validationType: fields?.validationType
-        ? fields.validationType
+        ? toCamelCase(fields.validationType)
         : fields.type.toLowerCase() || null,
     };
     // { validationType: null, isRequired: false, min: 0, max: 0 }

@@ -26,8 +26,8 @@ function DateTimePicker({
       <Controller
         control={control}
         name={fieldName}
+        shouldUnregister={false}
         render={({ field, fieldState: { error } }) => (
-          console.log(field,error,"Multi"),
           <>
             <input
               type="date"

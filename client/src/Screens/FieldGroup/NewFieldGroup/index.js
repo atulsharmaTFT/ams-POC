@@ -3,6 +3,8 @@ import classes from "./NewFieldGroup.module.scss";
 import { toCamelCase } from "../../../helper/commonHelpers";
 import useAdminApiService from "../../../helper/useAdminApiService";
 import adminServices from "../../../helper/adminServices";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const NewFieldGroup = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -112,8 +114,10 @@ const NewFieldGroup = () => {
         setSearchTerm("");
         setSearchResults([]);
       }
+      
     } catch (err) {
       console.log(err);
+      // toast.error("Something went wrong")
     }
   };
 

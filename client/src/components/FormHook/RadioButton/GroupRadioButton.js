@@ -13,6 +13,7 @@ function GroupRadioButton({ name, options, defaultValue, disabled }) {
             name={name}
             control={control}
             defaultValue={defaultValue}
+            shouldUnregister={false}
             render={({ field }) => (
               <div key={index} className={styles.radioButton}>
                 <label>

@@ -330,7 +330,7 @@ const FormBuilder = ({ onFormSubmit }) => {
             <option value="">Select Field</option>
             {getValidationList(selectedField)?.map((field) => (
               <option key={field.elementType} value={field.elementType}>
-                {field.elementType}
+                {field.elementType.toUpperCase()}
               </option>
             ))}
           </select>

@@ -8,7 +8,6 @@ const typeConstants = {
  radio: 'radio',
  multiselect: 'multiSelect',
  date: 'date',
-
  //Validations text
  onlyAlphabets: "onlyAlphabets",
  onlyAlphanumeric: "onlyAlphaNumeric",

@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+const schema = new mongoose.Schema(
+  {
+    index: { type: Number, required: true },
+    fieldId: { type: mongoose.Schema.Types.ObjectId, required: true }
+  },
+  { _id: false }
+);
+
+
 const fieldGroupsSchema = new mongoose.Schema(
   {
     name: {
@@ -9,6 +18,10 @@ const fieldGroupsSchema = new mongoose.Schema(
     variable: {
       type: String,
       required: true,
+    },
+    indexedFieldsIds: {
+      type: [schema],
+      require: true
     },
     fields: {
       type: [mongoose.Schema.Types.ObjectId],

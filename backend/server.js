@@ -162,17 +162,29 @@ app.get("/fields", async (req, res) => {
 const validateFieldGroups = Joi.object({
   name: Joi.string().required(),
   variable: Joi.string().required(),
-  fields: Joi.array()
-    .items(
-      Joi.string().custom((value, helpers) => {
-        if (!mongoose.Types.ObjectId.isValid(value)) {
-          return helpers.error("any.invalid");
-        }
-        return value;
-      })
-    )
+  fields: Joi.array().items(Joi.string().custom((value, helpers) => {
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      return helpers.error("any.invalid");
+    }
+    return value;
+  })
+  )
     .unique()
     .min(1)
+    .required(),
+  indexedFieldsIds: Joi.array().items(Joi.object({
+    index: Joi.number().integer().min(0).required(),
+    fieldId: Joi.string().custom((value, helpers) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        return helpers.error("any.invalid");
+      }
+      return value;
+    }).required(),
+  })
+  )
+    .unique()
+    .min(1)
+    .length(Joi.ref("fields", { adjust: (value) => value.length }))
     .required(),
 });
 
@@ -183,7 +195,13 @@ app.post("/field-groups", async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const { name, fields, variable } = value;
+    const { name, fields, indexedFieldsIds, variable } = value;
+
+    if (!indexedFieldsIds.map((item) => item.fieldId)
+      .every((id) => fields.includes(id))
+    ) {
+      return res.status(400).json({ error: 'INDEX_IDS_MISMATCH' })
+    }
 
     const isValidFields =
       (await Fields.countDocuments({ _id: { $in: fields } })) === fields.length;
@@ -194,6 +212,7 @@ app.post("/field-groups", async (req, res) => {
     const newFieldGroup = new FieldGroups({
       name,
       fields,
+      indexedFieldsIds,
       variable,
     });
 
@@ -249,15 +268,27 @@ app.get("/field-groups", async (req, res) => {
 const validateProducts = Joi.object({
   name: Joi.string().required(),
   variable: Joi.string().required(),
-  fieldGroups: Joi.array()
-    .items(
-      Joi.string().custom((value, helpers) => {
-        if (!mongoose.Types.ObjectId.isValid(value)) {
-          return helpers.error("any.invalid");
-        }
-        return value;
-      })
-    )
+  indexedFieldGroupsIds: Joi.array().items(Joi.object({
+    index: Joi.number().integer().min(0).required(),
+    fieldGroupId: Joi.string().custom((value, helpers) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        return helpers.error("any.invalid");
+      }
+      return value;
+    }).required(),
+  })
+  )
+    .unique()
+    .min(1)
+    .length(Joi.ref("fieldGroups", { adjust: (value) => value.length }))
+    .required(),
+  fieldGroups: Joi.array().items(Joi.string().custom((value, helpers) => {
+    if (!mongoose.Types.ObjectId.isValid(value)) {
+      return helpers.error("any.invalid");
+    }
+    return value;
+  })
+  )
     .unique()
     .min(1)
     .required(),
@@ -270,7 +301,13 @@ app.post("/products", async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const { name, fieldGroups, variable } = value;
+    const { name, indexedFieldGroupsIds, fieldGroups, variable } = value;
+
+    if (!indexedFieldGroupsIds.map((item) => item.fieldGroupId)
+      .every((id) => fieldGroups.includes(id))
+    ) {
+      return res.status(400).json({ error: 'INDEX_IDS_MISMATCH' })
+    }
 
     const isValidFields =
       (await FieldGroups.countDocuments({ _id: { $in: fieldGroups } })) ===
@@ -281,6 +318,7 @@ app.post("/products", async (req, res) => {
 
     const newProduct = new Products({
       name,
+      indexedFieldGroupsIds,
       fieldGroups,
       variable,
     });
@@ -295,6 +333,15 @@ app.post("/products", async (req, res) => {
 
 const validateEditAProduct = Joi.object({
   name: Joi.string().required(),
+  indexedFieldGroupsIds: Joi.array().items({
+    index: Joi.number().positive().required(),
+    fieldId: Joi.string().custom((value, helpers) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        return helpers.error("any.invalid");
+      }
+      return value;
+    }).required()
+  }),
   fieldGroups: Joi.array()
     .items(
       Joi.string().custom((value, helpers) => {
@@ -322,7 +369,7 @@ app.put("/products/:id", async (req, res) => {
         .json({ error: badRequestError.details[0].message });
     }
 
-    const { name, fieldGroups } = value;
+    const { name, fieldGroups, indexedFieldGroupsIds } = value;
 
     const isValidFieldGroups =
       (await FieldGroups.countDocuments({ _id: { $in: fieldGroups } })) ===
@@ -336,6 +383,7 @@ app.put("/products/:id", async (req, res) => {
       {
         name,
         fieldGroups,
+        indexedFieldGroupsIds
       }
     );
 

@@ -268,7 +268,14 @@ const ViewAsset = () => {
                         return (
                           <div key={x._id} className={styles.additionalItem}>
                             <span className={styles.key}>{x.name}:</span>{" "}
-                            {data.data[item].map(item=><span className={styles.chip}>{item.option}</span>)}
+                            {data.data[item].map((item) => {
+                              if (item.checked)
+                                return (
+                                  <span className={styles.chip}>
+                                    {item.option}
+                                  </span>
+                                );
+                            })}
                             {/* <span className={styles.value}>
                               {JSON.stringify(data.data[item])}
                             </span> */}
