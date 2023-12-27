@@ -62,8 +62,8 @@ const validateFields = Joi.object({
   validations: Joi.object({
     validationType: Joi.string().required(),
     isRequired: Joi.boolean(),
-    min: Joi.number(),
-    max: Joi.number()
+    min: Joi.number().allow(null),
+    max: Joi.number().allow(null)
   }),
   description: Joi.string().default(""),
   placeholder: Joi.string().default(""),
@@ -527,7 +527,7 @@ const validateAssets = Joi.object({
       Joi.string(),
       Joi.alternatives().try(
         Joi.date().iso(),
-        Joi.any().valid(null),
+        Joi.any().allow(null),
         Joi.string().min(1),
         Joi.array().items(options1).min(1),
         Joi.array().items(options2).min(1),
@@ -651,11 +651,12 @@ app.post("/assets", async (req, res) => {
           is: "date",
           then: Joi.date().iso().required().allow(null),
         }),
-        
+
     });
     // *********************** Joi Validation ******************************* 
     let getSchema = getJoiSchema(fields);
-    const CheckData = await testValidation(getSchema, data)
+    const checkData = await testValidation(getSchema, data)
+    if (checkData) { return res.status(400).json({ error: checkData.details[0].message }); }
     // *********************** Joi Validation *******************************
 
     for (const field of fields) {
