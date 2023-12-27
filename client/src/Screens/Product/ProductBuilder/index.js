@@ -480,7 +480,7 @@ const ProductBuilder = ({
   console.log(fields, "Fields");
   if (fields?.length <= 0) return <p>loading</p>;
   return (
-    <div className={styles["product-builder"]}>
+    <div className={styles.productBuilder}>
       <h1 className={styles.titleContainer}> Add Details</h1>
       <FormProvider
         methods={methods}
