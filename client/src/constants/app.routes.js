@@ -15,6 +15,7 @@ export const AppRoutes = {
   EDITASSET: "/editAsset/:id",
   REPORTS: "/reports",
   ORGANIZATIONS: "/organizations",
+  ORGANIZATIONS_ADMIN: "/organizations-admin",
   NEWORGANIZATION: "/newOrganization",
   MANAGEUSERS: "/manage-users",
   TEMPLATE:"templates",

@@ -38,6 +38,22 @@
   .links {
     margin-top: 20px;
     margin-left: 10px;
+    span {
+      font-size: 15px;
+      margin-top: 30px;
+      display: flex;
+      width: 15rem;
+      align-items: center;
+      text-decoration: none;
+      color: #fff;
+      padding: 7px 0;
+      cursor: pointer;
+      &:hover {
+        background-color: $shadow;
+        border-radius: 10px;
+        width: 15rem;
+      }
+    }
     a {
       // font-size: 20px;
       margin-top: 30px;
@@ -75,6 +91,8 @@
 }
 .icon {
   margin: 0 10px 0 10px;
+  width: 1.5rem;
+  height: 1rem;
 }
 .content {
   display: flex;
