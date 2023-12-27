@@ -20,6 +20,7 @@ import Domain from "./Domain";
 import Organization from "./Organization";
 import NewOrganization from "./Organization/NewOrganization";
 import Users from "./Users/Users";
+import AddAdmin from "./Organization/AddAdmin";
 
 export const adminRoutes = (token, role) => [
   {
@@ -96,6 +97,10 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.MANAGEUSERS,
         element: <Users />,
+      },
+      {
+        path: AppRoutes.ORGANIZATIONS_ADMIN,
+        element: <AddAdmin />,
       },
     ],
   },
