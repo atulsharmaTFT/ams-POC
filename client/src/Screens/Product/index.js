@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
+import useAdminApiService from "../../helper/useAdminApiService";
+import adminServices from "../../helper/adminServices";
 
 const columns = [
   { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
@@ -13,19 +15,40 @@ const Product = () => {
 
   const [data, setData] = useState([]);
 
+  const {
+    state: {
+      loading: getProductCategoryLoading,
+      isSuccess: isGetProductCategorySuccess,
+      data: getProductCategoryResponse,
+      isError: isGetProductCategoryError,
+      error: getProductCategoryError,
+    },
+    callService: getProductCategoryService,
+    resetServiceState: resetGetProductCategoryState,
+  } = useAdminApiService(adminServices.getProductCategory);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:8001/products");
-        const apiData = await response.json();
-        console.log(apiData);
-        setData(apiData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+    if (isGetProductCategoryError && getProductCategoryError) {
+      console.log(getProductCategoryError, "Error");
+    }
+    if (isGetProductCategorySuccess && getProductCategoryResponse) {
+      setData(getProductCategoryResponse?.data);
+    }
+  }, [
+    isGetProductCategorySuccess,
+    getProductCategoryResponse,
+    isGetProductCategoryError,
+    getProductCategoryError,
+  ]);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!localStorage.getItem("organizationId")) {
+        await getProductCategoryService();
       }
     };
 
-    fetchData();
+    checkAdmin();
   }, []);
 
   const handleAddData = (data) => {

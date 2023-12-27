@@ -118,7 +118,8 @@ const NewFieldGroup = () => {
       console.log(selectedDomain, obj);
 
       const apiData = await addFieldsGroupService(obj);
-      toast.success("Field Group Created successfully !");
+
+      // toast.success("Field Group Created successfully !");
       if (apiData) {
         setSelectedItems([]);
         setUserName("");
@@ -188,7 +189,7 @@ const NewFieldGroup = () => {
         <div>
           <label>Domain Category</label>
           <select
-            value={selectedDomain?.name}
+            // value={selectedDomain?.name}
             onChange={
               (e) => setSelectedDomain(JSON.parse(e.target.value))
               // console.log(JSON.parse(e.target.value))
