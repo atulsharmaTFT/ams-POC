@@ -86,6 +86,12 @@ const Sidebar = () => {
       show: ["OrganizationAdmin"],
       icon: <TbLockAccess size={"25px"} className={classes.icon} />,
     },
+    {
+      path: AppRoutes.MANAGEUSERS,
+      name: "Manage Users",
+      show: ["OrganizationAdmin","SuperAdmin"],
+      icon: <TbLockAccess size={"25px"} className={classes.icon} />,
+    },
   ];
   return (
     <motion.div

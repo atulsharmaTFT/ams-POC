@@ -74,10 +74,6 @@ export const adminRoutes = (token, role) => [
         element: <ViewAsset />,
       },
       {
-        path: AppRoutes.ASSETS,
-        element: <Asset />,
-      },
-      {
         path: AppRoutes.ORGANIZATIONS,
         element: <Organization />,
       },
