@@ -30,7 +30,7 @@ const ProductBuilder = ({
   tag,
   buttonName,
   data,
-  formTitile
+  formTitile,
 }) => {
   const [formData, setFormData] = useState({});
 
@@ -40,39 +40,49 @@ const ProductBuilder = ({
   const validatorSchema = !!schema && Yup.object().shape(schema);
   let defaultValues = {};
 
-  // function findFieldType(variableName) {
-  //   const field = fields.find((item) => item.variable === variableName);
-  //   return field ? field.type : null;
-  // }
-
+  function findFieldType(variableName) {
+    const field = fields.find((item) => item.variable === variableName);
+    return field ? field.type : null;
+  }
+  console.log(purchaseDate, "data FOR FIELDS");
   function setDefaultValues(schema) {
     try {
       let values = { data, name, purchaseDate, price, tag };
       Object.keys(schema).forEach((key) => {
         try {
-          // const type = findFieldType(key)
-          // if(type === null){
-          //   if(key === 'purchaseDate'){
-          //     console.log(key,"key")
-          //       if(!!values?.[key]){
-          //         return defaultValues[key] = moment(values[key]).format("YYYY-MM-DD").toString()
-          //       }
-          //       else {
-          //         return defaultValues[key] = moment().format("YYYY-MM-DD").toString()
-          //       }
-          //     }
-          //     else  return defaultValues[key] = values?.[key] ?? values?.data?.[key];
-          // }
-          // else if(type === 'date'){
-          //   if(!!values?.data?.[key]){
-          //     return defaultValues[key] = moment(values?.data?.[key]).format("YYYY-MM-DD").toString()
-          //   }
-          //   else {
-          //     return defaultValues[key] = moment().format("YYYY-MM-DD").toString()
-          //   }
-          // }
-          // else return defaultValues[key] = values?.[key] ?? values?.data?.[key];
-          defaultValues[key] = values?.[key] ?? values?.data?.[key];
+          if (buttonName === "Submit") {
+            defaultValues[key] = values?.[key] ?? values?.data?.[key];
+          } else {
+            const type = findFieldType(key);
+            if (type === null) {
+              if (key === "purchaseDate") {
+                console.log(key, "key");
+                if (!!values?.[key]) {
+                  return (defaultValues[key] = moment(values[key])
+                    .format("YYYY-MM-DD")
+                    .toString());
+                } else {
+                  return (defaultValues[key] = moment()
+                    .format("YYYY-MM-DD")
+                    .toString());
+                }
+              } else
+                return (defaultValues[key] =
+                  values?.[key] ?? values?.data?.[key]);
+            } else if (type === "date") {
+              if (!!values?.data?.[key]) {
+                return (defaultValues[key] = moment(values?.data?.[key])
+                  .format("YYYY-MM-DD")
+                  .toString());
+              } else {
+                return (defaultValues[key] = moment()
+                  .format("YYYY-MM-DD")
+                  .toString());
+              }
+            } else
+              return (defaultValues[key] =
+                values?.[key] ?? values?.data?.[key]);
+          }
         } catch (e) {
           console.log(e, "error creating Key Values");
         }
@@ -82,7 +92,7 @@ const ProductBuilder = ({
       console.log(e);
     }
   }
-  const DEFAULT_DATA_VALUE =!!schema &&  setDefaultValues(schema);
+  const DEFAULT_DATA_VALUE = !!schema && setDefaultValues(schema);
   const methods = useForm({
     shouldUnregister: false,
     defaultValues: !!validatorSchema && !!schema && DEFAULT_DATA_VALUE,
@@ -158,165 +168,165 @@ const ProductBuilder = ({
     "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml", // .xlsx worksheet
   ];
 
-  useEffect(() => {
-    if (data && Object.keys(data).length > 0) {
-      fields.forEach((item) => {
-        setDynamicData(item);
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (data && Object.keys(data).length > 0) {
+  //     fields.forEach((item) => {
+  //       setDynamicData(item);
+  //     });
+  //   }
+  // }, []);
   // useEffect(()=>{
   //   // Setting Purchase date for in case of update
   //   setValue('purchaseDate', moment(purchaseDate?? "").format("YYYY-MM-DD"))
   // },[])
-  const setDynamicData = (field) => {
-    let variable = field?.variable;
-    switch (field?.type) {
-      case constants.radio.toLowerCase():
-        handleRadioChange(data?.[variable]?.option, field);
-        break;
-      case constants.checkbox.toLowerCase():
-        data?.[variable]?.forEach((item) => {
-          if (item.checked) {
-            handleCheckBoxClick(item.option, field);
-          }
-        });
-        break;
-      case toCamelCase(constants.multiselect):
-        handleOptionChange(
-          data?.[variable],
-          { action: messages.selectOption },
-          toCamelCase(constants.multiselect),
-          variable,
-          field
-        );
-        break;
-      case "slider":
-      case constants.dropdown.toLowerCase():
-        handleOptionChange(
-          data?.[variable],
-          { action: messages.selectOption },
-          constants.dropdown.toLowerCase(),
-          variable,
-          field
-        );
-        break;
-      case constants.date.toLowerCase():
-        if (data?.[variable]) {
-          handleInputChange(data?.[variable], variable, field.type, field);
-        }
-        break;
-      case constants.number.toLowerCase():
-        handleInputChange(data?.[variable], variable, field.type, field);
-        break;
-      case constants.text.toLowerCase():
-        handleInputChange(data?.[variable], variable, field.type, field);
-        break;
-      default:
-        return null;
-    }
-  };
+  // const setDynamicData = (field) => {
+  //   let variable = field?.variable;
+  //   switch (field?.type) {
+  //     case constants.radio.toLowerCase():
+  //       handleRadioChange(data?.[variable]?.option, field);
+  //       break;
+  //     case constants.checkbox.toLowerCase():
+  //       data?.[variable]?.forEach((item) => {
+  //         if (item.checked) {
+  //           handleCheckBoxClick(item.option, field);
+  //         }
+  //       });
+  //       break;
+  //     case toCamelCase(constants.multiselect):
+  //       handleOptionChange(
+  //         data?.[variable],
+  //         { action: messages.selectOption },
+  //         toCamelCase(constants.multiselect),
+  //         variable,
+  //         field
+  //       );
+  //       break;
+  //     case "slider":
+  //     case constants.dropdown.toLowerCase():
+  //       handleOptionChange(
+  //         data?.[variable],
+  //         { action: messages.selectOption },
+  //         constants.dropdown.toLowerCase(),
+  //         variable,
+  //         field
+  //       );
+  //       break;
+  //     case constants.date.toLowerCase():
+  //       if (data?.[variable]) {
+  //         handleInputChange(data?.[variable], variable, field.type, field);
+  //       }
+  //       break;
+  //     case constants.number.toLowerCase():
+  //       handleInputChange(data?.[variable], variable, field.type, field);
+  //       break;
+  //     case constants.text.toLowerCase():
+  //       handleInputChange(data?.[variable], variable, field.type, field);
+  //       break;
+  //     default:
+  //       return null;
+  //   }
+  // };
 
-  const handleRadioChange = (e, field) => {
-    const data = field.radioOptions
-      .map((item) => {
-        if (item.option === e) {
-          item.checked = true;
-        } else {
-          item.checked = false;
-        }
-        return item;
-      })
-      .filter((ele) => {
-        if (ele.checked === true) {
-          return ele;
-        }
-      });
+  // const handleRadioChange = (e, field) => {
+  //   const data = field.radioOptions
+  //     .map((item) => {
+  //       if (item.option === e) {
+  //         item.checked = true;
+  //       } else {
+  //         item.checked = false;
+  //       }
+  //       return item;
+  //     })
+  //     .filter((ele) => {
+  //       if (ele.checked === true) {
+  //         return ele;
+  //       }
+  //     });
 
-    setFormData((prev) => {
-      return {
-        ...prev,
-        [field.variable]: data[0],
-      };
-    });
-  };
+  //   setFormData((prev) => {
+  //     return {
+  //       ...prev,
+  //       [field.variable]: data[0],
+  //     };
+  //   });
+  // };
 
-  const handleInputChange = (e, name, type, field) => {
-    if (type === constants.date.toLowerCase()) {
-      // setSelectedDate(new Date(e).toISOString().split("T")[0]);
-      field.value = new Date(e).toISOString().split("T")[0];
-      setFormData((prev) => {
-        return {
-          ...prev,
-          [name]: new Date(e).toISOString().split("T")[0],
-        };
-      });
-    } else {
-      field.value = e;
-      setFormData((prev) => {
-        return {
-          ...prev,
-          [name]: e,
-        };
-      });
-    }
-  };
-  const handleOptionChange = (options, action, type, name, field) => {
-    if (type === constants.dropdown.toLowerCase()) {
-      // setDropDownOptions(options);
-      field.value = options;
-      setFormData((prev) => {
-        return {
-          ...prev,
-          [name]: options,
-        };
-      });
-    }
-    if (type === toCamelCase(constants.multiselect)) {
-      if (action.action === messages.selectOption) {
-        // setSelectedOptions(options);
-        field.value = options;
-      }
-      if (action.action === messages.removeValue) {
-        // const filterOption = selectedOptions.filter(
-        //   (elem) => elem?.value !== action?.removedValue?.value
-        // );
-        // setSelectedOptions(filterOption);
-        field.value = options;
-      }
-      // const labels = options.map((item) => {
-      //   return item.label;
-      // });
+  // const handleInputChange = (e, name, type, field) => {
+  //   if (type === constants.date.toLowerCase()) {
+  //     // setSelectedDate(new Date(e).toISOString().split("T")[0]);
+  //     field.value = new Date(e).toISOString().split("T")[0];
+  //     setFormData((prev) => {
+  //       return {
+  //         ...prev,
+  //         [name]: new Date(e).toISOString().split("T")[0],
+  //       };
+  //     });
+  //   } else {
+  //     field.value = e;
+  //     setFormData((prev) => {
+  //       return {
+  //         ...prev,
+  //         [name]: e,
+  //       };
+  //     });
+  //   }
+  // };
+  // const handleOptionChange = (options, action, type, name, field) => {
+  //   if (type === constants.dropdown.toLowerCase()) {
+  //     // setDropDownOptions(options);
+  //     field.value = options;
+  //     setFormData((prev) => {
+  //       return {
+  //         ...prev,
+  //         [name]: options,
+  //       };
+  //     });
+  //   }
+  //   if (type === toCamelCase(constants.multiselect)) {
+  //     if (action.action === messages.selectOption) {
+  //       // setSelectedOptions(options);
+  //       field.value = options;
+  //     }
+  //     if (action.action === messages.removeValue) {
+  //       // const filterOption = selectedOptions.filter(
+  //       //   (elem) => elem?.value !== action?.removedValue?.value
+  //       // );
+  //       // setSelectedOptions(filterOption);
+  //       field.value = options;
+  //     }
+  //     // const labels = options.map((item) => {
+  //     //   return item.label;
+  //     // });
 
-      setFormData((prev) => {
-        return {
-          ...prev,
-          [name]: options,
-        };
-      });
-    }
-  };
-  const handleCheckBoxClick = (e, field) => {
-    const data = field.checkboxOptions
-      .map((item) => {
-        if (item.option === e) {
-          item.checked = !item.checked;
-        }
-        return item;
-      })
-      .filter((ele) => {
-        if (ele.checked === true) {
-          return ele;
-        }
-      });
+  //     setFormData((prev) => {
+  //       return {
+  //         ...prev,
+  //         [name]: options,
+  //       };
+  //     });
+  //   }
+  // };
+  // const handleCheckBoxClick = (e, field) => {
+  //   const data = field.checkboxOptions
+  //     .map((item) => {
+  //       if (item.option === e) {
+  //         item.checked = !item.checked;
+  //       }
+  //       return item;
+  //     })
+  //     .filter((ele) => {
+  //       if (ele.checked === true) {
+  //         return ele;
+  //       }
+  //     });
 
-    setFormData((prev) => {
-      return {
-        ...prev,
-        [field.variable]: data,
-      };
-    });
-  };
+  //   setFormData((prev) => {
+  //     return {
+  //       ...prev,
+  //       [field.variable]: data,
+  //     };
+  //   });
+  // };
   const formHandler = async (data) => {
     let newData = getValues();
     let finalData = {
@@ -332,36 +342,27 @@ const ProductBuilder = ({
     delete finalData.data.price;
     delete finalData.data.staticPurchaseDate;
     delete finalData.data.purchaseDate;
-    delete finalData.data.image
+    delete finalData.data.image;
     Object.keys(finalData.data).forEach((key) => {
       if (finalData.data[key] === undefined) {
         finalData.data[key] = null;
       }
     });
     if (buttonName === "Submit") {
-      console.log(finalData,"finalData")
+      console.log(finalData, "finalData");
       await addNewAssetService(finalData);
     } else {
       await updateExistingAssetService(params.id, finalData);
     }
   };
 
-  // const handleChangeStatus1 = ({ file }, status) => {
-  //   const fileType = file?.type;
-  //   const validFileTypes = [
-  //     "application/vnd.ms-excel",
-  //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  //     "application/vnd.ms-et",
-  //   ];
+  // const handleStaticInputHandler = (event, name) => {
+  //   if (name === "purchaseDate") {
+  //     setValue(name, new Date(event.target.value).toISOString().split("T")[0]);
+  //   } else {
+  //     setValue(name, event.target.value);
+  //   }
   // };
-
-  const handleStaticInputHandler = (event, name) => {
-    if (name === "purchaseDate") {
-      setValue(name, new Date(event.target.value).toISOString().split("T")[0]);
-    } else {
-      setValue(name, event.target.value);
-    }
-  };
   const renderField = useCallback(
     (field) => {
       switch (field?.type) {
@@ -371,7 +372,7 @@ const ProductBuilder = ({
               options={field?.radioOptions}
               name={field.variable}
               defaultValue={getValues(field.variable)}
-              />
+            />
           );
         case constants.checkbox.toLowerCase():
           return (
@@ -476,7 +477,7 @@ const ProductBuilder = ({
     },
     [fields, errors, setValue]
   );
-  console.log(fields,"Fields")
+  console.log(fields, "Fields");
   if (fields?.length <= 0) return <p>loading</p>;
   return (
     <div className={styles["product-builder"]}>
@@ -486,62 +487,66 @@ const ProductBuilder = ({
         buttonName={buttonName}
         onSubmit={handleSubmit(formHandler)}
       >
-        <div style={{padding:"10px"}}>
-            <InputField
-              type="text"
-              key="name"
-              label="Enter Name"
-              fieldName="name"
-              placeholder="Enter Name"
-              error={errors?.name?.message}
-              defaultValue={getValues("name")}
-              inputOverrideClassName={styles.inputOverride}
-              overrideErrorClassName={styles.overrideErrorClass}
-              containerOverrideClassName={styles.inputContainer}
-            />
-            <InputField
-              type="text"
-              key="tag"
-              fieldName="tag"
-              placeholder="Enter Tag"
-              label="Enter Tag"
-              error={errors?.tag?.message}
-              defaultValue={getValues("tag")}
-              inputOverrideClassName={styles.inputOverride}
-              overrideErrorClassName={styles.overrideErrorClass}
-              containerOverrideClassName={styles.inputContainer}
-            />
-            <InputField
-              type="number"
-              key="number"
-              fieldName="price"
-              placeholder="Enter Price"
-              defaultValue={getValues("price")}
-              label="Enter Price"
-              error={errors?.price?.message}
-              inputOverrideClassName={styles.inputOverride}
-              overrideErrorClassName={styles.overrideErrorClass}
-              containerOverrideClassName={styles.inputContainer}
-            />
-            <DateTimePicker
-              key="purchaseDate"
-              label="Enter Purchase Date"
-              fieldName="purchaseDate"
-              defaultValue={getValues("purchaseDate")}
-              inputOverrideClassName={styles.inputContainer}
-              overrideClassName={styles.inputOverride}
-            />
-            </div>
-          <h1 className={styles.titleContainer}>{formTitile.toUpperCase() +" Details"}</h1>
-          {fields?.length > 0 &&
-            fields?.map((field) => {
-              return (
-                <div style={{padding:"10px"}} key={field._id}>
-                  <label className={styles.labelClass}>{field?.name}:</label>
-                  {renderField(field)}
-                </div>
-              );
-            })}
+        <div style={{ padding: "10px" }}>
+          <InputField
+            type="text"
+            key="name"
+            label="Enter Name"
+            fieldName="name"
+            placeholder="Enter Name"
+            error={errors?.name?.message}
+            defaultValue={getValues("name")}
+            inputOverrideClassName={styles.inputOverride}
+            overrideErrorClassName={styles.overrideErrorClass}
+            containerOverrideClassName={styles.inputContainer}
+          />
+          <InputField
+            type="text"
+            key="tag"
+            fieldName="tag"
+            placeholder="Enter Tag"
+            label="Enter Tag"
+            error={errors?.tag?.message}
+            defaultValue={getValues("tag")}
+            inputOverrideClassName={styles.inputOverride}
+            overrideErrorClassName={styles.overrideErrorClass}
+            containerOverrideClassName={styles.inputContainer}
+          />
+          <InputField
+            type="number"
+            key="number"
+            fieldName="price"
+            placeholder="Enter Price"
+            defaultValue={getValues("price")}
+            label="Enter Price"
+            error={errors?.price?.message}
+            inputOverrideClassName={styles.inputOverride}
+            overrideErrorClassName={styles.overrideErrorClass}
+            containerOverrideClassName={styles.inputContainer}
+          />
+          <DateTimePicker
+            key="purchaseDate"
+            label="Enter Purchase Date"
+            fieldName="purchaseDate"
+            defaultValue={getValues("purchaseDate")}
+            inputOverrideClassName={styles.inputContainer}
+            overrideClassName={styles.inputOverride}
+          />
+        </div>
+        {formTitile?.length > 0 && (
+          <h1 className={styles.titleContainer}>
+            {formTitile.toUpperCase() + " Details"}
+          </h1>
+        )}
+        {fields?.length > 0 &&
+          fields?.map((field) => {
+            return (
+              <div style={{ padding: "10px" }} key={field._id}>
+                <label className={styles.labelClass}>{field?.name}:</label>
+                {renderField(field)}
+              </div>
+            );
+          })}
       </FormProvider>
     </div>
   );
