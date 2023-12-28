@@ -6,7 +6,7 @@ import CustomTable from "../../components/CustomTable";
 import Button from "../../components/Button/Button";
 import classes from "./Domain.module.scss";
 
-const headers = ["S.no", "Name", "createdAt"];
+const headers = ["S.no", "Name", "Created At"];
 const columnWidths = [
   { width: "100px" },
   { width: "800px" },
