@@ -3,6 +3,7 @@ import classes from "./table.module.scss";
 import { FaEye } from "react-icons/fa6";
 import { MdEditSquare } from "react-icons/md";
 import { AiFillDelete } from "react-icons/ai";
+import { FaPlusSquare } from "react-icons/fa";
 function CustomTable({
   data,
   headers,
@@ -10,7 +11,6 @@ function CustomTable({
   onView,
   onEdit,
   onDelete,
-  showActions = true,
 }) {
   return (
     <div className={classes.customTable}>
@@ -33,7 +33,6 @@ function CustomTable({
               {row?.[key]}
             </div>
           ))}
-          {showActions && (
           <div  className={classes.actionItem}>
             <span>
               <FaEye

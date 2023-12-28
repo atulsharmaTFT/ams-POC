@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
+import Button from "../../components/Button/Button";
+import CustomTable from "../../components/CustomTable";
+import classes from "./Product.module.scss";
 
-const columns = [
-  { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
-  { Header: "Name", accessor: "name" },
-  { Header: "Action", accessor: "action" },
-];
+const headers = ["Sno", "Name"];
+const columnWidths = [{ width: "100px" }, { width: "800px" }];
 
 const Product = () => {
   const navigate = useNavigate();
@@ -31,107 +31,45 @@ const Product = () => {
   const handleAddData = (data) => {
     navigate(`/addProductDetails/${data._id}`);
   };
-
-  const handleEditData = (data) => {
-    navigate(`/editProductfields/${data._id}`);
+  const onAdd = (row) => {
+    navigate(`/addProductDetails/${data._id}`);
+    console.log("View", row);
   };
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
+  const onEdit = (row) => {
+    navigate(`/editProductfields/${data._id}`);
+    console.log("Edit", row);
+  };
+  const productData = data.map(({ _id, name }, index) => ({
+    index: index + 1,
+    name,
+  }));
   return (
-    <div>
-      <button
+    <div className={classes.container}>
+      <div
         style={{
-          marginTop: "16px",
-          padding: "8px",
-          fontSize: "16px",
+          flex: 1,
+          flexDirection: "row",
+          display: "flex",
+          justifyContent: "flex-end",
         }}
-        onClick={() => navigate("/newProduct")} // Add your logic here
       >
-        Add New Product
-      </button>
+        <Button
+          type="submit"
+          overrideClassName={classes.addBtn}
+          buttonText={" Add New Product"}
+          onClick={() => navigate("/newProduct")}
+          loading={false}
+        />
+      </div>
       {/* Render the table */}
-      <table
-        {...getTableProps()}
-        style={{ borderCollapse: "collapse", width: "100%" }}
-      >
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th
-                  {...column.getHeaderProps()}
-                  style={{
-                    borderBottom: "2px solid black",
-                    background: "#f2f2f2",
-                    padding: "8px",
-                    textAlign: "left",
-                  }}
-                >
-                  {column.render("Header")}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  if (cell.column.Header === "Action") {
-                    // return <td {...cell.getCellProps()}>{`${row.original.img} ${cell.render("Cell")}`}</td>
-                    return (
-                      <td
-                        {...cell.getCellProps()}
-                        style={{
-                          border: "1px solid black",
-                          padding: "8px",
-                        }}
-                      >
-                        <button
-                          style={{
-                            padding: "6px 10px",
-                            fontSize: "14px",
-                            cursor: "pointer",
-                            marginRight: "5px",
-                          }}
-                          onClick={() => handleAddData(row.original)}
-                        >
-                          Add Data
-                        </button>
-                        <button
-                          style={{
-                            padding: "6px 10px",
-                            fontSize: "14px",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => handleEditData(row.original)}
-                        >
-                          Edit Data
-                        </button>
-                      </td>
-                    );
-                  } else {
-                    return (
-                      <td
-                        {...cell.getCellProps()}
-                        style={{
-                          border: "1px solid black",
-                          padding: "8px",
-                        }}
-                      >
-                        {cell.render("Cell")}
-                      </td>
-                    );
-                  }
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <CustomTable
+        data={productData}
+        headers={headers}
+        columnWidths={columnWidths}
+        onAdd={onAdd}
+        onEdit={onEdit}
+      />
     </div>
   );
 };
