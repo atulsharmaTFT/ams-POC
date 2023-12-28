@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import classes from "./addAdmin.module.scss";
-import InputField from "../../../components/FormHook/InputField";
+import InputField from "../../../../components/FormHook/InputField";
 import { useForm } from "react-hook-form";
-import { FormProvider } from "../../../components/FormHook";
-import useAdminApiService from "../../../helper/useAdminApiService";
-import adminServices from "../../../helper/adminServices";
+import { FormProvider } from "../../../../components/FormHook";
+import useAdminApiService from "../../../../helper/useAdminApiService";
+import adminServices from "../../../../helper/adminServices";
+import { useNavigate } from "react-router-dom";
 
 const AddAdmin = () => {
   const [selectedItem, setSelectedItem] = useState(null);
@@ -23,6 +24,7 @@ const AddAdmin = () => {
   } = methods;
 
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
 
   const {
     state: {
@@ -110,6 +112,7 @@ const AddAdmin = () => {
   return (
     <div className={classes.container}>
       <div className={classes.leftPanel}>
+        <button onClick={() => navigate('/organizations-admin')}>Back</button>
         <h2>Organization List</h2>
         <ul>
           {data.length > 0 &&
