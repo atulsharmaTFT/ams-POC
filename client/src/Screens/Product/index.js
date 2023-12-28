@@ -31,8 +31,8 @@ const Product = () => {
   const handleAddData = (data) => {
     navigate(`/addProductDetails/${data._id}`);
   };
-  const onView = (row) => {
-    navigate(`/editProductfields/${data._id}`);
+  const onAdd = (row) => {
+    navigate(`/addProductDetails/${data._id}`);
     console.log("View", row);
   };
 
@@ -67,7 +67,7 @@ const Product = () => {
         data={productData}
         headers={headers}
         columnWidths={columnWidths}
-        onView={onView}
+        onAdd={onAdd}
         onEdit={onEdit}
       />
     </div>

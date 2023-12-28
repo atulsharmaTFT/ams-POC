@@ -81,6 +81,7 @@ const Field = () => {
         data={fieldData}
         headers={headers}
         columnWidths={columnWidths}
+        showActions={false}
       />
     </div>
   );
