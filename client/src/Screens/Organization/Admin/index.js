@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import adminServices from "../../../helper/adminServices";
 import useAdminApiService from "../../../helper/useAdminApiService";
+import { AppRoutes } from "../../../constants/app.routes";
 
 const columns = [
   { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
@@ -81,7 +82,7 @@ const Admin = () => {
           padding: "8px",
           fontSize: "16px",
         }}
-        onClick={() => navigate("/add-organizations-admin")} // Add your logic here
+        onClick={() => navigate(AppRoutes.ADD_ORGANIZATIONS_ADMIN)} // Add your logic here
       >
         Add New Organization Admin
       </button>
