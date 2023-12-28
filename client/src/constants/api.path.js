@@ -16,6 +16,7 @@ export const ApiUrls = {
     ADD_ASSET : "/assets",
     ORGANIZATIONS: "/api/v1/super-admin/get-all-organizations",
     DOMAINS: "/api/v1/super-admin/get-all-domain-categories",
+    Get_ADMIN: "/api/v1/super-admin/get-all-organization-admins",
     ADD_DOMAIN: "/api/v1/super-admin/create-domain-category",
     MOVE_TO_Inventory: '/move-to-inventory',
     ARCHIVE_ASSET: '/move-to-archive',

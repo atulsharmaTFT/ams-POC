@@ -3,9 +3,11 @@ import styles from "./Login.module.scss";
 import useAdminApiService from "../../helper/useAdminApiService";
 import adminServices from "../../helper/adminServices";
 import { useNavigate } from "react-router";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginForm = () => {
-  const [userType, setUserType] = useState("");
+  const [userType, setUserType] = useState("SUPERADMIN");
   const [organizationId, setOrganizationId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -30,9 +32,12 @@ const LoginForm = () => {
       console.log(loginResponse);
       if (loginResponse?.success && loginResponse?.statusCode === 200) {
         localStorage.setItem("token", loginResponse?.data?.accessToken);
-        localStorage.setItem("organizationId",organizationId);
+        localStorage.setItem("organizationId", organizationId);
         localStorage.setItem("name", loginResponse?.data?.name);
+        toast.success("Login Successfull");
         navigate("/");
+      } else {
+        toast.error('Something went wrong, Please try again!')
       }
     }
   }, [isLoginSuccess, loginResponse, isLoginError, loginError]);

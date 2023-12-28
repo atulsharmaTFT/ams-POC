@@ -90,6 +90,12 @@ export default {
       method: HttpMethods.GET,
     };
   },
+  getAllOrganizationsAdmin: () => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.Get_ADMIN}`,
+      method: HttpMethods.GET,
+    };
+  },
   addOrganization: (data) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_ORGANIZATION}`,

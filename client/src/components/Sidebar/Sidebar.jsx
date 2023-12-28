@@ -76,7 +76,7 @@ const Sidebar = () => {
         },
         {
           path: AppRoutes.ORGANIZATIONS_ADMIN,
-          name: "Add Admins",
+          name: "Admins",
           show: ["OrganizationAdmin"],
           icon: <MdAdminPanelSettings size={"25px"} className={classes.icon} />,
         },
@@ -167,6 +167,7 @@ const Sidebar = () => {
                           isActive ? `${classes.active}` : ""
                         }
                         onClick={toggleSubmenu}
+                        key={node.name}
                       >
                         {node.icon}
                         {open && node.name}
@@ -193,6 +194,7 @@ const Sidebar = () => {
                                   }
                                   style={{ width: 220 }}
                                   to={item?.path}
+                                  key={item.name}
                                 >
                                   {item?.icon}
                                   {open && item?.name}
