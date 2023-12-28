@@ -18,6 +18,7 @@ export const AppRoutes = {
   ORGANIZATIONS_ADMIN: "/organizations-admin",
   ROLE_MANAGEMENT: "/manage-roles",
   NEW_ROLE: "/addrole",
+  ADD_USER:"/add-User",
   ASSIGN_ROLE: "/assignRoles",
   NEWORGANIZATION: "/newOrganization",
   MANAGEUSERS: "/manage-users",
