@@ -1,0 +1,33 @@
+@import "../../scss/variables";
+
+.searchBar {
+    display: flex;
+    flex:1;
+    align-items: center;
+    .addBtn {
+      width: 50px !important;
+      font-size: 14px !important;
+      margin-top: 10px !important;
+      height: 32px !important;
+      border-radius: 10px !important;
+      color: $themeWhite;
+      background-color: $shadow-lightgrey;
+      padding: 5px 0 !important;
+      font-weight: 550;
+      color: white;
+      margin: 5px 0px 10px 5px;
+      &:hover {
+        background: linear-gradient(20deg, $primaryLight, $primaryDark, $primaryLight);
+        color: $themeWhite;
+      }
+    }
+    input {
+      padding: 8px;
+      margin-right: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      outline: none;
+    }
+  }
+  

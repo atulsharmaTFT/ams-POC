@@ -23,7 +23,6 @@ import Users from "./Users/Users";
 import AddAdmin from "./Organization/AddAdmin";
 import RoleManagement from "./RoleManagement";
 import AddNewRole from "./RoleManagement/AddNewRole";
-import AssignRole from "./RoleManagement/AssignRole";
 import AddNewUser from "./Users/AddNewUser/AddNewUser";
 
 export const adminRoutes = (token, role) => [
@@ -113,10 +112,6 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.NEW_ROLE,
         element: <AddNewRole />,
-      },
-      {
-        path: AppRoutes.ASSIGN_ROLE,
-        element: <AssignRole />,
       },
       {
         path: AppRoutes.ADD_USER,

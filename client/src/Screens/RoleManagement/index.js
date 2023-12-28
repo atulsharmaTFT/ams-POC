@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import CustomTable from "../../components/CustomTable";
 import classes from "./roleManagement.module.scss";
 import Button from "../../components/Button/Button";
 import { useNavigate } from "react-router-dom";
 import { AppRoutes } from "../../constants/app.routes";
+import SearchBar from "../../components/SearchBar";
 
 const RoleManagement = () => {
-    const navigate = useNavigate();
-
+  const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState("");
   const data = [
     { name: "Manager", users: "28", permissions: "All", createdBy: "Admin" },
     { name: "It", users: "35", permissions: "5", createdBy: "Admin" },
@@ -41,9 +42,12 @@ const RoleManagement = () => {
   const onDelete = (row) => {
     console.log("Delete", row);
   };
-  const handleAddNewrole = () =>{
-    navigate(AppRoutes.NEW_ROLE)
-  }
+  const handleAddNewrole = () => {
+    navigate(AppRoutes.NEW_ROLE);
+  };
+  const handleSearch = () => {
+    console.log(searchValue, "searched Value");
+  };
   return (
     <div className={classes.container}>
       <div
@@ -54,11 +58,16 @@ const RoleManagement = () => {
           justifyContent: "flex-end",
         }}
       >
+        <SearchBar
+          searchTerm={searchValue}
+          setSearchTerm={setSearchValue}
+          handleSearch={handleSearch}
+        />
         <Button
           type="submit"
           overrideClassName={classes.addBtn}
           buttonText={"New role"}
-            onClick={handleAddNewrole}
+          onClick={handleAddNewrole}
           loading={false}
         />
       </div>

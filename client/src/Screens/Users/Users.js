@@ -4,14 +4,12 @@ import classes from "./Users.module.scss";
 import { useNavigate } from "react-router-dom";
 import { FaUserPlus } from "react-icons/fa6";
 import { RiFileExcel2Line } from "react-icons/ri";
-import { HiOutlineUserGroup } from "react-icons/hi2";
-
-
 import Modal from "../../components/Modal/Modal";
 import Button from "../../components/Button/Button";
 import CustomTable from "../../components/CustomTable";
 import UploadExcelComponent from "./Helper/UploadExcelComponent";
 import { AppRoutes } from "../../constants/app.routes";
+import SearchBar from "../../components/SearchBar";
 const employeeData = [
   {
     employeeId: "1343",
@@ -44,37 +42,19 @@ const employeeData = [
 
 function Users() {
   const navigate = useNavigate();
-  const [showForm, setShowForm] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
+  const [searchValue, setSearchValue] = useState("")
   const handleUpload = (file) => {
     console.log("Uploaded CSV file:", file);
   };
 
-  function handleShowForm() {
-    setShowForm(!showForm);
-  }
-  function handleShowModal() {
-    setShowModal(!showModal);
+  function handleShowModal(type) {
+    if(type === "1") setShowModal(!showModal);
   }
   function handleSampleFile() {
     const url = require("../../assets/sampleFile.xlsx");
     window.open(url, "_blank");
   }
-  const buttons = [
-    {
-      label: "View",
-      onClick: (employee) => console.log("View employee:", employee),
-    },
-    {
-      label: "Delete",
-      onClick: (employee) => console.log("Delete employee:", employee),
-    },
-    {
-      label: "Edit",
-      onClick: (employee) => console.log("Edit employee:", employee),
-    },
-  ];
   const headers = [
     "Employee Id",
     "Full Name",
@@ -107,6 +87,9 @@ function Users() {
   const onDelete = (row) => {
     console.log("Delete", row);
   };
+  const handleSearch = () => {
+    console.log("handleSearch", searchValue);
+  };
   return (
     <div className={classes.container}>
       <Modal
@@ -114,7 +97,7 @@ function Users() {
         modalBodyClassName={classes.modalBody}
         show={showModal}
         title={"Upload User Data"}
-        onClose={handleShowModal}
+        onClose={()=>handleShowModal("1")}
       >
         <UploadExcelComponent
           handleSampleFile={handleSampleFile}
@@ -130,17 +113,15 @@ function Users() {
           justifyContent: "flex-end",
         }}
       >
-        <Button
-          overrideClassName={classes.assignBtn}
-          buttonText={"Assign Roles"}
-          onClick={handleAddNewUser}
-          icon={<HiOutlineUserGroup size={"25px"}/>}
-          loading={false}
+        <SearchBar
+        searchTerm={searchValue}
+        setSearchTerm={setSearchValue}
+        handleSearch={handleSearch}
         />
         <Button
           overrideClassName={classes.excelBtn}
           buttonText={"Upload Excel"}
-          onClick={handleShowModal}
+          onClick={()=>handleShowModal("1")}
           icon={<RiFileExcel2Line size={"25px"}/>}
           loading={false}
         />
