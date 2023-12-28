@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTable } from "react-table";
 import adminServices from "../../helper/adminServices";
 import useAdminApiService from "../../helper/useAdminApiService";
+import classes from "./Field.module.scss"
+import CustomTable from "../../components/CustomTable";
+import Button from "../../components/Button/Button";
 
-const columns = [
-  { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
-  { Header: "Name", accessor: "name" },
-  { Header: "Type", accessor: "type" },
-];
+const headers = ["Sno","Name","Type"];
+const columnWidths = [
+  { width: "100px" },
+  { width: "800px" },
+  { width: "120px" },
+]
 
 const Field = () => {
   const navigate = useNavigate();
@@ -50,66 +53,35 @@ const Field = () => {
 
     checkAdmin();
   }, []);
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
+  const fieldData = data.map(({ _id, name,type},index) => ({
+    index:index+1,
+    name,
+    type,
+  }));
   return (
-    <div>
-      <button
-        style={{
-          marginTop: "16px",
-          padding: "8px",
-          fontSize: "16px",
-        }}
-        onClick={() => navigate("/newField")} // Add your logic here
-      >
-        Add New Field
-      </button>
+    <div className={classes.container}>
+    <div
+      style={{
+        flex: 1,
+        flexDirection: "row",
+        display: "flex",
+        justifyContent: "flex-end",
+      }}
+    >
+      <Button
+        type="submit"
+        overrideClassName={classes.addBtn}
+        buttonText={" Add New Field"}
+          onClick={()=>navigate("/newField")}
+        loading={false}
+      />
+    </div>
       {/* Render the table */}
-      <table
-        {...getTableProps()}
-        style={{ borderCollapse: "collapse", width: "100%" }}
-      >
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th
-                  {...column.getHeaderProps()}
-                  style={{
-                    borderBottom: "2px solid black",
-                    background: "#f2f2f2",
-                    padding: "8px",
-                    textAlign: "left",
-                  }}
-                >
-                  {column.render("Header")}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td
-                    {...cell.getCellProps()}
-                    style={{
-                      border: "1px solid black",
-                      padding: "8px",
-                    }}
-                  >
-                    {cell.render("Cell")}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <CustomTable
+        data={fieldData}
+        headers={headers}
+        columnWidths={columnWidths}
+      />
     </div>
   );
 };
