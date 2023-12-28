@@ -21,6 +21,9 @@ import Organization from "./Organization";
 import NewOrganization from "./Organization/NewOrganization";
 import Users from "./Users/Users";
 import AddAdmin from "./Organization/AddAdmin";
+import RoleManagement from "./RoleManagement";
+import AddNewRole from "./RoleManagement/AddNewRole";
+import AssignRole from "./RoleManagement/AssignRole";
 
 export const adminRoutes = (token, role) => [
   {
@@ -101,6 +104,18 @@ export const adminRoutes = (token, role) => [
       {
         path: AppRoutes.ORGANIZATIONS_ADMIN,
         element: <AddAdmin />,
+      },
+      {
+        path: AppRoutes.ROLE_MANAGEMENT,
+        element: <RoleManagement />,
+      },
+      {
+        path: AppRoutes.NEW_ROLE,
+        element: <AddNewRole />,
+      },
+      {
+        path: AppRoutes.ASSIGN_ROLE,
+        element: <AssignRole />,
       },
     ],
   },
