@@ -10,6 +10,7 @@ function CustomTable({
   onView,
   onEdit,
   onDelete,
+  showActions = true,
 }) {
   return (
     <div className={classes.customTable}>
@@ -19,7 +20,8 @@ function CustomTable({
             {header}
           </div>
         ))}
-        <div className={classes.actionItem}>Actions</div>
+        {showActions && <div className={classes.actionItem}>Actions</div>}
+        {/* <div className={classes.actionItem}>Actions</div> */}
       </div>
       {data.map((row, rowIndex) => (
         <div className={classes.dataRow} key={rowIndex}>
@@ -31,6 +33,7 @@ function CustomTable({
               {row?.[key]}
             </div>
           ))}
+          {showActions && (
           <div  className={classes.actionItem}>
             <span>
               <FaEye
@@ -58,6 +61,7 @@ function CustomTable({
               />
             </span>
           </div>
+          )}
         </div>
       ))}
     </div>

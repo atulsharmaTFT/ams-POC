@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useTable } from "react-table";
 import useAdminApiService from "../../helper/useAdminApiService";
 import adminServices from "../../helper/adminServices";
 import PopUp from "../../components/PopUp";
+import CustomTable from "../../components/CustomTable";
+import Button from "../../components/Button/Button";
+import classes from "./Domain.module.scss";
 
-const columns = [
-  { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
-  { Header: "Name", accessor: "name" },
-  { Header: "Created At", accessor: "createdAt" },
+const headers = ["S.no", "Name", "createdAt"];
+const columnWidths = [
+  { width: "100px" },
+  { width: "800px" },
+  { width: "120px" },
 ];
 
 const Domain = () => {
@@ -59,9 +62,6 @@ const Domain = () => {
     isCreateNewDomainError,
     createNewDomainError,
   ]);
-
-  // const navigate = useNavigate();
-
   const [data, setData] = useState([]);
   const [openModal, setOpenModal] = useState(false);
 
@@ -70,7 +70,7 @@ const Domain = () => {
       await getAllDomainsService();
     };
     fetchData();
-  }, []); // Run the effect only once on mount
+  }, []);
 
   const handleSubmit = async (item) => {
     console.log(item);
@@ -81,11 +81,8 @@ const Domain = () => {
     await createNewDomainService(obj);
     await getAllDomainsService();
   };
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
   return (
-    <div>
+    <div className={classes.container}>
       {openModal && (
         <PopUp
           title="Example Modal"
@@ -94,80 +91,29 @@ const Domain = () => {
           onSubmit={(item) => handleSubmit(item)}
         />
       )}
-      <button
+      <div
         style={{
-          marginTop: "16px",
-          padding: "8px",
-          fontSize: "16px",
+          flex: 1,
+          flexDirection: "row",
+          display: "flex",
+          justifyContent: "flex-end",
         }}
-        onClick={() => setOpenModal(true)} // Add your logic here
       >
-        Add New Domain Category
-      </button>
+        <Button
+          type="submit"
+          overrideClassName={classes.addBtn}
+          buttonText={"Add New Domain Category"}
+          onClick={() => setOpenModal(true)}
+          loading={false}
+        />
+      </div>
       {/* Render the table */}
-      <table
-        {...getTableProps()}
-        style={{ borderCollapse: "collapse", width: "100%" }}
-      >
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th
-                  {...column.getHeaderProps()}
-                  style={{
-                    borderBottom: "2px solid black",
-                    background: "#f2f2f2",
-                    padding: "8px",
-                    textAlign: "left",
-                  }}
-                >
-                  {column.render("Header")}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  if (cell.column.Header === "Created At") {
-                    const formattedDate = new Date(cell.value)
-                      .toISOString()
-                      .split("T")[0];
-                    return (
-                      <td
-                        {...cell.getCellProps()}
-                        style={{
-                          border: "1px solid black",
-                          padding: "8px",
-                        }}
-                      >
-                        {formattedDate}
-                      </td>
-                    );
-                  } else {
-                    return (
-                      <td
-                        {...cell.getCellProps()}
-                        style={{
-                          border: "1px solid black",
-                          padding: "8px",
-                        }}
-                      >
-                        {cell.render("Cell")}
-                      </td>
-                    );
-                  }
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <CustomTable
+        data={data}
+        headers={headers}
+        columnWidths={columnWidths}
+        showActions={false}
+      />
     </div>
   );
 };
