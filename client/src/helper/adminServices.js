@@ -97,6 +97,13 @@ export default {
       data,
     };
   },
+  addOrganizationAdmin: (data) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ORGANIZATION_ADMIN}`,
+      method: HttpMethods.POST,
+      data,
+    };
+  },
   addDomain: (data) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_DOMAIN}`,

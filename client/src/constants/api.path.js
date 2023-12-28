@@ -19,7 +19,8 @@ export const ApiUrls = {
     ADD_DOMAIN: "/api/v1/super-admin/create-domain-category",
     MOVE_TO_Inventory: '/move-to-inventory',
     ARCHIVE_ASSET: '/move-to-archive',
-    ADD_ORGANIZATION : '/api/v1/super-admin/create-organization'
+    ADD_ORGANIZATION : '/api/v1/super-admin/create-organization',
+    ADD_ORGANIZATION_ADMIN : '/api/v1/super-admin/create-organization-admin'
   },
 };
 

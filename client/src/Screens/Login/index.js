@@ -30,6 +30,8 @@ const LoginForm = () => {
       console.log(loginResponse);
       if (loginResponse?.success && loginResponse?.statusCode === 200) {
         localStorage.setItem("token", loginResponse?.data?.accessToken);
+        localStorage.setItem("organizationId",organizationId);
+        localStorage.setItem("name", loginResponse?.data?.name);
         navigate("/");
       }
     }
@@ -55,6 +57,9 @@ const LoginForm = () => {
     console.log(obj);
     if (userType === "SUPERADMIN") {
       await loginServices(obj);
+    } else {
+      obj.organizationId = organizationId;
+      await loginServices(obj);
     }
     // Add your login logic here
   };
@@ -68,11 +73,11 @@ const LoginForm = () => {
             User Type:
             <select value={userType} onChange={handleUserTypeChange}>
               <option value="SUPERADMIN">Super Admin</option>
-              <option value="ORGANIZATIONADMIN">Organization Admin</option>
+              <option value="ORGANIZATION_ADMIN">Organization Admin</option>
             </select>
           </label>
         </div>
-        {userType === "ORGANIZATIONADMIN" && (
+        {userType === "ORGANIZATION_ADMIN" && (
           <div className={styles.field}>
             <label>Organization ID:</label>
             <input

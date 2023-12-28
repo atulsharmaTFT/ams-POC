@@ -76,7 +76,7 @@ const NewOrganization = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission here
-    console.log(newOption);
+    newOption.id = newOption.id.toUpperCase();
     await addOrganizationService(newOption);
   };
 
