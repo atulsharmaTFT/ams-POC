@@ -1,0 +1,50 @@
+@import "../../scss/variables";
+
+.customTable {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .headerRow{
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    font-weight: 800;
+    background: linear-gradient(to right ,$primaryLight, $primaryDark,$skyBlueLight,$skyBlue);
+    color: $white;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+  }
+  .dataRow {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+  }
+  
+  .headerRow > div,
+  .dataRow > div {
+    padding: 8px;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+  .actionItem{
+    flex: 1;
+    display: flex;
+    text-align: justify;
+    justify-content: center;
+    span{
+        margin: 2px;
+        border-radius: 10px;
+        cursor: pointer;
+        :hover{
+            background-color: $grey2;
+        }
+    }
+  }

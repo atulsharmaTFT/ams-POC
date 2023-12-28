@@ -485,6 +485,7 @@ const ProductBuilder = ({
       <FormProvider
         methods={methods}
         buttonName={buttonName}
+        overrideClassName={styles.addBtn}
         onSubmit={handleSubmit(formHandler)}
       >
         <div style={{ padding: "10px" }}>

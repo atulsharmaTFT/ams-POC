@@ -25,36 +25,37 @@ const { typeConstants } = require("./constants");
 function validationSchema(validations) {
   switch (validations?.validationType) {
     case typeConstants.text:
-      if (validations.isRequired && validations.min && validations.max)
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.string()
           .min(validations.min)
           .max(validations.max)
           .required();
-      else if (!validations.isRequired && validations.min && validations.max)
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.string().min(validations.min).max(validations.max);
       else if (validations.isRequired && !(validations.min && validations.max))
         return Joi.string().required();
       else return Joi.string();
+
     case typeConstants.number:
-      if (validations.isRequired && validations.min && validations.max)
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.number()
           .min(validations.min)
           .max(validations.max)
           .required();
-      else if (!validations.isRequired && validations.min && validations.max)
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.number().min(validations.min).max(validations.max);
       else if (validations.isRequired && !(validations.min && validations.max))
         return Joi.number().required();
       else return Joi.number();
 
     case typeConstants.onlyAlphabets:
-      if (validations.isRequired && validations.min && validations.max)
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.string()
           .regex(/^[a-zA-Z]+$/)
           .min(validations.min)
           .max(validations.max)
           .required();
-      else if (!validations.isRequired && validations.min && validations.max)
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.string()
           .regex(/^[a-zA-Z]+$/)
           .min(validations.min)
@@ -66,13 +67,13 @@ function validationSchema(validations) {
       else return Joi.string().regex(/^[a-zA-Z]+$/);
 
     case typeConstants.onlyAlphanumeric:
-      if (validations.isRequired && validations.min && validations.max)
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.string()
           .alphanum()
           .min(validations.min)
           .max(validations.max)
           .required();
-      else if (!validations.isRequired && validations.min && validations.max)
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.string()
           .alphanum()
           .min(validations.min)
@@ -82,13 +83,13 @@ function validationSchema(validations) {
       else return Joi.string().alphanum();
 
     case typeConstants.specialCharacterAllowed:
-      if (validations.isRequired && validations.min && validations.max)
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.string()
           .pattern(/^[a-zA-Z0-9@_$&-]+$/)
           .min(validations.min)
           .max(validations.max)
           .required();
-      else if (!validations.isRequired && validations.min && validations.max)
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.string()
           .pattern(/^[a-zA-Z0-9@_$&-]+$/)
           .min(validations.min)
@@ -135,14 +136,14 @@ function validationSchema(validations) {
           .lowercase();
 
     case typeConstants.allowDecimal:
-      if (validations.isRequired && validations.min && validations.max)
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.number()
           .precision(2)
           .positive()
           .min(validations.min)
           .max(validations.max)
           .required();
-      else if (!validations.isRequired && validations.min && validations.max)
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.number()
           .precision(2)
           .positive()
@@ -153,14 +154,14 @@ function validationSchema(validations) {
       else return Joi.number().precision(2).positive();
 
     case typeConstants.onlyIntegerNumber:
-      if (validations.isRequired && validations.min && validations.max)
+      if (validations.isRequired && (validations.min && validations.max))
         return Joi.number()
           .integer()
           .positive()
           .min(validations.min)
           .max(validations.max)
           .required();
-      else if (!validations.isRequired && validations.min && validations.max)
+      else if (!validations.isRequired && (validations.min && validations.max))
         return Joi.number()
           .integer()
           .positive()
@@ -169,12 +170,12 @@ function validationSchema(validations) {
       else if (validations.isRequired && !(validations.min && validations.max))
         return Joi.number().integer().positive().required();
       else return Joi.number().integer().positive();
-    
+
     case typeConstants.date:
       if (validations.isRequired) {
         return Joi.date().iso().required();
       } else return Joi.date().iso();
-    
+
     case typeConstants.radio:
       if (validations.isRequired) {
         return Joi.object({
@@ -186,7 +187,7 @@ function validationSchema(validations) {
           option: Joi.string(),
           checked: Joi.boolean().valid(true),
         }).allow(null);
-    
+
     case typeConstants.checkbox:
       if (validations.isRequired) {
         return Joi.array()
@@ -196,7 +197,7 @@ function validationSchema(validations) {
         return Joi.array().items(
           Joi.object({ option: Joi.string(), checked: Joi.boolean() })
         );
-    
+
     case typeConstants.multiselect:
       if (validations.isRequired) {
         return Joi.array()
@@ -243,12 +244,10 @@ exports.getJoiSchema = (data) => {
 exports.testValidation = async (schema, obj) => {
 
   try {
-    const {error, value} = await schema?.validate(obj);
-    if(error?.details?.[0].message){
-      return error?.details?.[0].message
+    const { error, value } = await schema?.validate(obj);
+    if (error?.details?.[0].message) {
+      return error
     }
-    return "Validation Passed"
-
   } catch (error) {
     console.log(error);
   }
