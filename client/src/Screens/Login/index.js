@@ -5,7 +5,7 @@ import adminServices from "../../helper/adminServices";
 import { useNavigate } from "react-router";
 
 const LoginForm = () => {
-  const [userType, setUserType] = useState("normal");
+  const [userType, setUserType] = useState("");
   const [organizationId, setOrganizationId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -67,12 +67,12 @@ const LoginForm = () => {
           <label>
             User Type:
             <select value={userType} onChange={handleUserTypeChange}>
-              <option value="ORGANIZATIONADMIN">Organization Admin</option>
               <option value="SUPERADMIN">Super Admin</option>
+              <option value="ORGANIZATIONADMIN">Organization Admin</option>
             </select>
           </label>
         </div>
-        {userType === "normal" && (
+        {userType === "ORGANIZATIONADMIN" && (
           <div className={styles.field}>
             <label>Organization ID:</label>
             <input
