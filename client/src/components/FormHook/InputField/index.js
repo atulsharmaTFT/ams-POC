@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./inputField.module.scss";
 import ErrorMessage from "../../ErrorMessage/ErrorMessage";
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller } from "react-hook-form";
 // import ErrorMessage from "../ErrorMessage";
 
 const InputField = ({
@@ -69,31 +69,31 @@ const InputField = ({
         </div>
       )}
       <div className={getClassNames()}>
-      <Controller
-      shouldUnregister={false}
-     name={fieldName}
-     control={control}
-     defaultValue={control?.defaultValues?.fieldName}
-     render={({ field, fieldState: { error } }) => (
-        <input
-          style={{ color: textColor }}
-          type={type}
-          name={field?.name}
-          register={register}
-          defaultValue={value}
-          onChange={field?.onChange}
-          placeholder={placeholder}
-          onKeyPress={onKeyPress}
-          maxLength={maxlength}
-          min={min}
-          max={max}
-          step={step}
-          {...field}
-          {...register(fieldName)}
-          {...rest}
+        <Controller
+          shouldUnregister={false}
+          name={fieldName}
+          control={control}
+          defaultValue={control?.defaultValues?.fieldName}
+          render={({ field, fieldState: { error } }) => (
+            <input
+              style={{ color: textColor }}
+              type={type}
+              name={field?.name}
+              register={register}
+              defaultValue={value}
+              onChange={field?.onChange}
+              placeholder={placeholder}
+              onKeyPress={onKeyPress}
+              maxLength={maxlength}
+              min={min}
+              max={max}
+              step={step}
+              {...field}
+              {...register(fieldName)}
+              {...rest}
+            />
+          )}
         />
-     )}
-     />
         {suffixIcon && (
           <i
             onClick={onIconClick}
