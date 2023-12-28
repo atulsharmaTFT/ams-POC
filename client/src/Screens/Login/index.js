@@ -5,7 +5,7 @@ import adminServices from "../../helper/adminServices";
 import { useNavigate } from "react-router";
 
 const LoginForm = () => {
-  const [userType, setUserType] = useState("normal");
+  const [userType, setUserType] = useState("");
   const [organizationId, setOrganizationId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -30,6 +30,8 @@ const LoginForm = () => {
       console.log(loginResponse);
       if (loginResponse?.success && loginResponse?.statusCode === 200) {
         localStorage.setItem("token", loginResponse?.data?.accessToken);
+        localStorage.setItem("organizationId",organizationId);
+        localStorage.setItem("name", loginResponse?.data?.name);
         navigate("/");
       }
     }
@@ -55,6 +57,9 @@ const LoginForm = () => {
     console.log(obj);
     if (userType === "SUPERADMIN") {
       await loginServices(obj);
+    } else {
+      obj.organizationId = organizationId;
+      await loginServices(obj);
     }
     // Add your login logic here
   };
@@ -67,12 +72,12 @@ const LoginForm = () => {
           <label>
             User Type:
             <select value={userType} onChange={handleUserTypeChange}>
-              <option value="ORGANIZATIONADMIN">Organization Admin</option>
               <option value="SUPERADMIN">Super Admin</option>
+              <option value="ORGANIZATION_ADMIN">Organization Admin</option>
             </select>
           </label>
         </div>
-        {userType === "normal" && (
+        {userType === "ORGANIZATION_ADMIN" && (
           <div className={styles.field}>
             <label>Organization ID:</label>
             <input

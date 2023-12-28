@@ -35,6 +35,13 @@ export default {
       data,
     };
   },
+  createProductCategory: (data) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.CREATE_PRODUCT}`,
+      method: HttpMethods.POST,
+      data,
+    };
+  },
   getField: (params? : {}) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.FIELDS}`,
@@ -44,6 +51,12 @@ export default {
   getFieldGroups: (params) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.FIELD_GROUPS}`,
+      method: HttpMethods.GET,
+    };
+  },
+  getProductCategory: (params) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.PRODUCT_CATEGORY}`,
       method: HttpMethods.GET,
     };
   },
@@ -71,9 +84,22 @@ export default {
       method: HttpMethods.GET,
     };
   },
+  getAllOrganizations: () => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ORGANIZATIONS}`,
+      method: HttpMethods.GET,
+    };
+  },
   addOrganization: (data) => {
     return {
       url: `${ApiUrls.ADMIN_APIS.ADD_ORGANIZATION}`,
+      method: HttpMethods.POST,
+      data,
+    };
+  },
+  addOrganizationAdmin: (data) => {
+    return {
+      url: `${ApiUrls.ADMIN_APIS.ADD_ORGANIZATION_ADMIN}`,
       method: HttpMethods.POST,
       data,
     };

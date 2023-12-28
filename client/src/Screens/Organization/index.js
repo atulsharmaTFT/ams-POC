@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
+import adminServices from "../../helper/adminServices";
+import useAdminApiService from "../../helper/useAdminApiService";
 
 const columns = [
   { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
   { Header: "Name", accessor: "name" },
-  { Header: "Type", accessor: "type" },
+  { Header: "Email", accessor: "email" },
+  { Header: "Address", accessor: "address" },
+  { Header: "Domain Category", accessor: "domainCategory.name" },
+  { Header: "Phone", accessor: "phone" },
+  { Header: "Website", accessor: "website" },
 ];
 
 const Organization = () => {
@@ -13,16 +19,51 @@ const Organization = () => {
 
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const {
+    state: {
+      loading: getOrganizationLoading,
+      isSuccess: isGetOrganizationSuccess,
+      data: getOrganizationResponse,
+      isError: isGetOrganizationError,
+      error: getOrganizationError,
+    },
+    callService: getOrganizationService,
+    resetServiceState: resetGetOrganizationState,
+  } = useAdminApiService(adminServices.getAllOrganizations);
 
+  useEffect(() => {
+    if (isGetOrganizationError && getOrganizationError) {
+      console.log(getOrganizationError, "Error");
+    }
+    if (getOrganizationResponse && isGetOrganizationSuccess) {
+      console.log(getOrganizationResponse);
+      setData(getOrganizationResponse?.data);
+    }
+  }, [
+    isGetOrganizationSuccess,
+    getOrganizationResponse,
+    isGetOrganizationError,
+    getOrganizationError,
+  ]);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!localStorage.getItem("organizationId")) {
+        await getOrganizationService();
+      }
     };
 
-    fetchData();
-  }, []); // Run the effect only once on mount
+    checkAdmin();
+  }, []);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = useTable({ columns, data });
+
   return (
     <div>
       <button
@@ -83,4 +124,5 @@ const Organization = () => {
     </div>
   );
 };
+
 export default Organization;

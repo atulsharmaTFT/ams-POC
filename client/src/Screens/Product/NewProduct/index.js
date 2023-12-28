@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import classes from "./NewProduct.module.scss";
 import { toCamelCase } from "../../../helper/commonHelpers";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,6 +16,8 @@ const NewProduct = () => {
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [domain, setDomain] = useState([]);
+  const [selectedDomain, setSelectedDomain] = useState([]);
   const navigate = useNavigate();
 
   const params = useParams();
@@ -26,6 +28,18 @@ const NewProduct = () => {
       getProductById();
     }
   }, []);
+
+  const {
+    state: {
+      loading: getAllDomainsLoading,
+      isSuccess: isGetAllDomainsSuccess,
+      data: getAllDomainsResponse,
+      isError: isGetAllDomainsError,
+      error: getAllDomainsError,
+    },
+    callService: getAllDomainsService,
+    resetServiceState: resetGetAllDomainsState,
+  } = useAdminApiService(adminServices.getAllDomains);
 
   const {
     state: {
@@ -51,21 +65,33 @@ const NewProduct = () => {
     resetServiceState: resetGetFieldGroupsState,
   } = useAdminApiService(adminServices.getFieldGroups);
 
+  const {
+    state: {
+      loading: addProductCategoryLoading,
+      isSuccess: isAddProductCategorySuccess,
+      data: addProductCategoryResponse,
+      isError: isAddProductCategoryError,
+      error: addProductCategoryError,
+    },
+    callService: addProductCategoryServices,
+    resetServiceState: resetAddProductCategoryState,
+  } = useAdminApiService(adminServices.createProductCategory);
+
   useEffect(() => {
     if (isGetProductByIdError && getProductByIdError) {
       resetGetProductByIdState();
     }
     if (isGetProductByIdSuccess && getProductByIdResponse) {
       setTimeout(() => setLoading(false), 1000);
-      setUserName(getProductByIdResponse.name);
-      getProductByIdResponse.fieldGroups.forEach((group) => {
+      setUserName(getProductByIdResponse.data.name);
+      getProductByIdResponse.data.fieldGroups.forEach((group) => {
         handleAddItem(group);
       });
     }
     if (getFieldGroupsResponse && isGetFieldGroupsSuccess) {
       setTimeout(() => setLoading(false), 1000);
       console.log(getFieldGroupsResponse, "old");
-      const updatedData = getFieldGroupsResponse.map((item) => {
+      const updatedData = getFieldGroupsResponse.data.map((item) => {
         const fieldIds = item.fields.map((field) => field._id);
         return { ...item, fields: fieldIds };
       });
@@ -74,6 +100,12 @@ const NewProduct = () => {
     }
     if (isGetFieldGroupsError && getFieldGroupsError) {
       resetGetFieldGroupsState();
+    }
+    if (isGetAllDomainsError && getAllDomainsError) {
+      console.log(getAllDomainsError, "Error");
+    }
+    if (isGetAllDomainsSuccess && getAllDomainsResponse) {
+      setDomain(getAllDomainsResponse?.data);
     }
   }, [
     isGetProductByIdSuccess,
@@ -84,6 +116,10 @@ const NewProduct = () => {
     getFieldGroupsResponse,
     isGetFieldGroupsError,
     getFieldGroupsError,
+    isGetAllDomainsSuccess,
+    getAllDomainsResponse,
+    getAllDomainsError,
+    isGetAllDomainsError,
   ]);
 
   const getProductById = async () => {
@@ -94,6 +130,7 @@ const NewProduct = () => {
   const fetchFieldGroupData = async () => {
     setLoading(true);
     await getFieldGroupsServices();
+    await getAllDomainsService();
   };
 
   const createProduct = async () => {
@@ -104,12 +141,13 @@ const NewProduct = () => {
         userIds.push(item._id);
       });
       selectedItems.forEach((item, index) => {
-        indexedUserIdsArray.push({ index: index, fieldGroupId: item._id });
+        indexedUserIdsArray.push({ index: index, id: item._id });
       });
       const obj = {
         name: userName,
         fieldGroups: userIds,
         indexedFieldGroupsIds: indexedUserIdsArray,
+        domainCategoryId: selectedDomain?._id,
       };
 
       if (params.id) {
@@ -123,22 +161,21 @@ const NewProduct = () => {
             body: JSON.stringify(obj),
           }
         );
-        // const apiData = await response.json();
-        // console.log(apiData);
         if (response.status === 204 && response.statusText === "No Content") {
           navigate("/product");
         }
       } else {
         obj["variable"] = toCamelCase(userName);
-        const response = await fetch("http://localhost:8001/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(obj),
-        });
+        console.log(obj);
+        await addProductCategoryServices(obj);
+        // const response = await fetch("http://localhost:8001/products", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(obj),
+        // });
 
-        // const apiData = await response.json();
         navigate("/product");
       }
     } catch (err) {
@@ -161,19 +198,28 @@ const NewProduct = () => {
   };
   const handleDragStart = (e, id) => {
     dragItem.current = id;
-   };
-   const handleDragEnter = (e, id) => {
+  };
+  const handleDragEnter = (e, id) => {
     dragOverItem.current = id;
-   };
-   const onDragEnd = () => {
+  };
+  const onDragEnd = () => {
     const copySelectItems = [...selectedItems];
-    const draggedItem = copySelectItems.find(item => item._id === dragItem.current);
-    const draggedIndex = copySelectItems.findIndex(item => item._id === dragItem.current);
+    const draggedItem = copySelectItems.find(
+      (item) => item._id === dragItem.current
+    );
+    const draggedIndex = copySelectItems.findIndex(
+      (item) => item._id === dragItem.current
+    );
     if (draggedItem && dragOverItem.current) {
-      const dropIndex = copySelectItems.findIndex(item => item._id === dragOverItem.current);
-      [copySelectItems[draggedIndex], copySelectItems[dropIndex]] = [copySelectItems[dropIndex], copySelectItems[draggedIndex]];
+      const dropIndex = copySelectItems.findIndex(
+        (item) => item._id === dragOverItem.current
+      );
+      [copySelectItems[draggedIndex], copySelectItems[dropIndex]] = [
+        copySelectItems[dropIndex],
+        copySelectItems[draggedIndex],
+      ];
     }
-  
+
     dragItem.current = null;
     dragOverItem.current = null;
     setSelectedItems(copySelectItems);
@@ -194,7 +240,7 @@ const NewProduct = () => {
   //   );
   // };
   const isItemSelected = (item) =>
-  selectedItems.some((selectedItem) => selectedItem._id === item._id);
+    selectedItems.some((selectedItem) => selectedItem._id === item._id);
 
   const handleRemoveItem = (itemToRemove) => {
     const updatedSelectedItems = selectedItems.filter(
@@ -216,6 +262,26 @@ const NewProduct = () => {
               onChange={(e) => setUserName(e.target.value)}
             />
           </div>
+          {domain.length > 0 && (
+            <div>
+              <label>Domain Category</label>
+              <select
+                // value={selectedDomain?.name}
+                onChange={
+                  (e) => setSelectedDomain(JSON.parse(e.target.value))
+                  // console.log(JSON.parse(e.target.value))
+                }
+                key={selectedDomain?.domainCategoryId}
+              >
+                <option value="">Select Category</option>
+                {domain.map((item) => (
+                  <option key={item._id} value={JSON.stringify(item)}>
+                    {item.name.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {/* First Container */}
           <div className={classes.searchContainer}>
             <h2>Search Container</h2>
