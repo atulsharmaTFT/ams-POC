@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import "react-dropzone-uploader/dist/styles.css";
 import classes from "./Users.module.scss";
-import CSVUpload from "../../components/CSVUploader/CSVUploader";
-import AddNewUser from "./AddNewUser/AddNewUser";
-import Employee from "./AddNewUser/Employee/Employee";
+import { useNavigate } from "react-router-dom";
 import { FaUserPlus } from "react-icons/fa6";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { HiOutlineUserGroup } from "react-icons/hi2";
@@ -13,6 +11,7 @@ import Modal from "../../components/Modal/Modal";
 import Button from "../../components/Button/Button";
 import CustomTable from "../../components/CustomTable";
 import UploadExcelComponent from "./Helper/UploadExcelComponent";
+import { AppRoutes } from "../../constants/app.routes";
 const employeeData = [
   {
     employeeId: "1343",
@@ -44,6 +43,7 @@ const employeeData = [
 ];
 
 function Users() {
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -94,7 +94,7 @@ function Users() {
     { width: "120px" },
   ];
   function handleAddNewUser() {
-    console.log("Hello handleAddNewUser");
+    navigate(AppRoutes.ADD_USER)
   }
   const onView = (row) => {
     console.log("View", row);

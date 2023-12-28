@@ -1,72 +1,88 @@
-import React from 'react'
-import { useForm } from 'react-hook-form';
-import classes from "./AddNewUser.module.scss"
+import React from "react";
+import { useForm } from "react-hook-form";
+import classes from "./AddNewUser.module.scss";
+import { FormProvider } from "../../../components/FormHook";
+import { MdOutlineArrowBackIosNew } from "react-icons/md";
+import MultiselectDropdown from "../../../components/FormHook/MultiSelectDropdown/MultiselectDropdown";
+import { useNavigate } from "react-router-dom";
 
 function AddNewUser() {
+  const navigate = useNavigate();
+  const methods = useForm({
+    shouldUnregister: false,
+    mode: "all",
+  });
   const {
-    register,
     handleSubmit,
-    formState: { errors },
+    trigger,
+    watch,
+    setValue,
+    getValues,
     reset,
-  } = useForm();
+    formState: { errors },
+  } = methods;
 
-  const onSubmit=(data)=>{
-    console.log('data', data)
+  const onSubmit = (data) => {
+    console.log("data", data);
     reset();
-  }
+  };
+  const Roles = [
+    { label: "Manager", value: "Manager" },
+    { label: "Read Only", value: "Read Only" },
+  ];
+  const Users = [
+    { label: "Ganesh", value: "Ganesh" },
+    { label: "Gaitoned", value: "Gaitonde" },
+    { label: "Hercules", value: "Hercules" },
+    { label: "Ashwathama", value: "Ashwathama" },
+  ];
   return (
-    <>
-    
-    <form className={classes.employeeForm} onSubmit={handleSubmit(onSubmit)}>
-      <label>
-        Employee ID:
-        <input type="text" {...register('employeeId', { required: 'This field is required' })} />
-        {errors.employeeId && <p>{errors.employeeId.message}</p>}
-      </label>
-
-      <label>
-        Name:
-        <input type="text" {...register('name', { required: 'This field is required' })} />
-        {errors.name && <p>{errors.name.message}</p>}
-      </label>
-
-      <label>
-        Email:
-        <input
-          type="email"
-          {...register('email', { required: 'This field is required', pattern: /^\S+@\S+$/i })}
+    <div className={classes.container}>
+      <div style={{flex:1, display:'flex', flexDirection:"row", justifyContent:'space-between', alignItems:'center'}}>
+      <MdOutlineArrowBackIosNew onClick={()=>navigate(-1)} size={"25px"}/>
+      <h1>Add User Details</h1>
+      <div/>
+      </div>
+      <FormProvider
+        methods={methods}
+        buttonName={"Submit"}
+        onSubmit={handleSubmit(onSubmit)}
+        overrideClassName={classes.addBtn}
+      >
+        {/* Role Assing */}
+        <p>Select User</p>
+        <MultiselectDropdown
+          isMulti={false}
+          key={"user"}
+          category={"Please select user"}
+          data={Users}
+          handleChange={(selectedValue, action) => {
+            setValue("user", selectedValue);
+            methods.clearErrors("user");
+          }}
+          error={errors?.["user"]?.message}
+          selected={getValues("user")}
+          fieldName={"user"}
+          className={classes.inputOverride}
         />
-        {errors.email && <p>{errors.email.message}</p>}
-      </label>
-
-      <label>
-        Manager Name:
-        <input type="text" {...register('managerName', { required: 'This field is required' })} />
-        {errors.managerName && <p>{errors.managerName.message}</p>}
-      </label>
-
-      <label>
-        Designation:
-        <input type="text" {...register('designation', { required: 'This field is required' })} />
-        {errors.designation && <p>{errors.designation.message}</p>}
-      </label>
-
-      <label>
-        Department:
-        <input type="text" {...register('department')} />
-        {errors.department && <p>{errors.department.message}</p>}
-      </label>
-
-      <label>
-        Joining Date:
-        <input type="date" {...register('joiningDate')} />
-        {errors.joiningDate && <p>{errors.joiningDate.message}</p>}
-      </label>
-
-      <button type="submit">Add Employee</button>
-    </form>
-    </>
-  )
+        <p>Select Role for User</p>
+        <MultiselectDropdown
+          isMulti={true}
+          key={"roles"}
+          category={"Please select role"}
+          data={Roles}
+          handleChange={(selectedValue, action) => {
+            setValue("roles", selectedValue);
+            methods.clearErrors("roles");
+          }}
+          error={errors?.["roles"]?.message}
+          selected={getValues("roles")}
+          fieldName={"roles"}
+          className={classes.inputOverride}
+        />
+      </FormProvider>
+    </div>
+  );
 }
 
-export default AddNewUser
+export default AddNewUser;
