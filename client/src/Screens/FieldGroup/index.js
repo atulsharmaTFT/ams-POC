@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTable } from "react-table";
 import useAdminApiService from "../../helper/useAdminApiService";
 import adminServices from "../../helper/adminServices";
-
-const columns = [
-  { Header: "Sno.", accessor: "sno", Cell: ({ row }) => row.index + 1 },
-  { Header: "Name", accessor: "name" },
-];
+import CustomTable from "../../components/CustomTable";
+import Button from "../../components/Button/Button";
+import classes from "./FieldGroup.module.scss"
+import { AppRoutes } from "../../constants/app.routes";
 
 const FieldGroup = () => {
   const navigate = useNavigate();
@@ -55,7 +53,12 @@ const FieldGroup = () => {
   //     try {
   //       const response = await fetch("http://localhost:8001/field-groups");
   //       const apiData = await response.json();
-  //       setData(apiData);
+  //       let newD = apiData?.map((item)=>{
+  //         const names = item?.fields?.map((name)=> {return name?.name})
+  //         console.log(names,"names")
+  //         return {groupName: item?.name , fieldsCount: item?.fields?.length, fieldsName:names.join(',') }
+  //       })
+  //       setData(newD);
   //     } catch (error) {
   //       console.error("Error fetching data:", error);
   //     }
@@ -63,66 +66,38 @@ const FieldGroup = () => {
 
   //   fetchData();
   // }, []); // Run the effect only once on mount
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
+const headers = ["Group Name", "Count" , "Fields Name"]
+const columnWidths=[
+  {width: "350px"},
+  {width: "200px"},
+  {width: "400px"}
+]
+console.log(data,"data")
   return (
-    <div>
-      <button
+    <div className={classes.container}>
+     <div
         style={{
-          marginTop: "16px",
-          padding: "8px",
-          fontSize: "16px",
+          flex: 1,
+          flexDirection: "row",
+          display: "flex",
+          justifyContent: "flex-end",
         }}
-        onClick={() => navigate("/newFieldGroup")} // Add your logic here
       >
-        Add New FieldGroup
-      </button>
+        <Button
+          type="submit"
+          overrideClassName={classes.addBtn}
+          buttonText={"Add Field Group"}
+          onClick={() => navigate(AppRoutes.FIELDGROUP)}
+          loading={false}
+        />
+      </div>
       {/* Render the table */}
-      <table
-        {...getTableProps()}
-        style={{ borderCollapse: "collapse", width: "100%" }}
-      >
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th
-                  {...column.getHeaderProps()}
-                  style={{
-                    borderBottom: "2px solid black",
-                    background: "#f2f2f2",
-                    padding: "8px",
-                    textAlign: "left",
-                  }}
-                >
-                  {column.render("Header")}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td
-                    {...cell.getCellProps()}
-                    style={{
-                      border: "1px solid black",
-                      padding: "8px",
-                    }}
-                  >
-                    {cell.render("Cell")}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <CustomTable
+        data={data}
+        headers={headers}
+        columnWidths={columnWidths}
+        showActions={false}
+      />
     </div>
   );
 };
