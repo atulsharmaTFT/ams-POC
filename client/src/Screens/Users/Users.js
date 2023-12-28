@@ -4,7 +4,15 @@ import classes from "./Users.module.scss";
 import CSVUpload from "../../components/CSVUploader/CSVUploader";
 import AddNewUser from "./AddNewUser/AddNewUser";
 import Employee from "./AddNewUser/Employee/Employee";
+import { FaUserPlus } from "react-icons/fa6";
+import { RiFileExcel2Line } from "react-icons/ri";
+import { HiOutlineUserGroup } from "react-icons/hi2";
+
+
 import Modal from "../../components/Modal/Modal";
+import Button from "../../components/Button/Button";
+import CustomTable from "../../components/CustomTable";
+import UploadExcelComponent from "./Helper/UploadExcelComponent";
 const employeeData = [
   {
     employeeId: "1343",
@@ -34,13 +42,15 @@ const employeeData = [
     joiningDate: "31-07-2023",
   },
 ];
-const handleUpload = (file) => {
-  console.log("Uploaded CSV file:", file);
-};
 
 function Users() {
   const [showForm, setShowForm] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const handleUpload = (file) => {
+    console.log("Uploaded CSV file:", file);
+  };
+
   function handleShowForm() {
     setShowForm(!showForm);
   }
@@ -65,50 +75,92 @@ function Users() {
       onClick: (employee) => console.log("Edit employee:", employee),
     },
   ];
+  const headers = [
+    "Employee Id",
+    "Full Name",
+    "Email",
+    "Manager Name",
+    "Designation",
+    "Department",
+    "Joining Date",
+  ];
+  const columnWidths = [
+    { width: "100px" },
+    { width: "100px" },
+    { width: "120px" },
+    { width: "150px" },
+    { width: "150px" },
+    { width: "100px" },
+    { width: "120px" },
+  ];
+  function handleAddNewUser() {
+    console.log("Hello handleAddNewUser");
+  }
+  const onView = (row) => {
+    console.log("View", row);
+  };
+
+  const onEdit = (row) => {
+    console.log("Edit", row);
+  };
+
+  const onDelete = (row) => {
+    console.log("Delete", row);
+  };
   return (
-    <div className={classes.users}>
-      <div className={classes.addActions}>
-        <Modal
-          modalHeaderClassName={classes.hideModalHeader}
-          modalBodyClassName={classes.modalBody}
-          show={showModal}
-          title={"Import CSV"}
-          onClose={handleShowModal}
-        >
-          <CSVUpload onUpload={handleUpload} />
-          <div className={classes.instructions}>
-            <p>
-              <strong>Instructions</strong>
-            </p>
-            <p>Please upload a CSV file in the following format:</p>
-            <p>
-              <strong>Format:</strong> Name, Employee ID, Designation, Email,
-              Department, Manager Name, Manager Email, Joining Date
-            </p>
-            <p>
-              <strong>Example:</strong> ABCD, 13232, Software Engineer,
-              abc@tftus.com, Development, XYZ, xyz@tftus.com, 01/01/2024
-            </p>
-          </div>
-          <div className={classes.csvActions}>
-            <button onClick={handleSampleFile}>Download Sample File</button>
-
-            <button>Submit</button>
-          </div>
-        </Modal>
-        <button className={classes.addUser} onClick={handleShowModal}>
-          {"Import CSV"}
-        </button>
+    <div className={classes.container}>
+      <Modal
+        modalHeaderClassName={classes.hideModalHeader}
+        modalBodyClassName={classes.modalBody}
+        show={showModal}
+        title={"Upload User Data"}
+        onClose={handleShowModal}
+      >
+        <UploadExcelComponent
+          handleSampleFile={handleSampleFile}
+          handleUpload={handleUpload}
+          downloadClass={classes.addBtn}
+        />
+      </Modal>
+      <div
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <Button
+          overrideClassName={classes.assignBtn}
+          buttonText={"Assign Roles"}
+          onClick={handleAddNewUser}
+          icon={<HiOutlineUserGroup size={"25px"}/>}
+          loading={false}
+        />
+        <Button
+          overrideClassName={classes.excelBtn}
+          buttonText={"Upload Excel"}
+          onClick={handleShowModal}
+          icon={<RiFileExcel2Line size={"25px"}/>}
+          loading={false}
+        />
+        <Button
+          type="submit"
+          overrideClassName={classes.addNewUser}
+          buttonText={"Add User"}
+          icon={<FaUserPlus size={"25px"} />}
+          onClick={handleAddNewUser}
+          loading={false}
+        />
       </div>
-      <div className={classes.userTable}>
-        {showForm ? <h1>Add New User</h1> : <h1>Employee Table</h1>}
-        <button className={classes.addUser} onClick={handleShowForm}>
-          {showForm ? "View Table" : "Add New User"}
-        </button>
-
-        {showForm && <AddNewUser />}
-        {!showForm && <Employee data={employeeData} buttons={buttons} />}
-      </div>
+      <CustomTable
+        data={employeeData}
+        headers={headers}
+        columnWidths={columnWidths}
+        onView={onView}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
     </div>
   );
 }

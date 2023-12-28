@@ -129,20 +129,7 @@ const Sidebar = () => {
       name: "Role Management",
       show: ["OrganizationAdmin", "SuperAdmin"],
       icon: <FaUserFriends size={"25px"} className={classes.icon} />,
-      subMenu: [
-        {
-          path: AppRoutes.ROLE_MANAGEMENT,
-          name: "Roles",
-          show: ["OrganizationAdmin"],
-          icon: <CgOrganisation size={"25px"} className={classes.icon} />,
-        },
-        {
-          path: AppRoutes.ASSIGN_ROLE,
-          name: "Assign Roles",
-          show: ["OrganizationAdmin"],
-          icon: <MdAdminPanelSettings size={"25px"} className={classes.icon} />,
-        },
-      ],
+      subMenu: [],
     },
   ];
   return (

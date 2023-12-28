@@ -19,7 +19,7 @@ const Button = ({
       className={`${styles.button} ${overrideClassName}`}
       onClick={() => !disabled && onClick()}
     >
-      {icon && <i className={icon} />}
+      {icon && icon}
       {image && <img src={image} alt="icon" className={imageClassName} />}
       {iconText && <span>{iconText}</span>}
       {loading ? (
